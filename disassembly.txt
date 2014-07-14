@@ -1,0 +1,2515 @@
+0x00000100	0e	push   %cs	
+0x00000101	29c0	sub    %ax,%ax	
+0x00000103	50	push   %ax	
+0x00000104	2e89260904	mov    %sp,%cs:0x409	
+0x00000109	8cc8	mov    %cs,%ax	
+0x0000010b	050000	add    $0x0,%ax	
+0x0000010e	8ec0	mov    %ax,%es	
+0x00000110	8ed8	mov    %ax,%ds	
+0x00000112	8ed0	mov    %ax,%ss	
+0x00000114	bbe3ed	mov    $0xede3,%bx	
+0x00000117	c7070000	movw   $0x0,(%bx)	
+0x0000011b	bae4ed	mov    $0xede4,%dx	
+0x0000011e	b91007	mov    $0x710,%cx	
+0x00000121	87f3	xchg   %si,%bx	
+0x00000123	87fa	xchg   %di,%dx	
+0x00000125	fc	cld	
+0x00000126	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00000128	87f3	xchg   %si,%bx	
+0x0000012a	87fa	xchg   %di,%dx	
+0x0000012c	bbe3ed	mov    $0xede3,%bx	
+0x0000012f	bae4ed	mov    $0xede4,%dx	
+0x00000132	c707ff00	movw   $0xff,(%bx)	
+0x00000136	b91f03	mov    $0x31f,%cx	
+0x00000139	87f3	xchg   %si,%bx	
+0x0000013b	87fa	xchg   %di,%dx	
+0x0000013d	fc	cld	
+0x0000013e	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00000140	87f3	xchg   %si,%bx	
+0x00000142	87fa	xchg   %di,%dx	
+0x00000144	bbe3ed	mov    $0xede3,%bx	
+0x00000147	baf3f4	mov    $0xf4f3,%dx	
+0x0000014a	b92003	mov    $0x320,%cx	
+0x0000014d	87f3	xchg   %si,%bx	
+0x0000014f	87fa	xchg   %di,%dx	
+0x00000151	fc	cld	
+0x00000152	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00000154	87f3	xchg   %si,%bx	
+0x00000156	87fa	xchg   %di,%dx	
+0x00000158	e81e36	call   0x00003779	
+0x0000015b	e89535	call   0x000036f3	
+0x0000015e	e8f82e	call   0x00003059	
+0x00000161	e8920e	call   0x00000ff6	
+0x00000164	e8b400	call   0x0000021b	
+0x00000167	e8cf36	call   0x00003839	
+0x0000016a	2e89260904	mov    %sp,%cs:0x409	
+0x0000016f	2e8b260904	mov    %cs:0x409,%sp	
+0x00000174	e86701	call   0x000002de	
+0x00000177	e87d01	call   0x000002f7	
+0x0000017a	e8c737	call   0x00003944	
+0x0000017d	e80830	call   0x00003188	
+0x00000180	e85532	call   0x000033d8	
+0x00000183	b454	mov    $0x54,%ah	
+0x00000185	88261df1	mov    %ah,-0xee3	
+0x00000189	30e4	xor    %ah,%ah	
+0x0000018b	88267bf1	mov    %ah,-0xe85	
+0x0000018f	c7067cf10000	movw   $0x0,-0xe84	
+0x00000195	c6067ef400	movb   $0x0,-0xb82	
+0x0000019a	e8352a	call   0x00002bd2	
+0x0000019d	e88529	call   0x00002b25	
+0x000001a0	e81637	call   0x000038b9	
+0x000001a3	e80338	call   0x000039a9	
+0x000001a6	e87200	call   0x0000021b	
+0x000001a9	e89b00	call   0x00000247	
+0x000001ac	e84d0e	call   0x00000ffc	
+0x000001af	e82822	call   0x000023da	
+0x000001b2	e80132	call   0x000033b6	
+0x000001b5	b503	mov    $0x3,%ch	
+0x000001b7	b10d	mov    $0xd,%cl	
+0x000001b9	b60a	mov    $0xa,%dh	
+0x000001bb	b214	mov    $0x14,%dl	
+0x000001bd	e8a20f	call   0x00001162	
+0x000001c0	e86932	call   0x0000342c	
+0x000001c3	e85701	call   0x0000031d	
+0x000001c6	b450	mov    $0x50,%ah	
+0x000001c8	88261df1	mov    %ah,-0xee3	
+0x000001cc	bbe3ed	mov    $0xede3,%bx	
+0x000001cf	bae4ed	mov    $0xede4,%dx	
+0x000001d2	b91f03	mov    $0x31f,%cx	
+0x000001d5	87f3	xchg   %si,%bx	
+0x000001d7	87fa	xchg   %di,%dx	
+0x000001d9	fc	cld	
+0x000001da	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x000001dc	87f3	xchg   %si,%bx	
+0x000001de	87fa	xchg   %di,%dx	
+0x000001e0	e86137	call   0x00003944	
+0x000001e3	c70607f10000	movw   $0x0,-0xef9	
+0x000001e9	2e803e3b4100	cmpb   $0x0,%cs:0x413b	
+0x000001ef	7410	je     0x00000201	
+0x000001f1	2ec6063c4100	movb   $0x0,%cs:0x413c	
+0x000001f7	bb4041	mov    $0x4140,%bx	
+0x000001fa	2e891e3e41	mov    %bx,%cs:0x413e	
+0x000001ff	eb0e	jmp    0x0000020f	
+0x00000201	bb3e41	mov    $0x413e,%bx	
+0x00000204	2e891e3e41	mov    %bx,%cs:0x413e	
+0x00000209	2ec6063d41ff	movb   $0xff,%cs:0x413d	
+0x0000020f	c706aff10800	movw   $0x8,-0xe51	
+0x00000215	e8f301	call   0x0000040b	
+0x00000218	e954ff	jmp    0x0000016f	
+0x0000021b	b40f	mov    $0xf,%ah	
+0x0000021d	88261bf1	mov    %ah,-0xee5	
+0x00000221	e84f21	call   0x00002373	
+0x00000224	e84f00	call   0x00000276	
+0x00000227	bb0000	mov    $0x0,%bx	
+0x0000022a	891e2af1	mov    %bx,-0xed6	
+0x0000022e	b401	mov    $0x1,%ah	
+0x00000230	88267bf1	mov    %ah,-0xe85	
+0x00000234	bbcff1	mov    $0xf1cf,%bx	
+0x00000237	891e7cf1	mov    %bx,-0xe84	
+0x0000023b	bb0000	mov    $0x0,%bx	
+0x0000023e	891e7ef1	mov    %bx,-0xe82	
+0x00000242	8826f4f1	mov    %ah,-0xe0c	
+0x00000246	c3	ret	
+0x00000247	30e4	xor    %ah,%ah	
+0x00000249	88262cf1	mov    %ah,-0xed4	
+0x0000024d	88262af1	mov    %ah,-0xed6	
+0x00000251	88262bf1	mov    %ah,-0xed5	
+0x00000255	b4ff	mov    $0xff,%ah	
+0x00000257	bb03f1	mov    $0xf103,%bx	
+0x0000025a	8827	mov    %ah,(%bx)	
+0x0000025c	43	inc    %bx	
+0x0000025d	8827	mov    %ah,(%bx)	
+0x0000025f	43	inc    %bx	
+0x00000260	8827	mov    %ah,(%bx)	
+0x00000262	43	inc    %bx	
+0x00000263	8827	mov    %ah,(%bx)	
+0x00000265	8826cff3	mov    %ah,-0xc31	
+0x00000269	bb25f1	mov    $0xf125,%bx	
+0x0000026c	c60716	movb   $0x16,(%bx)	
+0x0000026f	bb24f1	mov    $0xf124,%bx	
+0x00000272	c60708	movb   $0x8,(%bx)	
+0x00000275	c3	ret	
+0x00000276	bbcff1	mov    $0xf1cf,%bx	
+0x00000279	c7070000	movw   $0x0,(%bx)	
+0x0000027d	bad0f1	mov    $0xf1d0,%dx	
+0x00000280	b9ec01	mov    $0x1ec,%cx	
+0x00000283	87f3	xchg   %si,%bx	
+0x00000285	87fa	xchg   %di,%dx	
+0x00000287	fc	cld	
+0x00000288	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x0000028a	87f3	xchg   %si,%bx	
+0x0000028c	87fa	xchg   %di,%dx	
+0x0000028e	bbbbf3	mov    $0xf3bb,%bx	
+0x00000291	c707ff00	movw   $0xff,(%bx)	
+0x00000295	bb68df	mov    $0xdf68,%bx	
+0x00000298	ba80f4	mov    $0xf480,%dx	
+0x0000029b	b94100	mov    $0x41,%cx	
+0x0000029e	87f3	xchg   %si,%bx	
+0x000002a0	87fa	xchg   %di,%dx	
+0x000002a2	fc	cld	
+0x000002a3	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x000002a5	87f3	xchg   %si,%bx	
+0x000002a7	87fa	xchg   %di,%dx	
+0x000002a9	bbb9df	mov    $0xdfb9,%bx	
+0x000002ac	bac1f4	mov    $0xf4c1,%dx	
+0x000002af	b93200	mov    $0x32,%cx	
+0x000002b2	87f3	xchg   %si,%bx	
+0x000002b4	87fa	xchg   %di,%dx	
+0x000002b6	fc	cld	
+0x000002b7	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x000002b9	87f3	xchg   %si,%bx	
+0x000002bb	87fa	xchg   %di,%dx	
+0x000002bd	e80100	call   0x000002c1	
+0x000002c0	c3	ret	
+0x000002c1	bbf9df	mov    $0xdff9,%bx	
+0x000002c4	e80300	call   0x000002ca	
+0x000002c7	bb2ae0	mov    $0xe02a,%bx	
+0x000002ca	8a27	mov    (%bx),%ah	
+0x000002cc	43	inc    %bx	
+0x000002cd	ba0400	mov    $0x4,%dx	
+0x000002d0	88e5	mov    %ah,%ch	
+0x000002d2	b401	mov    $0x1,%ah	
+0x000002d4	43	inc    %bx	
+0x000002d5	8827	mov    %ah,(%bx)	
+0x000002d7	01d3	add    %dx,%bx	
+0x000002d9	fecd	dec    %ch	
+0x000002db	75f8	jne    0x000002d5	
+0x000002dd	c3	ret	
+0x000002de	bb26f1	mov    $0xf126,%bx	
+0x000002e1	c7070000	movw   $0x0,(%bx)	
+0x000002e5	ba27f1	mov    $0xf127,%dx	
+0x000002e8	b90800	mov    $0x8,%cx	
+0x000002eb	87f3	xchg   %si,%bx	
+0x000002ed	87fa	xchg   %di,%dx	
+0x000002ef	fc	cld	
+0x000002f0	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x000002f2	87f3	xchg   %si,%bx	
+0x000002f4	87fa	xchg   %di,%dx	
+0x000002f6	c3	ret	
+0x000002f7	bb2ef1	mov    $0xf12e,%bx	
+0x000002fa	c7070000	movw   $0x0,(%bx)	
+0x000002fe	ba2ff1	mov    $0xf12f,%dx	
+0x00000301	b90c00	mov    $0xc,%cx	
+0x00000304	87f3	xchg   %si,%bx	
+0x00000306	87fa	xchg   %di,%dx	
+0x00000308	fc	cld	
+0x00000309	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x0000030b	87f3	xchg   %si,%bx	
+0x0000030d	87fa	xchg   %di,%dx	
+0x0000030f	c3	ret	
+0x00000310	1e	push   %ds	
+0x00000311	0304	add    (%si),%ax	
+0x00000313	260304	add    %es:(%si),%ax	
+0x00000316	07	pop    %es	
+0x00000317	06	push   %es	
+0x00000318	091f	or     %bx,(%bx)	
+0x0000031a	0304	add    (%si),%ax	
+0x0000031d	bb0000	mov    $0x0,%bx	
+0x00000320	891e7bf1	mov    %bx,-0xe85	
+0x00000324	891e7cf1	mov    %bx,-0xe84	
+0x00000328	bb0d03	mov    $0x30d,%bx	
+0x0000032b	891ec9f1	mov    %bx,-0xe37	
+0x0000032f	8b1ec9f1	mov    -0xe37,%bx	
+0x00000333	ba0300	mov    $0x3,%dx	
+0x00000336	01d3	add    %dx,%bx	
+0x00000338	891ec9f1	mov    %bx,-0xe37	
+0x0000033c	b91700	mov    $0x17,%cx	
+0x0000033f	bb8010	mov    $0x1080,%bx	
+0x00000342	e89000	call   0x000003d5	
+0x00000345	e86136	call   0x000039a9	
+0x00000348	e8ee34	call   0x00003839	
+0x0000034b	7407	je     0x00000354	
+0x0000034d	2ec6063b4100	movb   $0x0,%cs:0x413b	
+0x00000353	c3	ret	
+0x00000354	f60655ce80	testb  $0x80,-0x31ab	
+0x00000359	7407	je     0x00000362	
+0x0000035b	2ec6063b4101	movb   $0x1,%cs:0x413b	
+0x00000361	c3	ret	
+0x00000362	b9171e	mov    $0x1e17,%cx	
+0x00000365	30e4	xor    %ah,%ah	
+0x00000367	e87e00	call   0x000003e8	
+0x0000036a	b91027	mov    $0x2710,%cx	
+0x0000036d	e8df0d	call   0x0000114f	
+0x00000370	8a640c	mov    0xc(%si),%ah	
+0x00000373	80fc1e	cmp    $0x1e,%ah	
+0x00000376	73cd	jae    0x00000345	
+0x00000378	8b3ec9f1	mov    -0xe37,%di	
+0x0000037c	f60580	testb  $0x80,(%di)	
+0x0000037f	7407	je     0x00000388	
+0x00000381	bf1003	mov    $0x310,%di	
+0x00000384	893ec9f1	mov    %di,-0xe37	
+0x00000388	8a2d	mov    (%di),%ch	
+0x0000038a	8a4d01	mov    0x1(%di),%cl	
+0x0000038d	bb4010	mov    $0x1040,%bx	
+0x00000390	e84200	call   0x000003d5	
+0x00000393	e81336	call   0x000039a9	
+0x00000396	30e4	xor    %ah,%ah	
+0x00000398	b9171e	mov    $0x1e17,%cx	
+0x0000039b	e84a00	call   0x000003e8	
+0x0000039e	8b3ec9f1	mov    -0xe37,%di	
+0x000003a2	8a25	mov    (%di),%ah	
+0x000003a4	8a4d01	mov    0x1(%di),%cl	
+0x000003a7	8a6d02	mov    0x2(%di),%ch	
+0x000003aa	e83b00	call   0x000003e8	
+0x000003ad	f60410	testb  $0x10,(%si)	
+0x000003b0	7403	je     0x000003b5	
+0x000003b2	e97aff	jmp    0x0000032f	
+0x000003b5	b9b80b	mov    $0xbb8,%cx	
+0x000003b8	e8940d	call   0x0000114f	
+0x000003bb	e87b34	call   0x00003839	
+0x000003be	7407	je     0x000003c7	
+0x000003c0	2ec6063b4100	movb   $0x0,%cs:0x413b	
+0x000003c6	c3	ret	
+0x000003c7	f60655ce80	testb  $0x80,-0x31ab	
+0x000003cc	74c5	je     0x00000393	
+0x000003ce	2ec6063b4101	movb   $0x1,%cs:0x413b	
+0x000003d4	c3	ret	
+0x000003d5	51	push   %cx	
+0x000003d6	53	push   %bx	
+0x000003d7	e8cd0e	call   0x000012a7	
+0x000003da	7301	jae    0x000003dd	
+0x000003dc	c3	ret	
+0x000003dd	5b	pop    %bx	
+0x000003de	59	pop    %cx	
+0x000003df	b624	mov    $0x24,%dh	
+0x000003e1	b200	mov    $0x0,%dl	
+0x000003e3	b4c0	mov    $0xc0,%ah	
+0x000003e5	e98c0e	jmp    0x00001274	
+0x000003e8	51	push   %cx	
+0x000003e9	e86d10	call   0x00001459	
+0x000003ec	59	pop    %cx	
+0x000003ed	7301	jae    0x000003f0	
+0x000003ef	c3	ret	
+0x000003f0	57	push   %di	
+0x000003f1	5e	pop    %si	
+0x000003f2	b201	mov    $0x1,%dl	
+0x000003f4	e86e0c	call   0x00001065	
+0x000003f7	7201	jb     0x000003fa	
+0x000003f9	c3	ret	
+0x000003fa	e8c128	call   0x00002cbe	
+0x000003fd	8a640c	mov    0xc(%si),%ah	
+0x00000400	08e4	or     %ah,%ah	
+0x00000402	7401	je     0x00000405	
+0x00000404	c3	ret	
+0x00000405	800c10	orb    $0x10,(%si)	
+0x00000408	c3	ret	
+0x00000409	e2fe	loop   0x00000409	
+0x0000040b	e8ac07	call   0x00000bba	
+0x0000040e	c606774800	movb   $0x0,0x4877	
+0x00000413	8a2615f1	mov    -0xeeb,%ah	
+0x00000417	882616f1	mov    %ah,-0xeea	
+0x0000041b	e88033	call   0x0000379e	
+0x0000041e	e8383c	call   0x00004059	
+0x00000421	e81028	call   0x00002c34	
+0x00000424	e8fa1e	call   0x00002321	
+0x00000427	e8f01e	call   0x0000231a	
+0x0000042a	e86100	call   0x0000048e	
+0x0000042d	e85701	call   0x00000587	
+0x00000430	e8891b	call   0x00001fbc	
+0x00000433	e8e407	call   0x00000c1a	
+0x00000436	e87035	call   0x000039a9	
+0x00000439	e8b70c	call   0x000010f3	
+0x0000043c	e8691f	call   0x000023a8	
+0x0000043f	803e774803	cmpb   $0x3,0x4877	
+0x00000444	72f9	jb     0x0000043f	
+0x00000446	e80200	call   0x0000044b	
+0x00000449	ebc3	jmp    0x0000040e	
+0x0000044b	f70648ce8000	testw  $0x80,-0x31b8	
+0x00000451	7425	je     0x00000478	
+0x00000453	f7064bce8000	testw  $0x80,-0x31b5	
+0x00000459	741d	je     0x00000478	
+0x0000045b	f70655ce8000	testw  $0x80,-0x31ab	
+0x00000461	7415	je     0x00000478	
+0x00000463	f70649ce8000	testw  $0x80,-0x31b7	
+0x00000469	740d	je     0x00000478	
+0x0000046b	2ec606290990	movb   $0x90,%cs:0x929	
+0x00000471	2ec6062a0990	movb   $0x90,%cs:0x92a	
+0x00000477	c3	ret	
+0x00000478	f7064ace8000	testw  $0x80,-0x31b6	
+0x0000047e	7501	jne    0x00000481	
+0x00000480	c3	ret	
+0x00000481	2ec6062909fe	movb   $0xfe,%cs:0x929	
+0x00000487	2ec6062a09cc	movb   $0xcc,%cs:0x92a	
+0x0000048d	c3	ret	
+0x0000048e	8a262bf1	mov    -0xed5,%ah	
+0x00000492	f6c401	test   $0x1,%ah	
+0x00000495	7401	je     0x00000498	
+0x00000497	c3	ret	
+0x00000498	f6c402	test   $0x2,%ah	
+0x0000049b	7401	je     0x0000049e	
+0x0000049d	c3	ret	
+0x0000049e	becff1	mov    $0xf1cf,%si	
+0x000004a1	e87505	call   0x00000a19	
+0x000004a4	8a26ccf3	mov    -0xc34,%ah	
+0x000004a8	882633f1	mov    %ah,-0xecd	
+0x000004ac	e8b01c	call   0x0000215f	
+0x000004af	f6442402	testb  $0x2,0x24(%si)	
+0x000004b3	7403	je     0x000004b8	
+0x000004b5	e8be04	call   0x00000976	
+0x000004b8	f6441101	testb  $0x1,0x11(%si)	
+0x000004bc	7403	je     0x000004c1	
+0x000004be	e94301	jmp    0x00000604	
+0x000004c1	f6441104	testb  $0x4,0x11(%si)	
+0x000004c5	7403	je     0x000004ca	
+0x000004c7	e9f802	jmp    0x000007c2	
+0x000004ca	e82205	call   0x000009ef	
+0x000004cd	803e1cf13f	cmpb   $0x3f,-0xee4	
+0x000004d2	7409	je     0x000004dd	
+0x000004d4	f6441108	testb  $0x8,0x11(%si)	
+0x000004d8	7403	je     0x000004dd	
+0x000004da	e97002	jmp    0x0000074d	
+0x000004dd	f6441140	testb  $0x40,0x11(%si)	
+0x000004e1	7503	jne    0x000004e6	
+0x000004e3	e8a900	call   0x0000058f	
+0x000004e6	8a2615f1	mov    -0xeeb,%ah	
+0x000004ea	08e4	or     %ah,%ah	
+0x000004ec	7503	jne    0x000004f1	
+0x000004ee	e98e03	jmp    0x0000087f	
+0x000004f1	8a262df1	mov    -0xed3,%ah	
+0x000004f5	f6c480	test   $0x80,%ah	
+0x000004f8	7417	je     0x00000511	
+0x000004fa	bb96d3	mov    $0xd396,%bx	
+0x000004fd	f6441380	testb  $0x80,0x13(%si)	
+0x00000501	7403	je     0x00000506	
+0x00000503	bbc8d3	mov    $0xd3c8,%bx	
+0x00000506	e8fe03	call   0x00000907	
+0x00000509	b202	mov    $0x2,%dl	
+0x0000050b	e8570b	call   0x00001065	
+0x0000050e	7201	jb     0x00000511	
+0x00000510	c3	ret	
+0x00000511	30e4	xor    %ah,%ah	
+0x00000513	88262df1	mov    %ah,-0xed3	
+0x00000517	e89004	call   0x000009aa	
+0x0000051a	8a2615f1	mov    -0xeeb,%ah	
+0x0000051e	80fc02	cmp    $0x2,%ah	
+0x00000521	7503	jne    0x00000526	
+0x00000523	e83603	call   0x0000085c	
+0x00000526	80fc20	cmp    $0x20,%ah	
+0x00000529	7503	jne    0x0000052e	
+0x0000052b	e81308	call   0x00000d41	
+0x0000052e	bb4ddf	mov    $0xdf4d,%bx	
+0x00000531	f60701	testb  $0x1,(%bx)	
+0x00000534	8a2615f1	mov    -0xeeb,%ah	
+0x00000538	7505	jne    0x0000053f	
+0x0000053a	8027fd	andb   $0xfd,(%bx)	
+0x0000053d	eb1c	jmp    0x0000055b	
+0x0000053f	e8b31b	call   0x000020f5	
+0x00000542	8a2615f1	mov    -0xeeb,%ah	
+0x00000546	f60702	testb  $0x2,(%bx)	
+0x00000549	7410	je     0x0000055b	
+0x0000054b	80fc20	cmp    $0x20,%ah	
+0x0000054e	7503	jne    0x00000553	
+0x00000550	e87508	call   0x00000dc8	
+0x00000553	80e403	and    $0x3,%ah	
+0x00000556	7403	je     0x0000055b	
+0x00000558	e8d808	call   0x00000e33	
+0x0000055b	8a2615f1	mov    -0xeeb,%ah	
+0x0000055f	f6c401	test   $0x1,%ah	
+0x00000562	7403	je     0x00000567	
+0x00000564	e88c02	call   0x000007f3	
+0x00000567	88e0	mov    %ah,%al	
+0x00000569	8a262bf1	mov    -0xed5,%ah	
+0x0000056d	f6c480	test   $0x80,%ah	
+0x00000570	7512	jne    0x00000584	
+0x00000572	88c4	mov    %al,%ah	
+0x00000574	f6c404	test   $0x4,%ah	
+0x00000577	7403	je     0x0000057c	
+0x00000579	e85501	call   0x000006d1	
+0x0000057c	f6c408	test   $0x8,%ah	
+0x0000057f	7403	je     0x00000584	
+0x00000581	e8c900	call   0x0000064d	
+0x00000584	e9f802	jmp    0x0000087f	
+0x00000587	bb36f1	mov    $0xf136,%bx	
+0x0000058a	08e4	or     %ah,%ah	
+0x0000058c	d017	rclb   (%bx)	
+0x0000058e	c3	ret	
+0x0000058f	bb4ddf	mov    $0xdf4d,%bx	
+0x00000592	f60702	testb  $0x2,(%bx)	
+0x00000595	7401	je     0x00000598	
+0x00000597	c3	ret	
+0x00000598	59	pop    %cx	
+0x00000599	f6442440	testb  $0x40,0x24(%si)	
+0x0000059d	7401	je     0x000005a0	
+0x0000059f	c3	ret	
+0x000005a0	bb82d3	mov    $0xd382,%bx	
+0x000005a3	f6441380	testb  $0x80,0x13(%si)	
+0x000005a7	7403	je     0x000005ac	
+0x000005a9	bbb4d3	mov    $0xd3b4,%bx	
+0x000005ac	e85803	call   0x00000907	
+0x000005af	e8b30a	call   0x00001065	
+0x000005b2	7201	jb     0x000005b5	
+0x000005b4	c3	ret	
+0x000005b5	e82a27	call   0x00002ce2	
+0x000005b8	e87105	call   0x00000b2c	
+0x000005bb	8a6411	mov    0x11(%si),%ah	
+0x000005be	0a6424	or     0x24(%si),%ah	
+0x000005c1	f6441380	testb  $0x80,0x13(%si)	
+0x000005c5	7512	jne    0x000005d9	
+0x000005c7	f6c420	test   $0x20,%ah	
+0x000005ca	7501	jne    0x000005cd	
+0x000005cc	c3	ret	
+0x000005cd	c6441301	movb   $0x1,0x13(%si)	
+0x000005d1	fe4c0c	decb   0xc(%si)	
+0x000005d4	c6440b00	movb   $0x0,0xb(%si)	
+0x000005d8	c3	ret	
+0x000005d9	f6c410	test   $0x10,%ah	
+0x000005dc	7501	jne    0x000005df	
+0x000005de	c3	ret	
+0x000005df	c64413ff	movb   $0xff,0x13(%si)	
+0x000005e3	c6440b00	movb   $0x0,0xb(%si)	
+0x000005e7	fe440c	incb   0xc(%si)	
+0x000005ea	c3	ret	
+0x000005eb	bb75d3	mov    $0xd375,%bx	
+0x000005ee	f6441380	testb  $0x80,0x13(%si)	
+0x000005f2	7403	je     0x000005f7	
+0x000005f4	bba7d3	mov    $0xd3a7,%bx	
+0x000005f7	f6441480	testb  $0x80,0x14(%si)	
+0x000005fb	7401	je     0x000005fe	
+0x000005fd	4b	dec    %bx	
+0x000005fe	8a27	mov    (%bx),%ah	
+0x00000600	886410	mov    %ah,0x10(%si)	
+0x00000603	c3	ret	
+0x00000604	8a261df1	mov    -0xee3,%ah	
+0x00000608	88e5	mov    %ah,%ch	
+0x0000060a	bbe9df	mov    $0xdfe9,%bx	
+0x0000060d	ba0300	mov    $0x3,%dx	
+0x00000610	8a27	mov    (%bx),%ah	
+0x00000612	80fcff	cmp    $0xff,%ah	
+0x00000615	741c	je     0x00000633	
+0x00000617	38ec	cmp    %ch,%ah	
+0x00000619	7404	je     0x0000061f	
+0x0000061b	01d3	add    %dx,%bx	
+0x0000061d	ebf1	jmp    0x00000610	
+0x0000061f	53	push   %bx	
+0x00000620	5f	pop    %di	
+0x00000621	b300	mov    $0x0,%bl	
+0x00000623	8a7d01	mov    0x1(%di),%bh	
+0x00000626	891edaf1	mov    %bx,-0xe26	
+0x0000062a	b380	mov    $0x80,%bl	
+0x0000062c	8a7d02	mov    0x2(%di),%bh	
+0x0000062f	891edcf1	mov    %bx,-0xe24	
+0x00000633	bb0ecf	mov    $0xcf0e,%bx	
+0x00000636	e8592b	call   0x00003192	
+0x00000639	bbbed3	mov    $0xd3be,%bx	
+0x0000063c	e8c802	call   0x00000907	
+0x0000063f	e8230a	call   0x00001065	
+0x00000642	7201	jb     0x00000645	
+0x00000644	c3	ret	
+0x00000645	08e4	or     %ah,%ah	
+0x00000647	7501	jne    0x0000064a	
+0x00000649	c3	ret	
+0x0000064a	e9d802	jmp    0x00000925	
+0x0000064d	8a2626f1	mov    -0xeda,%ah	
+0x00000651	f6c440	test   $0x40,%ah	
+0x00000654	7504	jne    0x0000065a	
+0x00000656	c6440d80	movb   $0x80,0xd(%si)	
+0x0000065a	f6441120	testb  $0x20,0x11(%si)	
+0x0000065e	7438	je     0x00000698	
+0x00000660	8a6c0e	mov    0xe(%si),%ch	
+0x00000663	8a4c0c	mov    0xc(%si),%cl	
+0x00000666	fec1	inc    %cl	
+0x00000668	fec1	inc    %cl	
+0x0000066a	fec1	inc    %cl	
+0x0000066c	e8660a	call   0x000010d5	
+0x0000066f	8a27	mov    (%bx),%ah	
+0x00000671	08e4	or     %ah,%ah	
+0x00000673	7407	je     0x0000067c	
+0x00000675	80fc4e	cmp    $0x4e,%ah	
+0x00000678	7302	jae    0x0000067c	
+0x0000067a	eb1c	jmp    0x00000698	
+0x0000067c	ba2800	mov    $0x28,%dx	
+0x0000067f	01d3	add    %dx,%bx	
+0x00000681	01d3	add    %dx,%bx	
+0x00000683	8a27	mov    (%bx),%ah	
+0x00000685	08e4	or     %ah,%ah	
+0x00000687	740f	je     0x00000698	
+0x00000689	80fc4e	cmp    $0x4e,%ah	
+0x0000068c	730a	jae    0x00000698	
+0x0000068e	fe4c0e	decb   0xe(%si)	
+0x00000691	fe440c	incb   0xc(%si)	
+0x00000694	c6440b00	movb   $0x0,0xb(%si)	
+0x00000698	59	pop    %cx	
+0x00000699	8a6402	mov    0x2(%si),%ah	
+0x0000069c	80fc12	cmp    $0x12,%ah	
+0x0000069f	7405	je     0x000006a6	
+0x000006a1	fec4	inc    %ah	
+0x000006a3	886402	mov    %ah,0x2(%si)	
+0x000006a6	bb6ed3	mov    $0xd36e,%bx	
+0x000006a9	e85b02	call   0x00000907	
+0x000006ac	e8b609	call   0x00001065	
+0x000006af	7201	jb     0x000006b2	
+0x000006b1	c3	ret	
+0x000006b2	fe440c	incb   0xc(%si)	
+0x000006b5	c6440b00	movb   $0x0,0xb(%si)	
+0x000006b9	e87004	call   0x00000b2c	
+0x000006bc	8a6424	mov    0x24(%si),%ah	
+0x000006bf	0a6411	or     0x11(%si),%ah	
+0x000006c2	f6c420	test   $0x20,%ah	
+0x000006c5	7501	jne    0x000006c8	
+0x000006c7	c3	ret	
+0x000006c8	fe4c0c	decb   0xc(%si)	
+0x000006cb	c6440b00	movb   $0x0,0xb(%si)	
+0x000006cf	f9	stc	
+0x000006d0	c3	ret	
+0x000006d1	8a2626f1	mov    -0xeda,%ah	
+0x000006d5	f6c440	test   $0x40,%ah	
+0x000006d8	7504	jne    0x000006de	
+0x000006da	c6440d80	movb   $0x80,0xd(%si)	
+0x000006de	8a6411	mov    0x11(%si),%ah	
+0x000006e1	f6c410	test   $0x10,%ah	
+0x000006e4	7432	je     0x00000718	
+0x000006e6	8a6c0e	mov    0xe(%si),%ch	
+0x000006e9	8a4c0c	mov    0xc(%si),%cl	
+0x000006ec	fec9	dec    %cl	
+0x000006ee	e8e409	call   0x000010d5	
+0x000006f1	8a27	mov    (%bx),%ah	
+0x000006f3	08e4	or     %ah,%ah	
+0x000006f5	7405	je     0x000006fc	
+0x000006f7	80fc4e	cmp    $0x4e,%ah	
+0x000006fa	721c	jb     0x00000718	
+0x000006fc	ba2800	mov    $0x28,%dx	
+0x000006ff	01d3	add    %dx,%bx	
+0x00000701	01d3	add    %dx,%bx	
+0x00000703	8a27	mov    (%bx),%ah	
+0x00000705	08e4	or     %ah,%ah	
+0x00000707	740f	je     0x00000718	
+0x00000709	80fc4e	cmp    $0x4e,%ah	
+0x0000070c	730a	jae    0x00000718	
+0x0000070e	fe4c0e	decb   0xe(%si)	
+0x00000711	fe4c0c	decb   0xc(%si)	
+0x00000714	c6440b00	movb   $0x0,0xb(%si)	
+0x00000718	59	pop    %cx	
+0x00000719	8a6402	mov    0x2(%si),%ah	
+0x0000071c	80fc12	cmp    $0x12,%ah	
+0x0000071f	7405	je     0x00000726	
+0x00000721	fec4	inc    %ah	
+0x00000723	886402	mov    %ah,0x2(%si)	
+0x00000726	bba0d3	mov    $0xd3a0,%bx	
+0x00000729	e8db01	call   0x00000907	
+0x0000072c	e83609	call   0x00001065	
+0x0000072f	7201	jb     0x00000732	
+0x00000731	c3	ret	
+0x00000732	fe4c0c	decb   0xc(%si)	
+0x00000735	c6440b00	movb   $0x0,0xb(%si)	
+0x00000739	e8f003	call   0x00000b2c	
+0x0000073c	8a6424	mov    0x24(%si),%ah	
+0x0000073f	0a6411	or     0x11(%si),%ah	
+0x00000742	f6c410	test   $0x10,%ah	
+0x00000745	7501	jne    0x00000748	
+0x00000747	c3	ret	
+0x00000748	fe440c	incb   0xc(%si)	
+0x0000074b	f9	stc	
+0x0000074c	c3	ret	
+0x0000074d	f6441101	testb  $0x1,0x11(%si)	
+0x00000751	7403	je     0x00000756	
+0x00000753	e9aefe	jmp    0x00000604	
+0x00000756	f6442408	testb  $0x8,0x24(%si)	
+0x0000075a	7557	jne    0x000007b3	
+0x0000075c	8a6402	mov    0x2(%si),%ah	
+0x0000075f	08e4	or     %ah,%ah	
+0x00000761	750d	jne    0x00000770	
+0x00000763	30e4	xor    %ah,%ah	
+0x00000765	886402	mov    %ah,0x2(%si)	
+0x00000768	e8a20a	call   0x0000120d	
+0x0000076b	806411f7	andb   $0xf7,0x11(%si)	
+0x0000076f	c3	ret	
+0x00000770	fecc	dec    %ah	
+0x00000772	886402	mov    %ah,0x2(%si)	
+0x00000775	e86a25	call   0x00002ce2	
+0x00000778	e8b103	call   0x00000b2c	
+0x0000077b	8a6411	mov    0x11(%si),%ah	
+0x0000077e	0a6424	or     0x24(%si),%ah	
+0x00000781	f6c480	test   $0x80,%ah	
+0x00000784	75dd	jne    0x00000763	
+0x00000786	f6441380	testb  $0x80,0x13(%si)	
+0x0000078a	7510	jne    0x0000079c	
+0x0000078c	8a6411	mov    0x11(%si),%ah	
+0x0000078f	0a6424	or     0x24(%si),%ah	
+0x00000792	f6c420	test   $0x20,%ah	
+0x00000795	75cc	jne    0x00000763	
+0x00000797	bb73d3	mov    $0xd373,%bx	
+0x0000079a	eb0e	jmp    0x000007aa	
+0x0000079c	8a6411	mov    0x11(%si),%ah	
+0x0000079f	0a6424	or     0x24(%si),%ah	
+0x000007a2	f6c410	test   $0x10,%ah	
+0x000007a5	75bc	jne    0x00000763	
+0x000007a7	bba5d3	mov    $0xd3a5,%bx	
+0x000007aa	e85a01	call   0x00000907	
+0x000007ad	884c10	mov    %cl,0x10(%si)	
+0x000007b0	e938fe	jmp    0x000005eb	
+0x000007b3	fe4c12	decb   0x12(%si)	
+0x000007b6	7401	je     0x000007b9	
+0x000007b8	c3	ret	
+0x000007b9	806424f7	andb   $0xf7,0x24(%si)	
+0x000007bd	806411f7	andb   $0xf7,0x11(%si)	
+0x000007c1	c3	ret	
+0x000007c2	bb7dd3	mov    $0xd37d,%bx	
+0x000007c5	f6441380	testb  $0x80,0x13(%si)	
+0x000007c9	7403	je     0x000007ce	
+0x000007cb	bbafd3	mov    $0xd3af,%bx	
+0x000007ce	e83601	call   0x00000907	
+0x000007d1	e89108	call   0x00001065	
+0x000007d4	7201	jb     0x000007d7	
+0x000007d6	c3	ret	
+0x000007d7	08e4	or     %ah,%ah	
+0x000007d9	7501	jne    0x000007dc	
+0x000007db	c3	ret	
+0x000007dc	886410	mov    %ah,0x10(%si)	
+0x000007df	806411fb	andb   $0xfb,0x11(%si)	
+0x000007e3	806424f7	andb   $0xf7,0x24(%si)	
+0x000007e7	e80304	call   0x00000bed	
+0x000007ea	30e4	xor    %ah,%ah	
+0x000007ec	882627f1	mov    %ah,-0xed9	
+0x000007f0	e95b2e	jmp    0x0000364e	
+0x000007f3	59	pop    %cx	
+0x000007f4	bb73d3	mov    $0xd373,%bx	
+0x000007f7	f6441380	testb  $0x80,0x13(%si)	
+0x000007fb	7403	je     0x00000800	
+0x000007fd	bba5d3	mov    $0xd3a5,%bx	
+0x00000800	e80401	call   0x00000907	
+0x00000803	804c1108	orb    $0x8,0x11(%si)	
+0x00000807	e85b08	call   0x00001065	
+0x0000080a	8a6402	mov    0x2(%si),%ah	
+0x0000080d	08e4	or     %ah,%ah	
+0x0000080f	7406	je     0x00000817	
+0x00000811	bb6bce	mov    $0xce6b,%bx	
+0x00000814	e97b29	jmp    0x00003192	
+0x00000817	8a640e	mov    0xe(%si),%ah	
+0x0000081a	80ec02	sub    $0x2,%ah	
+0x0000081d	7301	jae    0x00000820	
+0x0000081f	c3	ret	
+0x00000820	b101	mov    $0x1,%cl	
+0x00000822	f6441380	testb  $0x80,0x13(%si)	
+0x00000826	7502	jne    0x0000082a	
+0x00000828	b1ff	mov    $0xff,%cl	
+0x0000082a	884c13	mov    %cl,0x13(%si)	
+0x0000082d	804c2408	orb    $0x8,0x24(%si)	
+0x00000831	c6441208	movb   $0x8,0x12(%si)	
+0x00000835	f6441180	testb  $0x80,0x11(%si)	
+0x00000839	751b	jne    0x00000856	
+0x0000083b	f6442480	testb  $0x80,0x24(%si)	
+0x0000083f	7515	jne    0x00000856	
+0x00000841	fe4c0e	decb   0xe(%si)	
+0x00000844	fe4c0e	decb   0xe(%si)	
+0x00000847	e8e202	call   0x00000b2c	
+0x0000084a	f6441180	testb  $0x80,0x11(%si)	
+0x0000084e	7406	je     0x00000856	
+0x00000850	fe440e	incb   0xe(%si)	
+0x00000853	fe440e	incb   0xe(%si)	
+0x00000856	bb61ce	mov    $0xce61,%bx	
+0x00000859	e93629	jmp    0x00003192	
+0x0000085c	f6441140	testb  $0x40,0x11(%si)	
+0x00000860	7501	jne    0x00000863	
+0x00000862	c3	ret	
+0x00000863	bb4ddf	mov    $0xdf4d,%bx	
+0x00000866	f60702	testb  $0x2,(%bx)	
+0x00000869	7401	je     0x0000086c	
+0x0000086b	c3	ret	
+0x0000086c	59	pop    %cx	
+0x0000086d	bb78d3	mov    $0xd378,%bx	
+0x00000870	f6441380	testb  $0x80,0x13(%si)	
+0x00000874	7403	je     0x00000879	
+0x00000876	bbaad3	mov    $0xd3aa,%bx	
+0x00000879	e88b00	call   0x00000907	
+0x0000087c	e9e607	jmp    0x00001065	
+0x0000087f	8a2626f1	mov    -0xeda,%ah	
+0x00000883	f6c404	test   $0x4,%ah	
+0x00000886	7401	je     0x00000889	
+0x00000888	c3	ret	
+0x00000889	f6c440	test   $0x40,%ah	
+0x0000088c	7505	jne    0x00000893	
+0x0000088e	b480	mov    $0x80,%ah	
+0x00000890	88640d	mov    %ah,0xd(%si)	
+0x00000893	30e4	xor    %ah,%ah	
+0x00000895	886402	mov    %ah,0x2(%si)	
+0x00000898	8a264ddf	mov    -0x20b3,%ah	
+0x0000089c	f6c402	test   $0x2,%ah	
+0x0000089f	7554	jne    0x000008f5	
+0x000008a1	8a2633f1	mov    -0xecd,%ah	
+0x000008a5	08e4	or     %ah,%ah	
+0x000008a7	744c	je     0x000008f5	
+0x000008a9	80fc4e	cmp    $0x4e,%ah	
+0x000008ac	7347	jae    0x000008f5	
+0x000008ae	8a262df1	mov    -0xed3,%ah	
+0x000008b2	f6c480	test   $0x80,%ah	
+0x000008b5	752c	jne    0x000008e3	
+0x000008b7	fec4	inc    %ah	
+0x000008b9	88262df1	mov    %ah,-0xed3	
+0x000008bd	80fcc8	cmp    $0xc8,%ah	
+0x000008c0	7533	jne    0x000008f5	
+0x000008c2	fecc	dec    %ah	
+0x000008c4	88262df1	mov    %ah,-0xed3	
+0x000008c8	bb96d3	mov    $0xd396,%bx	
+0x000008cb	f6441380	testb  $0x80,0x13(%si)	
+0x000008cf	7403	je     0x000008d4	
+0x000008d1	bbc8d3	mov    $0xd3c8,%bx	
+0x000008d4	e83000	call   0x00000907	
+0x000008d7	e88b07	call   0x00001065	
+0x000008da	7201	jb     0x000008dd	
+0x000008dc	c3	ret	
+0x000008dd	b480	mov    $0x80,%ah	
+0x000008df	88262df1	mov    %ah,-0xed3	
+0x000008e3	bb9bd3	mov    $0xd39b,%bx	
+0x000008e6	f6441380	testb  $0x80,0x13(%si)	
+0x000008ea	7403	je     0x000008ef	
+0x000008ec	bbcdd3	mov    $0xd3cd,%bx	
+0x000008ef	e81500	call   0x00000907	
+0x000008f2	e97007	jmp    0x00001065	
+0x000008f5	f6441380	testb  $0x80,0x13(%si)	
+0x000008f9	bb6fd3	mov    $0xd36f,%bx	
+0x000008fc	7403	je     0x00000901	
+0x000008fe	bba1d3	mov    $0xd3a1,%bx	
+0x00000901	8a27	mov    (%bx),%ah	
+0x00000903	886410	mov    %ah,0x10(%si)	
+0x00000906	c3	ret	
+0x00000907	8a17	mov    (%bx),%dl	
+0x00000909	43	inc    %bx	
+0x0000090a	8a0f	mov    (%bx),%cl	
+0x0000090c	43	inc    %bx	
+0x0000090d	8a2f	mov    (%bx),%ch	
+0x0000090f	43	inc    %bx	
+0x00000910	8a27	mov    (%bx),%ah	
+0x00000912	08e4	or     %ah,%ah	
+0x00000914	7403	je     0x00000919	
+0x00000916	886413	mov    %ah,0x13(%si)	
+0x00000919	43	inc    %bx	
+0x0000091a	8a27	mov    (%bx),%ah	
+0x0000091c	08e4	or     %ah,%ah	
+0x0000091e	7501	jne    0x00000921	
+0x00000920	c3	ret	
+0x00000921	886414	mov    %ah,0x14(%si)	
+0x00000924	c3	ret	
+0x00000925	8a261bf1	mov    -0xee5,%ah	
+0x00000929	fecc	dec    %ah	
+0x0000092b	88261bf1	mov    %ah,-0xee5	
+0x0000092f	50	push   %ax	
+0x00000930	e8401a	call   0x00002373	
+0x00000933	58	pop    %ax	
+0x00000934	80fcff	cmp    $0xff,%ah	
+0x00000937	7503	jne    0x0000093c	
+0x00000939	e933f8	jmp    0x0000016f	
+0x0000093c	becff1	mov    $0xf1cf,%si	
+0x0000093f	c6441100	movb   $0x0,0x11(%si)	
+0x00000943	c6442400	movb   $0x0,0x24(%si)	
+0x00000947	800c20	orb    $0x20,(%si)	
+0x0000094a	e85c30	call   0x000039a9	
+0x0000094d	e8d709	call   0x00001327	
+0x00000950	8024df	andb   $0xdf,(%si)	
+0x00000953	30e4	xor    %ah,%ah	
+0x00000955	882626f1	mov    %ah,-0xeda	
+0x00000959	882633f1	mov    %ah,-0xecd	
+0x0000095d	8a2631f1	mov    -0xecf,%ah	
+0x00000961	08e4	or     %ah,%ah	
+0x00000963	7501	jne    0x00000966	
+0x00000965	c3	ret	
+0x00000966	e8b113	call   0x00001d1a	
+0x00000969	30e4	xor    %ah,%ah	
+0x0000096b	882631f1	mov    %ah,-0xecf	
+0x0000096f	b416	mov    $0x16,%ah	
+0x00000971	882625f1	mov    %ah,-0xedb	
+0x00000975	c3	ret	
+0x00000976	5b	pop    %bx	
+0x00000977	f6441140	testb  $0x40,0x11(%si)	
+0x0000097b	7507	jne    0x00000984	
+0x0000097d	c644147f	movb   $0x7f,0x14(%si)	
+0x00000981	e95e23	jmp    0x00002ce2	
+0x00000984	f6441101	testb  $0x1,0x11(%si)	
+0x00000988	7403	je     0x0000098d	
+0x0000098a	e9a6fc	jmp    0x00000633	
+0x0000098d	bb87d3	mov    $0xd387,%bx	
+0x00000990	f6441380	testb  $0x80,0x13(%si)	
+0x00000994	7403	je     0x00000999	
+0x00000996	bbb9d3	mov    $0xd3b9,%bx	
+0x00000999	e86bff	call   0x00000907	
+0x0000099c	e8c606	call   0x00001065	
+0x0000099f	7201	jb     0x000009a2	
+0x000009a1	c3	ret	
+0x000009a2	08e4	or     %ah,%ah	
+0x000009a4	7403	je     0x000009a9	
+0x000009a6	e97cff	jmp    0x00000925	
+0x000009a9	c3	ret	
+0x000009aa	8a2615f1	mov    -0xeeb,%ah	
+0x000009ae	f6441104	testb  $0x4,0x11(%si)	
+0x000009b2	7401	je     0x000009b5	
+0x000009b4	c3	ret	
+0x000009b5	f6c410	test   $0x10,%ah	
+0x000009b8	7501	jne    0x000009bb	
+0x000009ba	c3	ret	
+0x000009bb	8a261df1	mov    -0xee3,%ah	
+0x000009bf	80fc42	cmp    $0x42,%ah	
+0x000009c2	7501	jne    0x000009c5	
+0x000009c4	c3	ret	
+0x000009c5	80fc3b	cmp    $0x3b,%ah	
+0x000009c8	7501	jne    0x000009cb	
+0x000009ca	c3	ret	
+0x000009cb	80fc41	cmp    $0x41,%ah	
+0x000009ce	7501	jne    0x000009d1	
+0x000009d0	c3	ret	
+0x000009d1	8a2633f1	mov    -0xecd,%ah	
+0x000009d5	80fc3c	cmp    $0x3c,%ah	
+0x000009d8	7501	jne    0x000009db	
+0x000009da	c3	ret	
+0x000009db	8a2627f1	mov    -0xed9,%ah	
+0x000009df	80fc3c	cmp    $0x3c,%ah	
+0x000009e2	7201	jb     0x000009e5	
+0x000009e4	c3	ret	
+0x000009e5	80c401	add    $0x1,%ah	
+0x000009e8	882627f1	mov    %ah,-0xed9	
+0x000009ec	e95f2c	jmp    0x0000364e	
+0x000009ef	8a2615f1	mov    -0xeeb,%ah	
+0x000009f3	f6c410	test   $0x10,%ah	
+0x000009f6	7401	je     0x000009f9	
+0x000009f8	c3	ret	
+0x000009f9	8a2627f1	mov    -0xed9,%ah	
+0x000009fd	08e4	or     %ah,%ah	
+0x000009ff	7501	jne    0x00000a02	
+0x00000a01	c3	ret	
+0x00000a02	5b	pop    %bx	
+0x00000a03	804c1104	orb    $0x4,0x11(%si)	
+0x00000a07	bb7ed3	mov    $0xd37e,%bx	
+0x00000a0a	f6441380	testb  $0x80,0x13(%si)	
+0x00000a0e	7403	je     0x00000a13	
+0x00000a10	bbb0d3	mov    $0xd3b0,%bx	
+0x00000a13	8a27	mov    (%bx),%ah	
+0x00000a15	886410	mov    %ah,0x10(%si)	
+0x00000a18	c3	ret	
+0x00000a19	806411bf	andb   $0xbf,0x11(%si)	
+0x00000a1d	e86e00	call   0x00000a8e	
+0x00000a20	e89700	call   0x00000aba	
+0x00000a23	e85322	call   0x00002c79	
+0x00000a26	eb00	jmp    0x00000a28	
+0x00000a28	b92000	mov    $0x20,%cx	
+0x00000a2b	01cb	add    %cx,%bx	
+0x00000a2d	8b0ec5f1	mov    -0xe3b,%cx	
+0x00000a31	01cb	add    %cx,%bx	
+0x00000a33	8a640f	mov    0xf(%si),%ah	
+0x00000a36	08e4	or     %ah,%ah	
+0x00000a38	7420	je     0x00000a5a	
+0x00000a3a	87d3	xchg   %dx,%bx	
+0x00000a3c	8b0ec3f1	mov    -0xe3d,%cx	
+0x00000a40	d0ed	shr    %ch	
+0x00000a42	d0d9	rcr    %cl	
+0x00000a44	01cb	add    %cx,%bx	
+0x00000a46	87d3	xchg   %dx,%bx	
+0x00000a48	88fd	mov    %bh,%ch	
+0x00000a4a	88f1	mov    %dh,%cl	
+0x00000a4c	e82a00	call   0x00000a79	
+0x00000a4f	80fc32	cmp    $0x32,%ah	
+0x00000a52	7401	je     0x00000a55	
+0x00000a54	c3	ret	
+0x00000a55	806411bf	andb   $0xbf,0x11(%si)	
+0x00000a59	c3	ret	
+0x00000a5a	b413	mov    $0x13,%ah	
+0x00000a5c	38fc	cmp    %bh,%ah	
+0x00000a5e	7307	jae    0x00000a67	
+0x00000a60	30e4	xor    %ah,%ah	
+0x00000a62	8826ccf3	mov    %ah,-0xc34	
+0x00000a66	c3	ret	
+0x00000a67	88fd	mov    %bh,%ch	
+0x00000a69	88f1	mov    %dh,%cl	
+0x00000a6b	e80b00	call   0x00000a79	
+0x00000a6e	43	inc    %bx	
+0x00000a6f	e80a00	call   0x00000a7c	
+0x00000a72	8826ccf3	mov    %ah,-0xc34	
+0x00000a76	43	inc    %bx	
+0x00000a77	eb03	jmp    0x00000a7c	
+0x00000a79	e85906	call   0x000010d5	
+0x00000a7c	8a27	mov    (%bx),%ah	
+0x00000a7e	08e4	or     %ah,%ah	
+0x00000a80	7501	jne    0x00000a83	
+0x00000a82	c3	ret	
+0x00000a83	80fc4e	cmp    $0x4e,%ah	
+0x00000a86	7201	jb     0x00000a89	
+0x00000a88	c3	ret	
+0x00000a89	804c1140	orb    $0x40,0x11(%si)	
+0x00000a8d	c3	ret	
+0x00000a8e	bb65d4	mov    $0xd465,%bx	
+0x00000a91	8a540f	mov    0xf(%si),%dl	
+0x00000a94	d0e2	shl    %dl	
+0x00000a96	b600	mov    $0x0,%dh	
+0x00000a98	01d3	add    %dx,%bx	
+0x00000a9a	8a37	mov    (%bx),%dh	
+0x00000a9c	43	inc    %bx	
+0x00000a9d	8a17	mov    (%bx),%dl	
+0x00000a9f	88f3	mov    %dh,%bl	
+0x00000aa1	b700	mov    $0x0,%bh	
+0x00000aa3	01db	add    %bx,%bx	
+0x00000aa5	01db	add    %bx,%bx	
+0x00000aa7	01db	add    %bx,%bx	
+0x00000aa9	01db	add    %bx,%bx	
+0x00000aab	01db	add    %bx,%bx	
+0x00000aad	891ec5f1	mov    %bx,-0xe3b	
+0x00000ab1	88d6	mov    %dl,%dh	
+0x00000ab3	b200	mov    $0x0,%dl	
+0x00000ab5	8916c3f1	mov    %dx,-0xe3d	
+0x00000ab9	c3	ret	
+0x00000aba	8a6424	mov    0x24(%si),%ah	
+0x00000abd	80e40f	and    $0xf,%ah	
+0x00000ac0	886424	mov    %ah,0x24(%si)	
+0x00000ac3	8a640e	mov    0xe(%si),%ah	
+0x00000ac6	08e4	or     %ah,%ah	
+0x00000ac8	7503	jne    0x00000acd	
+0x00000aca	e84000	call   0x00000b0d	
+0x00000acd	f6c480	test   $0x80,%ah	
+0x00000ad0	7403	je     0x00000ad5	
+0x00000ad2	e83800	call   0x00000b0d	
+0x00000ad5	8b16c5f1	mov    -0xe3b,%dx	
+0x00000ad9	8a7c0e	mov    0xe(%si),%bh	
+0x00000adc	8a5c0d	mov    0xd(%si),%bl	
+0x00000adf	01d3	add    %dx,%bx	
+0x00000ae1	ba0014	mov    $0x1400,%dx	
+0x00000ae4	19d3	sbb    %dx,%bx	
+0x00000ae6	7203	jb     0x00000aeb	
+0x00000ae8	e83b00	call   0x00000b26	
+0x00000aeb	8a640c	mov    0xc(%si),%ah	
+0x00000aee	08e4	or     %ah,%ah	
+0x00000af0	7503	jne    0x00000af5	
+0x00000af2	e82c00	call   0x00000b21	
+0x00000af5	8b16c3f1	mov    -0xe3d,%dx	
+0x00000af9	8a5c0b	mov    0xb(%si),%bl	
+0x00000afc	8a7c0c	mov    0xc(%si),%bh	
+0x00000aff	01d3	add    %dx,%bx	
+0x00000b01	b427	mov    $0x27,%ah	
+0x00000b03	28fc	sub    %bh,%ah	
+0x00000b05	7201	jb     0x00000b08	
+0x00000b07	c3	ret	
+0x00000b08	804c2420	orb    $0x20,0x24(%si)	
+0x00000b0c	c3	ret	
+0x00000b0d	f6c480	test   $0x80,%ah	
+0x00000b10	750a	jne    0x00000b1c	
+0x00000b12	8a2626f1	mov    -0xeda,%ah	
+0x00000b16	f6c440	test   $0x40,%ah	
+0x00000b19	7501	jne    0x00000b1c	
+0x00000b1b	c3	ret	
+0x00000b1c	804c2480	orb    $0x80,0x24(%si)	
+0x00000b20	c3	ret	
+0x00000b21	804c2410	orb    $0x10,0x24(%si)	
+0x00000b25	c3	ret	
+0x00000b26	804c2440	orb    $0x40,0x24(%si)	
+0x00000b2a	c3	ret	
+0x00000b2b	008a2607	add    %cl,0x726(%bp,%si)	
+0x00000b2f	f1	icebp	
+0x00000b30	f6c408	test   $0x8,%ah	
+0x00000b33	7401	je     0x00000b36	
+0x00000b35	c3	ret	
+0x00000b36	8a2607f1	mov    -0xef9,%ah	
+0x00000b3a	f6c420	test   $0x20,%ah	
+0x00000b3d	7401	je     0x00000b40	
+0x00000b3f	c3	ret	
+0x00000b40	8064117f	andb   $0x7f,0x11(%si)	
+0x00000b44	806411df	andb   $0xdf,0x11(%si)	
+0x00000b48	806411ef	andb   $0xef,0x11(%si)	
+0x00000b4c	8a4c0c	mov    0xc(%si),%cl	
+0x00000b4f	8a6c0e	mov    0xe(%si),%ch	
+0x00000b52	e88005	call   0x000010d5	
+0x00000b55	b410	mov    $0x10,%ah	
+0x00000b57	8826b5f1	mov    %ah,-0xe4b	
+0x00000b5b	bfd1d3	mov    $0xd3d1,%di	
+0x00000b5e	b600	mov    $0x0,%dh	
+0x00000b60	53	push   %bx	
+0x00000b61	47	inc    %di	
+0x00000b62	b4ff	mov    $0xff,%ah	
+0x00000b64	8a15	mov    (%di),%dl	
+0x00000b66	38d4	cmp    %dl,%ah	
+0x00000b68	741a	je     0x00000b84	
+0x00000b6a	01d3	add    %dx,%bx	
+0x00000b6c	8a27	mov    (%bx),%ah	
+0x00000b6e	80fc4e	cmp    $0x4e,%ah	
+0x00000b71	5b	pop    %bx	
+0x00000b72	73ec	jae    0x00000b60	
+0x00000b74	08e4	or     %ah,%ah	
+0x00000b76	74e8	je     0x00000b60	
+0x00000b78	8a26b5f1	mov    -0xe4b,%ah	
+0x00000b7c	0a6411	or     0x11(%si),%ah	
+0x00000b7f	886411	mov    %ah,0x11(%si)	
+0x00000b82	ebdc	jmp    0x00000b60	
+0x00000b84	5b	pop    %bx	
+0x00000b85	8a26b5f1	mov    -0xe4b,%ah	
+0x00000b89	d0e4	shl    %ah	
+0x00000b8b	8826b5f1	mov    %ah,-0xe4b	
+0x00000b8f	73cf	jae    0x00000b60	
+0x00000b91	8a640c	mov    0xc(%si),%ah	
+0x00000b94	08e4	or     %ah,%ah	
+0x00000b96	7406	je     0x00000b9e	
+0x00000b98	80fc24	cmp    $0x24,%ah	
+0x00000b9b	7306	jae    0x00000ba3	
+0x00000b9d	c3	ret	
+0x00000b9e	806411ef	andb   $0xef,0x11(%si)	
+0x00000ba2	c3	ret	
+0x00000ba3	806411df	andb   $0xdf,0x11(%si)	
+0x00000ba7	c3	ret	
+0x00000ba8	b40d	mov    $0xd,%ah	
+0x00000baa	bb7bf1	mov    $0xf17b,%bx	
+0x00000bad	2a27	sub    (%bx),%ah	
+0x00000baf	ba2c01	mov    $0x12c,%dx	
+0x00000bb2	e88405	call   0x00001139	
+0x00000bb5	53	push   %bx	
+0x00000bb6	59	pop    %cx	
+0x00000bb7	e99505	jmp    0x0000114f	
+0x00000bba	e8872d	call   0x00003944	
+0x00000bbd	e864f6	call   0x00000224	
+0x00000bc0	e81bf7	call   0x000002de	
+0x00000bc3	e8ad17	call   0x00002373	
+0x00000bc6	e83304	call   0x00000ffc	
+0x00000bc9	30e4	xor    %ah,%ah	
+0x00000bcb	88264ddf	mov    %ah,-0x20b3	
+0x00000bcf	30e4	xor    %ah,%ah	
+0x00000bd1	88262bf1	mov    %ah,-0xed5	
+0x00000bd5	e81ff7	call   0x000002f7	
+0x00000bd8	e853f6	call   0x0000022e	
+0x00000bdb	e82e02	call   0x00000e0c	
+0x00000bde	e8f11f	call   0x00002bd2	
+0x00000be1	e8411f	call   0x00002b25	
+0x00000be4	e80502	call   0x00000dec	
+0x00000be7	e8cf2c	call   0x000038b9	
+0x00000bea	e99325	jmp    0x00003180	
+0x00000bed	bef8f1	mov    $0xf1f8,%si	
+0x00000bf0	f60480	testb  $0x80,(%si)	
+0x00000bf3	7401	je     0x00000bf6	
+0x00000bf5	c3	ret	
+0x00000bf6	b4a0	mov    $0xa0,%ah	
+0x00000bf8	e87520	call   0x00002c70	
+0x00000bfb	7506	jne    0x00000c03	
+0x00000bfd	fec6	inc    %dh	
+0x00000bff	fec6	inc    %dh	
+0x00000c01	f6dc	neg    %ah	
+0x00000c03	b100	mov    $0x0,%cl	
+0x00000c05	b501	mov    $0x1,%ch	
+0x00000c07	e86a06	call   0x00001274	
+0x00000c0a	8a2627f1	mov    -0xed9,%ah	
+0x00000c0e	d0e4	shl    %ah	
+0x00000c10	f6dc	neg    %ah	
+0x00000c12	886414	mov    %ah,0x14(%si)	
+0x00000c15	b401	mov    $0x1,%ah	
+0x00000c17	e94133	jmp    0x00003f5b	
+0x00000c1a	becff1	mov    $0xf1cf,%si	
+0x00000c1d	8a6424	mov    0x24(%si),%ah	
+0x00000c20	80e4f0	and    $0xf0,%ah	
+0x00000c23	7501	jne    0x00000c26	
+0x00000c25	c3	ret	
+0x00000c26	8b3ecdf1	mov    -0xe33,%di	
+0x00000c2a	f6c480	test   $0x80,%ah	
+0x00000c2d	7544	jne    0x00000c73	
+0x00000c2f	f6c440	test   $0x40,%ah	
+0x00000c32	7403	je     0x00000c37	
+0x00000c34	e97400	jmp    0x00000cab	
+0x00000c37	f6c420	test   $0x20,%ah	
+0x00000c3a	751b	jne    0x00000c57	
+0x00000c3c	e8de00	call   0x00000d1d	
+0x00000c3f	7501	jne    0x00000c42	
+0x00000c41	c3	ret	
+0x00000c42	8a25	mov    (%di),%ah	
+0x00000c44	80fcff	cmp    $0xff,%ah	
+0x00000c47	7509	jne    0x00000c52	
+0x00000c49	806411fe	andb   $0xfe,0x11(%si)	
+0x00000c4d	c6440c00	movb   $0x0,0xc(%si)	
+0x00000c51	c3	ret	
+0x00000c52	b225	mov    $0x25,%dl	
+0x00000c54	e98400	jmp    0x00000cdb	
+0x00000c57	e8be00	call   0x00000d18	
+0x00000c5a	7401	je     0x00000c5d	
+0x00000c5c	c3	ret	
+0x00000c5d	ba0200	mov    $0x2,%dx	
+0x00000c60	01d7	add    %dx,%di	
+0x00000c62	8a25	mov    (%di),%ah	
+0x00000c64	80fcff	cmp    $0xff,%ah	
+0x00000c67	7505	jne    0x00000c6e	
+0x00000c69	806411fe	andb   $0xfe,0x11(%si)	
+0x00000c6d	c3	ret	
+0x00000c6e	b200	mov    $0x0,%dl	
+0x00000c70	e96800	jmp    0x00000cdb	
+0x00000c73	8a640e	mov    0xe(%si),%ah	
+0x00000c76	f6c480	test   $0x80,%ah	
+0x00000c79	7519	jne    0x00000c94	
+0x00000c7b	8a2626f1	mov    -0xeda,%ah	
+0x00000c7f	f6c440	test   $0x40,%ah	
+0x00000c82	7409	je     0x00000c8d	
+0x00000c84	8a267ef4	mov    -0xb82,%ah	
+0x00000c88	f6c480	test   $0x80,%ah	
+0x00000c8b	7507	jne    0x00000c94	
+0x00000c8d	f6441480	testb  $0x80,0x14(%si)	
+0x00000c91	7501	jne    0x00000c94	
+0x00000c93	c3	ret	
+0x00000c94	8a6503	mov    0x3(%di),%ah	
+0x00000c97	80fcff	cmp    $0xff,%ah	
+0x00000c9a	7501	jne    0x00000c9d	
+0x00000c9c	c3	ret	
+0x00000c9d	88261df1	mov    %ah,-0xee3	
+0x00000ca1	c6440e10	movb   $0x10,0xe(%si)	
+0x00000ca5	c6440d80	movb   $0x80,0xd(%si)	
+0x00000ca9	eb3b	jmp    0x00000ce6	
+0x00000cab	8a2626f1	mov    -0xeda,%ah	
+0x00000caf	f6c440	test   $0x40,%ah	
+0x00000cb2	7409	je     0x00000cbd	
+0x00000cb4	8a267ef4	mov    -0xb82,%ah	
+0x00000cb8	f6c480	test   $0x80,%ah	
+0x00000cbb	7407	je     0x00000cc4	
+0x00000cbd	f6441480	testb  $0x80,0x14(%si)	
+0x00000cc1	7401	je     0x00000cc4	
+0x00000cc3	c3	ret	
+0x00000cc4	47	inc    %di	
+0x00000cc5	8a25	mov    (%di),%ah	
+0x00000cc7	80fcff	cmp    $0xff,%ah	
+0x00000cca	7501	jne    0x00000ccd	
+0x00000ccc	c3	ret	
+0x00000ccd	88261df1	mov    %ah,-0xee3	
+0x00000cd1	c6440e00	movb   $0x0,0xe(%si)	
+0x00000cd5	c6440d80	movb   $0x80,0xd(%si)	
+0x00000cd9	eb0b	jmp    0x00000ce6	
+0x00000cdb	88261df1	mov    %ah,-0xee3	
+0x00000cdf	c6440b00	movb   $0x0,0xb(%si)	
+0x00000ce3	88540c	mov    %dl,0xc(%si)	
+0x00000ce6	e85b2c	call   0x00003944	
+0x00000ce9	becff1	mov    $0xf1cf,%si	
+0x00000cec	800c40	orb    $0x40,(%si)	
+0x00000cef	e80105	call   0x000011f3	
+0x00000cf2	e84b15	call   0x00002240	
+0x00000cf5	e8db05	call   0x000012d3	
+0x00000cf8	30e4	xor    %ah,%ah	
+0x00000cfa	882626f1	mov    %ah,-0xeda	
+0x00000cfe	bbf8f1	mov    $0xf1f8,%bx	
+0x00000d01	c60700	movb   $0x0,(%bx)	
+0x00000d04	baf9f1	mov    $0xf1f9,%dx	
+0x00000d07	b9c201	mov    $0x1c2,%cx	
+0x00000d0a	87f3	xchg   %si,%bx	
+0x00000d0c	87fa	xchg   %di,%dx	
+0x00000d0e	fc	cld	
+0x00000d0f	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00000d11	87f3	xchg   %si,%bx	
+0x00000d13	87fa	xchg   %di,%dx	
+0x00000d15	e9b7fe	jmp    0x00000bcf	
+0x00000d18	f6441380	testb  $0x80,0x13(%si)	
+0x00000d1c	c3	ret	
+0x00000d1d	8a2633f1	mov    -0xecd,%ah	
+0x00000d21	80fc2c	cmp    $0x2c,%ah	
+0x00000d24	7405	je     0x00000d2b	
+0x00000d26	f6441380	testb  $0x80,0x13(%si)	
+0x00000d2a	c3	ret	
+0x00000d2b	8a2615f1	mov    -0xeeb,%ah	
+0x00000d2f	f6c408	test   $0x8,%ah	
+0x00000d32	750a	jne    0x00000d3e	
+0x00000d34	80cc80	or     $0x80,%ah	
+0x00000d37	8826e2f1	mov    %ah,-0xe1e	
+0x00000d3b	08e4	or     %ah,%ah	
+0x00000d3d	c3	ret	
+0x00000d3e	30e4	xor    %ah,%ah	
+0x00000d40	c3	ret	
+0x00000d41	bb36f1	mov    $0xf136,%bx	
+0x00000d44	800f01	orb    $0x1,(%bx)	
+0x00000d47	f60702	testb  $0x2,(%bx)	
+0x00000d4a	7403	je     0x00000d4f	
+0x00000d4c	e97100	jmp    0x00000dc0	
+0x00000d4f	bb26f1	mov    $0xf126,%bx	
+0x00000d52	f60740	testb  $0x40,(%bx)	
+0x00000d55	7401	je     0x00000d58	
+0x00000d57	c3	ret	
+0x00000d58	8a261df1	mov    -0xee3,%ah	
+0x00000d5c	80fc42	cmp    $0x42,%ah	
+0x00000d5f	7501	jne    0x00000d62	
+0x00000d61	c3	ret	
+0x00000d62	8a2633f1	mov    -0xecd,%ah	
+0x00000d66	80fc2c	cmp    $0x2c,%ah	
+0x00000d69	7501	jne    0x00000d6c	
+0x00000d6b	c3	ret	
+0x00000d6c	80fc3c	cmp    $0x3c,%ah	
+0x00000d6f	7501	jne    0x00000d72	
+0x00000d71	c3	ret	
+0x00000d72	8b1edcf1	mov    -0xe24,%bx	
+0x00000d76	88fc	mov    %bh,%ah	
+0x00000d78	80fc0a	cmp    $0xa,%ah	
+0x00000d7b	53	push   %bx	
+0x00000d7c	7244	jb     0x00000dc2	
+0x00000d7e	8a264ddf	mov    -0x20b3,%ah	
+0x00000d82	f6c401	test   $0x1,%ah	
+0x00000d85	753b	jne    0x00000dc2	
+0x00000d87	8b1edaf1	mov    -0xe26,%bx	
+0x00000d8b	891e50df	mov    %bx,-0x20b0	
+0x00000d8f	f6441380	testb  $0x80,0x13(%si)	
+0x00000d93	7508	jne    0x00000d9d	
+0x00000d95	fec7	inc    %bh	
+0x00000d97	fec7	inc    %bh	
+0x00000d99	891e50df	mov    %bx,-0x20b0	
+0x00000d9d	5b	pop    %bx	
+0x00000d9e	59	pop    %cx	
+0x00000d9f	ba0002	mov    $0x200,%dx	
+0x00000da2	01d3	add    %dx,%bx	
+0x00000da4	891e52df	mov    %bx,-0x20ae	
+0x00000da8	e82701	call   0x00000ed2	
+0x00000dab	7301	jae    0x00000dae	
+0x00000dad	c3	ret	
+0x00000dae	e83202	call   0x00000fe3	
+0x00000db1	bb4ddf	mov    $0xdf4d,%bx	
+0x00000db4	800f01	orb    $0x1,(%bx)	
+0x00000db7	8a261df1	mov    -0xee3,%ah	
+0x00000dbb	882622f1	mov    %ah,-0xede	
+0x00000dbf	c3	ret	
+0x00000dc0	59	pop    %cx	
+0x00000dc1	c3	ret	
+0x00000dc2	5b	pop    %bx	
+0x00000dc3	8a2615f1	mov    -0xeeb,%ah	
+0x00000dc7	c3	ret	
+0x00000dc8	bb36f1	mov    $0xf136,%bx	
+0x00000dcb	800f01	orb    $0x1,(%bx)	
+0x00000dce	f60702	testb  $0x2,(%bx)	
+0x00000dd1	75ed	jne    0x00000dc0	
+0x00000dd3	8a264ddf	mov    -0x20b3,%ah	
+0x00000dd7	f6c402	test   $0x2,%ah	
+0x00000dda	7501	jne    0x00000ddd	
+0x00000ddc	c3	ret	
+0x00000ddd	80e4f8	and    $0xf8,%ah	
+0x00000de0	88264ddf	mov    %ah,-0x20b3	
+0x00000de4	e89b01	call   0x00000f82	
+0x00000de7	e8f901	call   0x00000fe3	
+0x00000dea	59	pop    %cx	
+0x00000deb	c3	ret	
+0x00000dec	8a264ddf	mov    -0x20b3,%ah	
+0x00000df0	f6c401	test   $0x1,%ah	
+0x00000df3	7501	jne    0x00000df6	
+0x00000df5	c3	ret	
+0x00000df6	8a2622f1	mov    -0xede,%ah	
+0x00000dfa	88e5	mov    %ah,%ch	
+0x00000dfc	8a261df1	mov    -0xee3,%ah	
+0x00000e00	38ec	cmp    %ch,%ah	
+0x00000e02	7401	je     0x00000e05	
+0x00000e04	c3	ret	
+0x00000e05	e8ca00	call   0x00000ed2	
+0x00000e08	7301	jae    0x00000e0b	
+0x00000e0a	c3	ret	
+0x00000e0b	c3	ret	
+0x00000e0c	b508	mov    $0x8,%ch	
+0x00000e0e	bb80f4	mov    $0xf480,%bx	
+0x00000e11	51	push   %cx	
+0x00000e12	53	push   %bx	
+0x00000e13	8a261df1	mov    -0xee3,%ah	
+0x00000e17	3a27	cmp    (%bx),%ah	
+0x00000e19	750c	jne    0x00000e27	
+0x00000e1b	43	inc    %bx	
+0x00000e1c	43	inc    %bx	
+0x00000e1d	53	push   %bx	
+0x00000e1e	e88604	call   0x000012a7	
+0x00000e21	5f	pop    %di	
+0x00000e22	7203	jb     0x00000e27	
+0x00000e24	e80204	call   0x00001229	
+0x00000e27	ba0800	mov    $0x8,%dx	
+0x00000e2a	5b	pop    %bx	
+0x00000e2b	59	pop    %cx	
+0x00000e2c	01d3	add    %dx,%bx	
+0x00000e2e	fecd	dec    %ch	
+0x00000e30	75df	jne    0x00000e11	
+0x00000e32	c3	ret	
+0x00000e33	bb4ddf	mov    $0xdf4d,%bx	
+0x00000e36	8027fb	andb   $0xfb,(%bx)	
+0x00000e39	8a2615f1	mov    -0xeeb,%ah	
+0x00000e3d	f6c402	test   $0x2,%ah	
+0x00000e40	753a	jne    0x00000e7c	
+0x00000e42	f6c401	test   $0x1,%ah	
+0x00000e45	7501	jne    0x00000e48	
+0x00000e47	c3	ret	
+0x00000e48	8a6c0e	mov    0xe(%si),%ch	
+0x00000e4b	fecd	dec    %ch	
+0x00000e4d	8a4c0c	mov    0xc(%si),%cl	
+0x00000e50	e88202	call   0x000010d5	
+0x00000e53	b466	mov    $0x66,%ah	
+0x00000e55	3a27	cmp    (%bx),%ah	
+0x00000e57	7413	je     0x00000e6c	
+0x00000e59	b469	mov    $0x69,%ah	
+0x00000e5b	3a27	cmp    (%bx),%ah	
+0x00000e5d	740d	je     0x00000e6c	
+0x00000e5f	30e4	xor    %ah,%ah	
+0x00000e61	0a27	or     (%bx),%ah	
+0x00000e63	7407	je     0x00000e6c	
+0x00000e65	b44e	mov    $0x4e,%ah	
+0x00000e67	3a27	cmp    (%bx),%ah	
+0x00000e69	7201	jb     0x00000e6c	
+0x00000e6b	c3	ret	
+0x00000e6c	bb91d3	mov    $0xd391,%bx	
+0x00000e6f	e895fa	call   0x00000907	
+0x00000e72	e8f001	call   0x00001065	
+0x00000e75	7349	jae    0x00000ec0	
+0x00000e77	fe4c0e	decb   0xe(%si)	
+0x00000e7a	eb3e	jmp    0x00000eba	
+0x00000e7c	8a2633f1	mov    -0xecd,%ah	
+0x00000e80	80fc66	cmp    $0x66,%ah	
+0x00000e83	740b	je     0x00000e90	
+0x00000e85	80fc69	cmp    $0x69,%ah	
+0x00000e88	7406	je     0x00000e90	
+0x00000e8a	80fc4e	cmp    $0x4e,%ah	
+0x00000e8d	7301	jae    0x00000e90	
+0x00000e8f	c3	ret	
+0x00000e90	8a2653df	mov    -0x20ad,%ah	
+0x00000e94	88e5	mov    %ah,%ch	
+0x00000e96	8a26ddf1	mov    -0xe23,%ah	
+0x00000e9a	fec4	inc    %ah	
+0x00000e9c	38ec	cmp    %ch,%ah	
+0x00000e9e	7501	jne    0x00000ea1	
+0x00000ea0	c3	ret	
+0x00000ea1	7201	jb     0x00000ea4	
+0x00000ea3	c3	ret	
+0x00000ea4	b40f	mov    $0xf,%ah	
+0x00000ea6	3a640e	cmp    0xe(%si),%ah	
+0x00000ea9	7301	jae    0x00000eac	
+0x00000eab	c3	ret	
+0x00000eac	bbc3d3	mov    $0xd3c3,%bx	
+0x00000eaf	e855fa	call   0x00000907	
+0x00000eb2	e8b001	call   0x00001065	
+0x00000eb5	7309	jae    0x00000ec0	
+0x00000eb7	fe440e	incb   0xe(%si)	
+0x00000eba	bb4fcf	mov    $0xcf4f,%bx	
+0x00000ebd	e8d222	call   0x00003192	
+0x00000ec0	8b1e50df	mov    -0x20b0,%bx	
+0x00000ec4	b300	mov    $0x0,%bl	
+0x00000ec6	891edaf1	mov    %bx,-0xe26	
+0x00000eca	bb4ddf	mov    $0xdf4d,%bx	
+0x00000ecd	800f04	orb    $0x4,(%bx)	
+0x00000ed0	59	pop    %cx	
+0x00000ed1	c3	ret	
+0x00000ed2	8a261df1	mov    -0xee3,%ah	
+0x00000ed6	80fc42	cmp    $0x42,%ah	
+0x00000ed9	7501	jne    0x00000edc	
+0x00000edb	c3	ret	
+0x00000edc	8a2651df	mov    -0x20af,%ah	
+0x00000ee0	88e1	mov    %ah,%cl	
+0x00000ee2	8a2653df	mov    -0x20ad,%ah	
+0x00000ee6	88e5	mov    %ah,%ch	
+0x00000ee8	51	push   %cx	
+0x00000ee9	fec5	inc    %ch	
+0x00000eeb	e8e701	call   0x000010d5	
+0x00000eee	8a27	mov    (%bx),%ah	
+0x00000ef0	08e4	or     %ah,%ah	
+0x00000ef2	7507	jne    0x00000efb	
+0x00000ef4	43	inc    %bx	
+0x00000ef5	3a27	cmp    (%bx),%ah	
+0x00000ef7	7502	jne    0x00000efb	
+0x00000ef9	eb32	jmp    0x00000f2d	
+0x00000efb	59	pop    %cx	
+0x00000efc	51	push   %cx	
+0x00000efd	e8d501	call   0x000010d5	
+0x00000f00	ba65f4	mov    $0xf465,%dx	
+0x00000f03	b50a	mov    $0xa,%ch	
+0x00000f05	53	push   %bx	
+0x00000f06	51	push   %cx	
+0x00000f07	8a07	mov    (%bx),%al	
+0x00000f09	87d3	xchg   %dx,%bx	
+0x00000f0b	8807	mov    %al,(%bx)	
+0x00000f0d	87d3	xchg   %dx,%bx	
+0x00000f0f	43	inc    %bx	
+0x00000f10	42	inc    %dx	
+0x00000f11	8a07	mov    (%bx),%al	
+0x00000f13	87d3	xchg   %dx,%bx	
+0x00000f15	8807	mov    %al,(%bx)	
+0x00000f17	87d3	xchg   %dx,%bx	
+0x00000f19	43	inc    %bx	
+0x00000f1a	42	inc    %dx	
+0x00000f1b	b92a00	mov    $0x2a,%cx	
+0x00000f1e	08e4	or     %ah,%ah	
+0x00000f20	19cb	sbb    %cx,%bx	
+0x00000f22	59	pop    %cx	
+0x00000f23	fecd	dec    %ch	
+0x00000f25	75df	jne    0x00000f06	
+0x00000f27	e83d00	call   0x00000f67	
+0x00000f2a	7204	jb     0x00000f30	
+0x00000f2c	5b	pop    %bx	
+0x00000f2d	59	pop    %cx	
+0x00000f2e	f9	stc	
+0x00000f2f	c3	ret	
+0x00000f30	5b	pop    %bx	
+0x00000f31	b50a	mov    $0xa,%ch	
+0x00000f33	51	push   %cx	
+0x00000f34	b466	mov    $0x66,%ah	
+0x00000f36	8827	mov    %ah,(%bx)	
+0x00000f38	43	inc    %bx	
+0x00000f39	b469	mov    $0x69,%ah	
+0x00000f3b	8827	mov    %ah,(%bx)	
+0x00000f3d	b92900	mov    $0x29,%cx	
+0x00000f40	08e4	or     %ah,%ah	
+0x00000f42	19cb	sbb    %cx,%bx	
+0x00000f44	59	pop    %cx	
+0x00000f45	fecd	dec    %ch	
+0x00000f47	75ea	jne    0x00000f33	
+0x00000f49	59	pop    %cx	
+0x00000f4a	b40a	mov    $0xa,%ah	
+0x00000f4c	50	push   %ax	
+0x00000f4d	51	push   %cx	
+0x00000f4e	b466	mov    $0x66,%ah	
+0x00000f50	e84229	call   0x00003895	
+0x00000f53	59	pop    %cx	
+0x00000f54	51	push   %cx	
+0x00000f55	fec1	inc    %cl	
+0x00000f57	b469	mov    $0x69,%ah	
+0x00000f59	e83929	call   0x00003895	
+0x00000f5c	59	pop    %cx	
+0x00000f5d	fecd	dec    %ch	
+0x00000f5f	58	pop    %ax	
+0x00000f60	fecc	dec    %ah	
+0x00000f62	75e8	jne    0x00000f4c	
+0x00000f64	08e4	or     %ah,%ah	
+0x00000f66	c3	ret	
+0x00000f67	bb65f4	mov    $0xf465,%bx	
+0x00000f6a	b514	mov    $0x14,%ch	
+0x00000f6c	30e4	xor    %ah,%ah	
+0x00000f6e	0a27	or     (%bx),%ah	
+0x00000f70	7409	je     0x00000f7b	
+0x00000f72	b44e	mov    $0x4e,%ah	
+0x00000f74	3a27	cmp    (%bx),%ah	
+0x00000f76	7203	jb     0x00000f7b	
+0x00000f78	08e4	or     %ah,%ah	
+0x00000f7a	c3	ret	
+0x00000f7b	43	inc    %bx	
+0x00000f7c	fecd	dec    %ch	
+0x00000f7e	75ec	jne    0x00000f6c	
+0x00000f80	f9	stc	
+0x00000f81	c3	ret	
+0x00000f82	8a2651df	mov    -0x20af,%ah	
+0x00000f86	88e1	mov    %ah,%cl	
+0x00000f88	8a2653df	mov    -0x20ad,%ah	
+0x00000f8c	88e5	mov    %ah,%ch	
+0x00000f8e	51	push   %cx	
+0x00000f8f	e84301	call   0x000010d5	
+0x00000f92	ba65f4	mov    $0xf465,%dx	
+0x00000f95	b50a	mov    $0xa,%ch	
+0x00000f97	87d3	xchg   %dx,%bx	
+0x00000f99	51	push   %cx	
+0x00000f9a	8a07	mov    (%bx),%al	
+0x00000f9c	87d3	xchg   %dx,%bx	
+0x00000f9e	8807	mov    %al,(%bx)	
+0x00000fa0	87d3	xchg   %dx,%bx	
+0x00000fa2	43	inc    %bx	
+0x00000fa3	42	inc    %dx	
+0x00000fa4	8a07	mov    (%bx),%al	
+0x00000fa6	87d3	xchg   %dx,%bx	
+0x00000fa8	8807	mov    %al,(%bx)	
+0x00000faa	87d3	xchg   %dx,%bx	
+0x00000fac	43	inc    %bx	
+0x00000fad	42	inc    %dx	
+0x00000fae	b92a00	mov    $0x2a,%cx	
+0x00000fb1	08e4	or     %ah,%ah	
+0x00000fb3	87d3	xchg   %dx,%bx	
+0x00000fb5	19cb	sbb    %cx,%bx	
+0x00000fb7	87d3	xchg   %dx,%bx	
+0x00000fb9	59	pop    %cx	
+0x00000fba	fecd	dec    %ch	
+0x00000fbc	75db	jne    0x00000f99	
+0x00000fbe	59	pop    %cx	
+0x00000fbf	b40a	mov    $0xa,%ah	
+0x00000fc1	bb65f4	mov    $0xf465,%bx	
+0x00000fc4	50	push   %ax	
+0x00000fc5	51	push   %cx	
+0x00000fc6	8a27	mov    (%bx),%ah	
+0x00000fc8	53	push   %bx	
+0x00000fc9	e8c928	call   0x00003895	
+0x00000fcc	5b	pop    %bx	
+0x00000fcd	59	pop    %cx	
+0x00000fce	51	push   %cx	
+0x00000fcf	fec1	inc    %cl	
+0x00000fd1	43	inc    %bx	
+0x00000fd2	8a27	mov    (%bx),%ah	
+0x00000fd4	53	push   %bx	
+0x00000fd5	e8bd28	call   0x00003895	
+0x00000fd8	5b	pop    %bx	
+0x00000fd9	43	inc    %bx	
+0x00000fda	59	pop    %cx	
+0x00000fdb	fecd	dec    %ch	
+0x00000fdd	58	pop    %ax	
+0x00000fde	fecc	dec    %ah	
+0x00000fe0	75e2	jne    0x00000fc4	
+0x00000fe2	c3	ret	
+0x00000fe3	c3	ret	
+0x00000fe4	8b0e7bf1	mov    -0xe85,%cx	
+0x00000fe8	be7df1	mov    $0xf17d,%si	
+0x00000feb	8a1c	mov    (%si),%bl	
+0x00000fed	8a7c01	mov    0x1(%si),%bh	
+0x00000ff0	800f40	orb    $0x40,(%bx)	
+0x00000ff3	c3	ret	
+0x00000ff4	75f5	jne    0x00000feb	
+0x00000ff6	b408	mov    $0x8,%ah	
+0x00000ff8	8826aff1	mov    %ah,-0xe51	
+0x00000ffc	e85900	call   0x00001058	
+0x00000fff	882608f1	mov    %ah,-0xef8	
+0x00001003	e85200	call   0x00001058	
+0x00001006	882609f1	mov    %ah,-0xef7	
+0x0000100a	e84b00	call   0x00001058	
+0x0000100d	88260af1	mov    %ah,-0xef6	
+0x00001011	e84400	call   0x00001058	
+0x00001014	88260bf1	mov    %ah,-0xef5	
+0x00001018	e83d00	call   0x00001058	
+0x0000101b	88260cf1	mov    %ah,-0xef4	
+0x0000101f	e83600	call   0x00001058	
+0x00001022	88260df1	mov    %ah,-0xef3	
+0x00001026	e82f00	call   0x00001058	
+0x00001029	88260ef1	mov    %ah,-0xef2	
+0x0000102d	e82800	call   0x00001058	
+0x00001030	88260ff1	mov    %ah,-0xef1	
+0x00001034	e82100	call   0x00001058	
+0x00001037	882610f1	mov    %ah,-0xef0	
+0x0000103b	e81a00	call   0x00001058	
+0x0000103e	882611f1	mov    %ah,-0xeef	
+0x00001042	e81300	call   0x00001058	
+0x00001045	882612f1	mov    %ah,-0xeee	
+0x00001049	e80c00	call   0x00001058	
+0x0000104c	882613f1	mov    %ah,-0xeed	
+0x00001050	e80500	call   0x00001058	
+0x00001053	882614f1	mov    %ah,-0xeec	
+0x00001057	c3	ret	
+0x00001058	e8b600	call   0x00001111	
+0x0000105b	80e40f	and    $0xf,%ah	
+0x0000105e	80fc0a	cmp    $0xa,%ah	
+0x00001061	73f5	jae    0x00001058	
+0x00001063	c3	ret	
+0x00001064	c3	ret	
+0x00001065	fec5	inc    %ch	
+0x00001067	8a6410	mov    0x10(%si),%ah	
+0x0000106a	38cc	cmp    %cl,%ah	
+0x0000106c	7204	jb     0x00001072	
+0x0000106e	38ec	cmp    %ch,%ah	
+0x00001070	7232	jb     0x000010a4	
+0x00001072	884c10	mov    %cl,0x10(%si)	
+0x00001075	30e4	xor    %ah,%ah	
+0x00001077	886415	mov    %ah,0x15(%si)	
+0x0000107a	c3	ret	
+0x0000107b	fec5	inc    %ch	
+0x0000107d	8a6410	mov    0x10(%si),%ah	
+0x00001080	38cc	cmp    %cl,%ah	
+0x00001082	7204	jb     0x00001088	
+0x00001084	38ec	cmp    %ch,%ah	
+0x00001086	721c	jb     0x000010a4	
+0x00001088	88cc	mov    %cl,%ah	
+0x0000108a	08e4	or     %ah,%ah	
+0x0000108c	7407	je     0x00001095	
+0x0000108e	8a6410	mov    0x10(%si),%ah	
+0x00001091	00cc	add    %cl,%ah	
+0x00001093	eb05	jmp    0x0000109a	
+0x00001095	8a6410	mov    0x10(%si),%ah	
+0x00001098	28ec	sub    %ch,%ah	
+0x0000109a	886410	mov    %ah,0x10(%si)	
+0x0000109d	c6441500	movb   $0x0,0x15(%si)	
+0x000010a1	30e4	xor    %ah,%ah	
+0x000010a3	c3	ret	
+0x000010a4	8a6415	mov    0x15(%si),%ah	
+0x000010a7	38d4	cmp    %dl,%ah	
+0x000010a9	7306	jae    0x000010b1	
+0x000010ab	fe4415	incb   0x15(%si)	
+0x000010ae	30e4	xor    %ah,%ah	
+0x000010b0	c3	ret	
+0x000010b1	8a6410	mov    0x10(%si),%ah	
+0x000010b4	fec4	inc    %ah	
+0x000010b6	38ec	cmp    %ch,%ah	
+0x000010b8	730a	jae    0x000010c4	
+0x000010ba	886410	mov    %ah,0x10(%si)	
+0x000010bd	30e4	xor    %ah,%ah	
+0x000010bf	886415	mov    %ah,0x15(%si)	
+0x000010c2	f9	stc	
+0x000010c3	c3	ret	
+0x000010c4	fecd	dec    %ch	
+0x000010c6	b401	mov    $0x1,%ah	
+0x000010c8	08e4	or     %ah,%ah	
+0x000010ca	88ec	mov    %ch,%ah	
+0x000010cc	884c10	mov    %cl,0x10(%si)	
+0x000010cf	c6441500	movb   $0x0,0x15(%si)	
+0x000010d3	f9	stc	
+0x000010d4	c3	ret	
+0x000010d5	88eb	mov    %ch,%bl	
+0x000010d7	b700	mov    $0x0,%bh	
+0x000010d9	01db	add    %bx,%bx	
+0x000010db	01db	add    %bx,%bx	
+0x000010dd	01db	add    %bx,%bx	
+0x000010df	88fe	mov    %bh,%dh	
+0x000010e1	88da	mov    %bl,%dl	
+0x000010e3	01db	add    %bx,%bx	
+0x000010e5	01db	add    %bx,%bx	
+0x000010e7	01d3	add    %dx,%bx	
+0x000010e9	b500	mov    $0x0,%ch	
+0x000010eb	01cb	add    %cx,%bx	
+0x000010ed	bae3ed	mov    $0xede3,%dx	
+0x000010f0	01d3	add    %dx,%bx	
+0x000010f2	c3	ret	
+0x000010f3	e82827	call   0x0000381e	
+0x000010f6	7403	je     0x000010fb	
+0x000010f8	e974f0	jmp    0x0000016f	
+0x000010fb	e83527	call   0x00003833	
+0x000010fe	7501	jne    0x00001101	
+0x00001100	c3	ret	
+0x00001101	e82f27	call   0x00003833	
+0x00001104	75fb	jne    0x00001101	
+0x00001106	e82a27	call   0x00003833	
+0x00001109	74fb	je     0x00001106	
+0x0000110b	e82527	call   0x00003833	
+0x0000110e	75fb	jne    0x0000110b	
+0x00001110	c3	ret	
+0x00001111	53	push   %bx	
+0x00001112	52	push   %dx	
+0x00001113	8b16aff1	mov    -0xe51,%dx	
+0x00001117	88d7	mov    %dl,%bh	
+0x00001119	b3fd	mov    $0xfd,%bl	
+0x0000111b	88f4	mov    %dh,%ah	
+0x0000111d	19d3	sbb    %dx,%bx	
+0x0000111f	80dc00	sbb    $0x0,%ah	
+0x00001122	19d3	sbb    %dx,%bx	
+0x00001124	80dc00	sbb    $0x0,%ah	
+0x00001127	88e2	mov    %ah,%dl	
+0x00001129	b600	mov    $0x0,%dh	
+0x0000112b	19d3	sbb    %dx,%bx	
+0x0000112d	7301	jae    0x00001130	
+0x0000112f	43	inc    %bx	
+0x00001130	891eaff1	mov    %bx,-0xe51	
+0x00001134	88dc	mov    %bl,%ah	
+0x00001136	5a	pop    %dx	
+0x00001137	5b	pop    %bx	
+0x00001138	c3	ret	
+0x00001139	51	push   %cx	
+0x0000113a	bb0000	mov    $0x0,%bx	
+0x0000113d	b508	mov    $0x8,%ch	
+0x0000113f	d0dc	rcr    %ah	
+0x00001141	7302	jae    0x00001145	
+0x00001143	01d3	add    %dx,%bx	
+0x00001145	d0d2	rcl    %dl	
+0x00001147	d0d6	rcl    %dh	
+0x00001149	fecd	dec    %ch	
+0x0000114b	75f2	jne    0x0000113f	
+0x0000114d	59	pop    %cx	
+0x0000114e	c3	ret	
+0x0000114f	49	dec    %cx	
+0x00001150	88ec	mov    %ch,%ah	
+0x00001152	08cc	or     %cl,%ah	
+0x00001154	75f9	jne    0x0000114f	
+0x00001156	c3	ret	
+0x00001157	b700	mov    $0x0,%bh	
+0x00001159	01db	add    %bx,%bx	
+0x0000115b	01db	add    %bx,%bx	
+0x0000115d	01db	add    %bx,%bx	
+0x0000115f	01db	add    %bx,%bx	
+0x00001161	c3	ret	
+0x00001162	52	push   %dx	
+0x00001163	51	push   %cx	
+0x00001164	b4ff	mov    $0xff,%ah	
+0x00001166	e8ee1a	call   0x00002c57	
+0x00001169	30e4	xor    %ah,%ah	
+0x0000116b	b601	mov    $0x1,%dh	
+0x0000116d	52	push   %dx	
+0x0000116e	e8e026	call   0x00003851	
+0x00001171	5a	pop    %dx	
+0x00001172	fec1	inc    %cl	
+0x00001174	feca	dec    %dl	
+0x00001176	75ec	jne    0x00001164	
+0x00001178	59	pop    %cx	
+0x00001179	5a	pop    %dx	
+0x0000117a	fec5	inc    %ch	
+0x0000117c	fece	dec    %dh	
+0x0000117e	75e2	jne    0x00001162	
+0x00001180	c3	ret	
+0x00001181	8a27	mov    (%bx),%ah	
+0x00001183	80fcff	cmp    $0xff,%ah	
+0x00001186	7501	jne    0x00001189	
+0x00001188	c3	ret	
+0x00001189	08e4	or     %ah,%ah	
+0x0000118b	7413	je     0x000011a0	
+0x0000118d	80fc20	cmp    $0x20,%ah	
+0x00001190	7403	je     0x00001195	
+0x00001192	80ec20	sub    $0x20,%ah	
+0x00001195	80ec20	sub    $0x20,%ah	
+0x00001198	53	push   %bx	
+0x00001199	e81500	call   0x000011b1	
+0x0000119c	5b	pop    %bx	
+0x0000119d	43	inc    %bx	
+0x0000119e	ebe1	jmp    0x00001181	
+0x000011a0	43	inc    %bx	
+0x000011a1	8a27	mov    (%bx),%ah	
+0x000011a3	43	inc    %bx	
+0x000011a4	8826baf1	mov    %ah,-0xe46	
+0x000011a8	8a27	mov    (%bx),%ah	
+0x000011aa	8826b9f1	mov    %ah,-0xe47	
+0x000011ae	43	inc    %bx	
+0x000011af	ebd0	jmp    0x00001181	
+0x000011b1	52	push   %dx	
+0x000011b2	ba0000	mov    $0x0,%dx	
+0x000011b5	8b0eb9f1	mov    -0xe47,%cx	
+0x000011b9	baffff	mov    $0xffff,%dx	
+0x000011bc	e89226	call   0x00003851	
+0x000011bf	5a	pop    %dx	
+0x000011c0	8b0eb9f1	mov    -0xe47,%cx	
+0x000011c4	fec1	inc    %cl	
+0x000011c6	b427	mov    $0x27,%ah	
+0x000011c8	38cc	cmp    %cl,%ah	
+0x000011ca	730d	jae    0x000011d9	
+0x000011cc	b100	mov    $0x0,%cl	
+0x000011ce	fec5	inc    %ch	
+0x000011d0	b418	mov    $0x18,%ah	
+0x000011d2	38ec	cmp    %ch,%ah	
+0x000011d4	7303	jae    0x000011d9	
+0x000011d6	b90000	mov    $0x0,%cx	
+0x000011d9	890eb9f1	mov    %cx,-0xe47	
+0x000011dd	c3	ret	
+0x000011de	51	push   %cx	
+0x000011df	8a27	mov    (%bx),%ah	
+0x000011e1	88d1	mov    %dl,%cl	
+0x000011e3	88f5	mov    %dh,%ch	
+0x000011e5	52	push   %dx	
+0x000011e6	e8ac26	call   0x00003895	
+0x000011e9	5a	pop    %dx	
+0x000011ea	fec2	inc    %dl	
+0x000011ec	43	inc    %bx	
+0x000011ed	59	pop    %cx	
+0x000011ee	fecd	dec    %ch	
+0x000011f0	75ec	jne    0x000011de	
+0x000011f2	c3	ret	
+0x000011f3	56	push   %si	
+0x000011f4	5b	pop    %bx	
+0x000011f5	b90300	mov    $0x3,%cx	
+0x000011f8	01cb	add    %cx,%bx	
+0x000011fa	53	push   %bx	
+0x000011fb	5a	pop    %dx	
+0x000011fc	b90800	mov    $0x8,%cx	
+0x000011ff	01cb	add    %cx,%bx	
+0x00001201	87f3	xchg   %si,%bx	
+0x00001203	87fa	xchg   %di,%dx	
+0x00001205	fc	cld	
+0x00001206	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00001208	87f3	xchg   %si,%bx	
+0x0000120a	87fa	xchg   %di,%dx	
+0x0000120c	c3	ret	
+0x0000120d	56	push   %si	
+0x0000120e	5b	pop    %bx	
+0x0000120f	b90300	mov    $0x3,%cx	
+0x00001212	01cb	add    %cx,%bx	
+0x00001214	53	push   %bx	
+0x00001215	5a	pop    %dx	
+0x00001216	b90800	mov    $0x8,%cx	
+0x00001219	01cb	add    %cx,%bx	
+0x0000121b	87d3	xchg   %dx,%bx	
+0x0000121d	87f3	xchg   %si,%bx	
+0x0000121f	87fa	xchg   %di,%dx	
+0x00001221	fc	cld	
+0x00001222	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00001224	87f3	xchg   %si,%bx	
+0x00001226	87fa	xchg   %di,%dx	
+0x00001228	c3	ret	
+0x00001229	e86600	call   0x00001292	
+0x0000122c	8a65ff	mov    -0x1(%di),%ah	
+0x0000122f	88640a	mov    %ah,0xa(%si)	
+0x00001232	8a25	mov    (%di),%ah	
+0x00001234	886407	mov    %ah,0x7(%si)	
+0x00001237	88e1	mov    %ah,%cl	
+0x00001239	8a6501	mov    0x1(%di),%ah	
+0x0000123c	886408	mov    %ah,0x8(%si)	
+0x0000123f	8a6502	mov    0x2(%di),%ah	
+0x00001242	886403	mov    %ah,0x3(%si)	
+0x00001245	8a6503	mov    0x3(%di),%ah	
+0x00001248	886404	mov    %ah,0x4(%si)	
+0x0000124b	8a6504	mov    0x4(%di),%ah	
+0x0000124e	886405	mov    %ah,0x5(%si)	
+0x00001251	8a6505	mov    0x5(%di),%ah	
+0x00001254	886406	mov    %ah,0x6(%si)	
+0x00001257	8a6506	mov    0x6(%di),%ah	
+0x0000125a	886422	mov    %ah,0x22(%si)	
+0x0000125d	80c407	add    $0x7,%ah	
+0x00001260	886420	mov    %ah,0x20(%si)	
+0x00001263	8a6507	mov    0x7(%di),%ah	
+0x00001266	886423	mov    %ah,0x23(%si)	
+0x00001269	80d400	adc    $0x0,%ah	
+0x0000126c	886421	mov    %ah,0x21(%si)	
+0x0000126f	8a6408	mov    0x8(%si),%ah	
+0x00001272	eb18	jmp    0x0000128c	
+0x00001274	e81b00	call   0x00001292	
+0x00001277	886c07	mov    %ch,0x7(%si)	
+0x0000127a	884c08	mov    %cl,0x8(%si)	
+0x0000127d	885403	mov    %dl,0x3(%si)	
+0x00001280	887404	mov    %dh,0x4(%si)	
+0x00001283	885c05	mov    %bl,0x5(%si)	
+0x00001286	887c06	mov    %bh,0x6(%si)	
+0x00001289	886413	mov    %ah,0x13(%si)	
+0x0000128c	e8d228	call   0x00003b61	
+0x0000128f	e97bff	jmp    0x0000120d	
+0x00001292	57	push   %di	
+0x00001293	51	push   %cx	
+0x00001294	89f7	mov    %si,%di	
+0x00001296	b92800	mov    $0x28,%cx	
+0x00001299	b000	mov    $0x0,%al	
+0x0000129b	fc	cld	
+0x0000129c	f3aa	rep stos %al,%es:(%di)	
+0x0000129e	800c80	orb    $0x80,(%si)	
+0x000012a1	800c40	orb    $0x40,(%si)	
+0x000012a4	59	pop    %cx	
+0x000012a5	5f	pop    %di	
+0x000012a6	c3	ret	
+0x000012a7	8a2633f1	mov    -0xecd,%ah	
+0x000012ab	80fc3c	cmp    $0x3c,%ah	
+0x000012ae	7502	jne    0x000012b2	
+0x000012b0	f9	stc	
+0x000012b1	c3	ret	
+0x000012b2	be21f2	mov    $0xf221,%si	
+0x000012b5	ba2900	mov    $0x29,%dx	
+0x000012b8	b50a	mov    $0xa,%ch	
+0x000012ba	f60480	testb  $0x80,(%si)	
+0x000012bd	7408	je     0x000012c7	
+0x000012bf	01d6	add    %dx,%si	
+0x000012c1	fecd	dec    %ch	
+0x000012c3	75f5	jne    0x000012ba	
+0x000012c5	f9	stc	
+0x000012c6	c3	ret	
+0x000012c7	57	push   %di	
+0x000012c8	53	push   %bx	
+0x000012c9	b464	mov    $0x64,%ah	
+0x000012cb	e88d2c	call   0x00003f5b	
+0x000012ce	5b	pop    %bx	
+0x000012cf	5f	pop    %di	
+0x000012d0	08e4	or     %ah,%ah	
+0x000012d2	c3	ret	
+0x000012d3	57	push   %di	
+0x000012d4	51	push   %cx	
+0x000012d5	bfdaf3	mov    $0xf3da,%di	
+0x000012d8	b504	mov    $0x4,%ch	
+0x000012da	becff1	mov    $0xf1cf,%si	
+0x000012dd	56	push   %si	
+0x000012de	8a640b	mov    0xb(%si),%ah	
+0x000012e1	8825	mov    %ah,(%di)	
+0x000012e3	47	inc    %di	
+0x000012e4	46	inc    %si	
+0x000012e5	fecd	dec    %ch	
+0x000012e7	75f5	jne    0x000012de	
+0x000012e9	5e	pop    %si	
+0x000012ea	8a6413	mov    0x13(%si),%ah	
+0x000012ed	8825	mov    %ah,(%di)	
+0x000012ef	59	pop    %cx	
+0x000012f0	5f	pop    %di	
+0x000012f1	c3	ret	
+0x000012f2	bbdff3	mov    $0xf3df,%bx	
+0x000012f5	badaf3	mov    $0xf3da,%dx	
+0x000012f8	b90500	mov    $0x5,%cx	
+0x000012fb	87f3	xchg   %si,%bx	
+0x000012fd	87fa	xchg   %di,%dx	
+0x000012ff	fc	cld	
+0x00001300	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00001302	87f3	xchg   %si,%bx	
+0x00001304	87fa	xchg   %di,%dx	
+0x00001306	eb1f	jmp    0x00001327	
+0x00001308	bbdaf3	mov    $0xf3da,%bx	
+0x0000130b	badff3	mov    $0xf3df,%dx	
+0x0000130e	b90500	mov    $0x5,%cx	
+0x00001311	87f3	xchg   %si,%bx	
+0x00001313	87fa	xchg   %di,%dx	
+0x00001315	fc	cld	
+0x00001316	f3a4	rep movsb %ds:(%si),%es:(%di)	
+0x00001318	87f3	xchg   %si,%bx	
+0x0000131a	87fa	xchg   %di,%dx	
+0x0000131c	8a261df1	mov    -0xee3,%ah	
+0x00001320	87d3	xchg   %dx,%bx	
+0x00001322	8827	mov    %ah,(%bx)	
+0x00001324	87d3	xchg   %dx,%bx	
+0x00001326	c3	ret	
+0x00001327	becff1	mov    $0xf1cf,%si	
+0x0000132a	bbdaf3	mov    $0xf3da,%bx	
+0x0000132d	b504	mov    $0x4,%ch	
+0x0000132f	8a27	mov    (%bx),%ah	
+0x00001331	88640b	mov    %ah,0xb(%si)	
+0x00001334	43	inc    %bx	
+0x00001335	46	inc    %si	
+0x00001336	fecd	dec    %ch	
+0x00001338	75f5	jne    0x0000132f	
+0x0000133a	becff1	mov    $0xf1cf,%si	
+0x0000133d	8a27	mov    (%bx),%ah	
+0x0000133f	886413	mov    %ah,0x13(%si)	
+0x00001342	800c40	orb    $0x40,(%si)	
+0x00001345	e9abfe	jmp    0x000011f3	
+0x00001348	8a26ddf1	mov    -0xe23,%ah	
+0x0000134c	2a640e	sub    0xe(%si),%ah	
+0x0000134f	7201	jb     0x00001352	
+0x00001351	c3	ret	
+0x00001352	f6dc	neg    %ah	
+0x00001354	c3	ret	
+0x00001355	8a26dbf1	mov    -0xe25,%ah	
+0x00001359	2a640c	sub    0xc(%si),%ah	
+0x0000135c	7201	jb     0x0000135f	
+0x0000135e	c3	ret	
+0x0000135f	f6dc	neg    %ah	
+0x00001361	c3	ret	
+0x00001362	53	push   %bx	
+0x00001363	bbc002	mov    $0x2c0,%bx	
+0x00001366	8b0edcf1	mov    -0xe24,%cx	
+0x0000136a	890eb5f1	mov    %cx,-0xe4b	
+0x0000136e	01cb	add    %cx,%bx	
+0x00001370	891edcf1	mov    %bx,-0xe24	
+0x00001374	5b	pop    %bx	
+0x00001375	b501	mov    $0x1,%ch	
+0x00001377	b111	mov    $0x11,%cl	
+0x00001379	e80900	call   0x00001385	
+0x0000137c	8b0eb5f1	mov    -0xe4b,%cx	
+0x00001380	890edcf1	mov    %cx,-0xe24	
+0x00001384	c3	ret	
+0x00001385	08e4	or     %ah,%ah	
+0x00001387	bfcff1	mov    $0xf1cf,%di	
+0x0000138a	f60580	testb  $0x80,(%di)	
+0x0000138d	7501	jne    0x00001390	
+0x0000138f	c3	ret	
+0x00001390	8a6524	mov    0x24(%di),%ah	
+0x00001393	80e403	and    $0x3,%ah	
+0x00001396	7401	je     0x00001399	
+0x00001398	c3	ret	
+0x00001399	8a262bf1	mov    -0xed5,%ah	
+0x0000139d	f6c408	test   $0x8,%ah	
+0x000013a0	7401	je     0x000013a3	
+0x000013a2	c3	ret	
+0x000013a3	8a6510	mov    0x10(%di),%ah	
+0x000013a6	80fc08	cmp    $0x8,%ah	
+0x000013a9	7405	je     0x000013b0	
+0x000013ab	80fc1f	cmp    $0x1f,%ah	
+0x000013ae	7510	jne    0x000013c0	
+0x000013b0	fe450e	incb   0xe(%di)	
+0x000013b3	fe450e	incb   0xe(%di)	
+0x000013b6	e80700	call   0x000013c0	
+0x000013b9	fe4d0e	decb   0xe(%di)	
+0x000013bc	fe4d0e	decb   0xe(%di)	
+0x000013bf	c3	ret	
+0x000013c0	b516	mov    $0x16,%ch	
+0x000013c2	b111	mov    $0x11,%cl	
+0x000013c4	eb2e	jmp    0x000013f4	
+0x000013c6	bff8f1	mov    $0xf1f8,%di	
+0x000013c9	08e4	or     %ah,%ah	
+0x000013cb	f60580	testb  $0x80,(%di)	
+0x000013ce	7501	jne    0x000013d1	
+0x000013d0	c3	ret	
+0x000013d1	8a650f	mov    0xf(%di),%ah	
+0x000013d4	80fc02	cmp    $0x2,%ah	
+0x000013d7	7415	je     0x000013ee	
+0x000013d9	b50a	mov    $0xa,%ch	
+0x000013db	b107	mov    $0x7,%cl	
+0x000013dd	e81400	call   0x000013f4	
+0x000013e0	7201	jb     0x000013e3	
+0x000013e2	c3	ret	
+0x000013e3	b401	mov    $0x1,%ah	
+0x000013e5	e87100	call   0x00001459	
+0x000013e8	804d1140	orb    $0x40,0x11(%di)	
+0x000013ec	f9	stc	
+0x000013ed	c3	ret	
+0x000013ee	b50a	mov    $0xa,%ch	
+0x000013f0	b107	mov    $0x7,%cl	
+0x000013f2	eb00	jmp    0x000013f4	
+0x000013f4	52	push   %dx	
+0x000013f5	53	push   %bx	
+0x000013f6	8a7c0c	mov    0xc(%si),%bh	
+0x000013f9	8a5c0b	mov    0xb(%si),%bl	
+0x000013fc	d0d3	rcl    %bl	
+0x000013fe	d0d7	rcl    %bh	
+0x00001400	88fc	mov    %bh,%ah	
+0x00001402	d0d3	rcl    %bl	
+0x00001404	d0d7	rcl    %bh	
+0x00001406	00fc	add    %bh,%ah	
+0x00001408	5b	pop    %bx	
+0x00001409	88e7	mov    %ah,%bh	
+0x0000140b	00dc	add    %bl,%ah	
+0x0000140d	88e3	mov    %ah,%bl	
+0x0000140f	8a750c	mov    0xc(%di),%dh	
+0x00001412	8a550b	mov    0xb(%di),%dl	
+0x00001415	d0d2	rcl    %dl	
+0x00001417	d0d6	rcl    %dh	
+0x00001419	88f4	mov    %dh,%ah	
+0x0000141b	d0d2	rcl    %dl	
+0x0000141d	d0d6	rcl    %dh	
+0x0000141f	00f4	add    %dh,%ah	
+0x00001421	88e6	mov    %ah,%dh	
+0x00001423	00cc	add    %cl,%ah	
+0x00001425	88e2	mov    %ah,%dl	
+0x00001427	e88028	call   0x00003caa	
+0x0000142a	5a	pop    %dx	
+0x0000142b	7201	jb     0x0000142e	
+0x0000142d	c3	ret	
+0x0000142e	8a7c0e	mov    0xe(%si),%bh	
+0x00001431	8a5c0d	mov    0xd(%si),%bl	
+0x00001434	01db	add    %bx,%bx	
+0x00001436	01db	add    %bx,%bx	
+0x00001438	01db	add    %bx,%bx	
+0x0000143a	88fc	mov    %bh,%ah	
+0x0000143c	00d4	add    %dl,%ah	
+0x0000143e	88e3	mov    %ah,%bl	
+0x00001440	53	push   %bx	
+0x00001441	8a7d0e	mov    0xe(%di),%bh	
+0x00001444	8a5d0d	mov    0xd(%di),%bl	
+0x00001447	01db	add    %bx,%bx	
+0x00001449	01db	add    %bx,%bx	
+0x0000144b	01db	add    %bx,%bx	
+0x0000144d	88fe	mov    %bh,%dh	
+0x0000144f	88fc	mov    %bh,%ah	
+0x00001451	00ec	add    %ch,%ah	
+0x00001453	88e2	mov    %ah,%dl	
+0x00001455	5b	pop    %bx	
+0x00001456	e95128	jmp    0x00003caa	
+0x00001459	51	push   %cx	
+0x0000145a	52	push   %dx	
+0x0000145b	b50c	mov    $0xc,%ch	
+0x0000145d	ba2900	mov    $0x29,%dx	
+0x00001460	bfcff1	mov    $0xf1cf,%di	
+0x00001463	f60580	testb  $0x80,(%di)	
+0x00001466	7405	je     0x0000146d	
+0x00001468	3a650f	cmp    0xf(%di),%ah	
+0x0000146b	740a	je     0x00001477	
+0x0000146d	01d7	add    %dx,%di	
+0x0000146f	fecd	dec    %ch	
+0x00001471	75f0	jne    0x00001463	
+0x00001473	f9	stc	
+0x00001474	5a	pop    %dx	
+0x00001475	59	pop    %cx	
+0x00001476	c3	ret	
+0x00001477	5a	pop    %dx	
+0x00001478	59	pop    %cx	
+0x00001479	08e4	or     %ah,%ah	
+0x0000147b	c3	ret	
+0x0000147c	51	push   %cx	
+0x0000147d	52	push   %dx	
+0x0000147e	b50c	mov    $0xc,%ch	
+0x00001480	ba2900	mov    $0x29,%dx	
+0x00001483	bfcff1	mov    $0xf1cf,%di	
+0x00001486	f60580	testb  $0x80,(%di)	
+0x00001489	7405	je     0x00001490	
+0x0000148b	3a650f	cmp    0xf(%di),%ah	
+0x0000148e	740a	je     0x0000149a	
+0x00001490	01d7	add    %dx,%di	
+0x00001492	fecd	dec    %ch	
+0x00001494	75f0	jne    0x00001486	
+0x00001496	f9	stc	
+0x00001497	5a	pop    %dx	
+0x00001498	59	pop    %cx	
+0x00001499	c3	ret	
+0x0000149a	8826b5f1	mov    %ah,-0xe4b	
+0x0000149e	88cc	mov    %cl,%ah	
+0x000014a0	3a6510	cmp    0x10(%di),%ah	
+0x000014a3	8a26b5f1	mov    -0xe4b,%ah	
+0x000014a7	75e7	jne    0x00001490	
+0x000014a9	5a	pop    %dx	
+0x000014aa	59	pop    %cx	
+0x000014ab	08e4	or     %ah,%ah	
+0x000014ad	c3	ret	
+0x000014ae	51	push   %cx	
+0x000014af	52	push   %dx	
+0x000014b0	b50c	mov    $0xc,%ch	
+0x000014b2	ba2900	mov    $0x29,%dx	
+0x000014b5	bfcff1	mov    $0xf1cf,%di	
+0x000014b8	f60580	testb  $0x80,(%di)	
+0x000014bb	7417	je     0x000014d4	
+0x000014bd	3a650f	cmp    0xf(%di),%ah	
+0x000014c0	7512	jne    0x000014d4	
+0x000014c2	8826b5f1	mov    %ah,-0xe4b	
+0x000014c6	8a6512	mov    0x12(%di),%ah	
+0x000014c9	80e407	and    $0x7,%ah	
+0x000014cc	38cc	cmp    %cl,%ah	
+0x000014ce	8a26b5f1	mov    -0xe4b,%ah	
+0x000014d2	740a	je     0x000014de	
+0x000014d4	01d7	add    %dx,%di	
+0x000014d6	fecd	dec    %ch	
+0x000014d8	75de	jne    0x000014b8	
+0x000014da	f9	stc	
+0x000014db	5a	pop    %dx	
+0x000014dc	59	pop    %cx	
+0x000014dd	c3	ret	
+0x000014de	5a	pop    %dx	
+0x000014df	59	pop    %cx	
+0x000014e0	08e4	or     %ah,%ah	
+0x000014e2	c3	ret	
+0x000014e3	51	push   %cx	
+0x000014e4	52	push   %dx	
+0x000014e5	b50c	mov    $0xc,%ch	
+0x000014e7	ba2900	mov    $0x29,%dx	
+0x000014ea	bfcff1	mov    $0xf1cf,%di	
+0x000014ed	f60580	testb  $0x80,(%di)	
+0x000014f0	7405	je     0x000014f7	
+0x000014f2	3a6512	cmp    0x12(%di),%ah	
+0x000014f5	740a	je     0x00001501	
+0x000014f7	01d7	add    %dx,%di	
+0x000014f9	fecd	dec    %ch	
+0x000014fb	75f0	jne    0x000014ed	
+0x000014fd	f9	stc	
+0x000014fe	5a	pop    %dx	
+0x000014ff	59	pop    %cx	
+0x00001500	c3	ret	
+0x00001501	5a	pop    %dx	
+0x00001502	59	pop    %cx	
+0x00001503	08e4	or     %ah,%ah	
+0x00001505	c3	ret	
+0x00001506	8a2607f1	mov    -0xef9,%ah	
+0x0000150a	f6c408	test   $0x8,%ah	
+0x0000150d	7401	je     0x00001510	
+0x0000150f	c3	ret	
+0x00001510	8a261df1	mov    -0xee3,%ah	
+0x00001514	80fc3f	cmp    $0x3f,%ah	
+0x00001517	7501	jne    0x0000151a	
+0x00001519	c3	ret	
+0x0000151a	8a2633f1	mov    -0xecd,%ah	
+0x0000151e	80fc3c	cmp    $0x3c,%ah	
+0x00001521	7501	jne    0x00001524	
+0x00001523	c3	ret	
+0x00001524	56	push   %si	
+0x00001525	c60625f116	movb   $0x16,-0xedb	
+0x0000152a	becff1	mov    $0xf1cf,%si	
+0x0000152d	804c2402	orb    $0x2,0x24(%si)	
+0x00001531	c6441100	movb   $0x0,0x11(%si)	
+0x00001535	bb26f1	mov    $0xf126,%bx	
+0x00001538	800f08	orb    $0x8,(%bx)	
+0x0000153b	5e	pop    %si	
+0x0000153c	c3	ret	
+0x0000153d	b425	mov    $0x25,%ah	
+0x0000153f	e817ff	call   0x00001459	
+0x00001542	7201	jb     0x00001545	
+0x00001544	c3	ret	
+0x00001545	bba2e0	mov    $0xe0a2,%bx	
+0x00001548	ba0300	mov    $0x3,%dx	
+0x0000154b	8a261df1	mov    -0xee3,%ah	
+0x0000154f	f60780	testb  $0x80,(%bx)	
+0x00001552	7401	je     0x00001555	
+0x00001554	c3	ret	
+0x00001555	3a27	cmp    (%bx),%ah	
+0x00001557	7404	je     0x0000155d	
+0x00001559	01d3	add    %dx,%bx	
+0x0000155b	ebf2	jmp    0x0000154f	
+0x0000155d	43	inc    %bx	
+0x0000155e	8a2f	mov    (%bx),%ch	
+0x00001560	43	inc    %bx	
+0x00001561	8a0f	mov    (%bx),%cl	
+0x00001563	890ed0f3	mov    %cx,-0xc30	
+0x00001567	e8a7fb	call   0x00001111	
+0x0000156a	80e47f	and    $0x7f,%ah	
+0x0000156d	80fc08	cmp    $0x8,%ah	
+0x00001570	7401	je     0x00001573	
+0x00001572	c3	ret	
+0x00001573	ba8d65	mov    $0x658d,%dx	
+0x00001576	e82e00	call   0x000015a7	
+0x00001579	e82bfd	call   0x000012a7	
+0x0000157c	7301	jae    0x0000157f	
+0x0000157e	c3	ret	
+0x0000157f	8b1ed0f3	mov    -0xc30,%bx	
+0x00001583	fec7	inc    %bh	
+0x00001585	30e4	xor    %ah,%ah	
+0x00001587	88de	mov    %bl,%dh	
+0x00001589	88e3	mov    %ah,%bl	
+0x0000158b	88e2	mov    %ah,%dl	
+0x0000158d	b102	mov    $0x2,%cl	
+0x0000158f	b525	mov    $0x25,%ch	
+0x00001591	b4a0	mov    $0xa0,%ah	
+0x00001593	e8defc	call   0x00001274	
+0x00001596	c6440208	movb   $0x8,0x2(%si)	
+0x0000159a	e8b8fd	call   0x00001355	
+0x0000159d	80fc07	cmp    $0x7,%ah	
+0x000015a0	7201	jb     0x000015a3	
+0x000015a2	c3	ret	
+0x000015a3	800c10	orb    $0x10,(%si)	
+0x000015a6	c3	ret	
+0x000015a7	89169ef1	mov    %dx,-0xe62	
+0x000015ab	bb45cf	mov    $0xcf45,%bx	
+0x000015ae	e8e11b	call   0x00003192	
+0x000015b1	8b169ef1	mov    -0xe62,%dx	
+0x000015b5	8b0ed0f3	mov    -0xc30,%cx	
+0x000015b9	88f4	mov    %dh,%ah	
+0x000015bb	e89916	call   0x00002c57	
+0x000015be	e8d422	call   0x00003895	
+0x000015c1	8b169ef1	mov    -0xe62,%dx	
+0x000015c5	88d4	mov    %dl,%ah	
+0x000015c7	fec1	inc    %cl	
+0x000015c9	e88b16	call   0x00002c57	
+0x000015cc	e9c622	jmp    0x00003895	
+0x000015cf	e847f4	call   0x00000a19	
+0x000015d2	b30c	mov    $0xc,%bl	
+0x000015d4	b20c	mov    $0xc,%dl	
+0x000015d6	e8acfd	call   0x00001385	
+0x000015d9	7304	jae    0x000015df	
+0x000015db	5b	pop    %bx	
+0x000015dc	e927ff	jmp    0x00001506	
+0x000015df	b30c	mov    $0xc,%bl	
+0x000015e1	b20c	mov    $0xc,%dl	
+0x000015e3	e8e0fd	call   0x000013c6	
+0x000015e6	7308	jae    0x000015f0	
+0x000015e8	800c10	orb    $0x10,(%si)	
+0x000015eb	ba6764	mov    $0x6467,%dx	
+0x000015ee	ebb7	jmp    0x000015a7	
+0x000015f0	8a6402	mov    0x2(%si),%ah	
+0x000015f3	08e4	or     %ah,%ah	
+0x000015f5	7412	je     0x00001609	
+0x000015f7	b90203	mov    $0x302,%cx	
+0x000015fa	b202	mov    $0x2,%dl	
+0x000015fc	e866fa	call   0x00001065	
+0x000015ff	7201	jb     0x00001602	
+0x00001601	c3	ret	
+0x00001602	e8dd16	call   0x00002ce2	
+0x00001605	fe4c02	decb   0x2(%si)	
+0x00001608	c3	ret	
+0x00001609	f6442404	testb  $0x4,0x24(%si)	
+0x0000160d	7536	jne    0x00001645	
+0x0000160f	f6442408	testb  $0x8,0x24(%si)	
+0x00001613	7512	jne    0x00001627	
+0x00001615	804c2408	orb    $0x8,0x24(%si)	
+0x00001619	c6441300	movb   $0x0,0x13(%si)	
+0x0000161d	c6441440	movb   $0x40,0x14(%si)	
+0x00001621	ba6764	mov    $0x6467,%dx	
+0x00001624	e880ff	call   0x000015a7	
+0x00001627	f6441140	testb  $0x40,0x11(%si)	
+0x0000162b	7503	jne    0x00001630	
+0x0000162d	e9b216	jmp    0x00002ce2	
+0x00001630	804c2404	orb    $0x4,0x24(%si)	
+0x00001634	c6441400	movb   $0x0,0x14(%si)	
+0x00001638	e81afd	call   0x00001355	
+0x0000163b	b440	mov    $0x40,%ah	
+0x0000163d	7302	jae    0x00001641	
+0x0000163f	f6dc	neg    %ah	
+0x00001641	886413	mov    %ah,0x13(%si)	
+0x00001644	c3	ret	
+0x00001645	8a6411	mov    0x11(%si),%ah	
+0x00001648	0a6424	or     0x24(%si),%ah	
+0x0000164b	80e430	and    $0x30,%ah	
+0x0000164e	7404	je     0x00001654	
+0x00001650	800c10	orb    $0x10,(%si)	
+0x00001653	c3	ret	
+0x00001654	b90203	mov    $0x302,%cx	
+0x00001657	f6441380	testb  $0x80,0x13(%si)	
+0x0000165b	7503	jne    0x00001660	
+0x0000165d	b90001	mov    $0x100,%cx	
+0x00001660	b202	mov    $0x2,%dl	
+0x00001662	e800fa	call   0x00001065	
+0x00001665	7201	jb     0x00001668	
+0x00001667	c3	ret	
+0x00001668	e95316	jmp    0x00002cbe	
+0x0000166b	bf36e1	mov    $0xe136,%di	
+0x0000166e	b426	mov    $0x26,%ah	
+0x00001670	bb4be1	mov    $0xe14b,%bx	
+0x00001673	eb42	jmp    0x000016b7	
+0x00001675	bf08e1	mov    $0xe108,%di	
+0x00001678	b41e	mov    $0x1e,%ah	
+0x0000167a	bb4be1	mov    $0xe14b,%bx	
+0x0000167d	eb38	jmp    0x000016b7	
+0x0000167f	bf25e1	mov    $0xe125,%di	
+0x00001682	b41f	mov    $0x1f,%ah	
+0x00001684	bb4be1	mov    $0xe14b,%bx	
+0x00001687	eb2e	jmp    0x000016b7	
+0x00001689	bfefe0	mov    $0xe0ef,%di	
+0x0000168c	b407	mov    $0x7,%ah	
+0x0000168e	bb4fe1	mov    $0xe14f,%bx	
+0x00001691	eb24	jmp    0x000016b7	
+0x00001693	bfbee0	mov    $0xe0be,%di	
+0x00001696	b417	mov    $0x17,%ah	
+0x00001698	e81c00	call   0x000016b7	
+0x0000169b	b417	mov    $0x17,%ah	
+0x0000169d	e8b9fd	call   0x00001459	
+0x000016a0	7301	jae    0x000016a3	
+0x000016a2	c3	ret	
+0x000016a3	f60440	testb  $0x40,(%si)	
+0x000016a6	7501	jne    0x000016a9	
+0x000016a8	c3	ret	
+0x000016a9	f60410	testb  $0x10,(%si)	
+0x000016ac	7401	je     0x000016af	
+0x000016ae	c3	ret	
+0x000016af	bb3dcf	mov    $0xcf3d,%bx	
+0x000016b2	b402	mov    $0x2,%ah	
+0x000016b4	e9db1a	jmp    0x00003192	
+0x000016b7	891ea0f1	mov    %bx,-0xe60	
+0x000016bb	8826a2f1	mov    %ah,-0xe5e	
+0x000016bf	57	push   %di	
+0x000016c0	e896fd	call   0x00001459	
+0x000016c3	5f	pop    %di	
+0x000016c4	7201	jb     0x000016c7	
+0x000016c6	c3	ret	
+0x000016c7	ba0400	mov    $0x4,%dx	
+0x000016ca	8a261df1	mov    -0xee3,%ah	
+0x000016ce	f60580	testb  $0x80,(%di)	
+0x000016d1	7401	je     0x000016d4	
+0x000016d3	c3	ret	
+0x000016d4	3a25	cmp    (%di),%ah	
+0x000016d6	7404	je     0x000016dc	
+0x000016d8	01d7	add    %dx,%di	
+0x000016da	ebf2	jmp    0x000016ce	
+0x000016dc	e832fa	call   0x00001111	
+0x000016df	80fc02	cmp    $0x2,%ah	
+0x000016e2	7201	jb     0x000016e5	
+0x000016e4	c3	ret	
+0x000016e5	e8bffb	call   0x000012a7	
+0x000016e8	7301	jae    0x000016eb	
+0x000016ea	c3	ret	
+0x000016eb	8a5d01	mov    0x1(%di),%bl	
+0x000016ee	8a7d02	mov    0x2(%di),%bh	
+0x000016f1	b100	mov    $0x0,%cl	
+0x000016f3	8a7503	mov    0x3(%di),%dh	
+0x000016f6	88ca	mov    %cl,%dl	
+0x000016f8	8a26a2f1	mov    -0xe5e,%ah	
+0x000016fc	88e5	mov    %ah,%ch	
+0x000016fe	e873fb	call   0x00001274	
+0x00001701	8b1ea0f1	mov    -0xe60,%bx	
+0x00001705	885c22	mov    %bl,0x22(%si)	
+0x00001708	887c23	mov    %bh,0x23(%si)	
+0x0000170b	e847fc	call   0x00001355	
+0x0000170e	80fc05	cmp    $0x5,%ah	
+0x00001711	7201	jb     0x00001714	
+0x00001713	c3	ret	
+0x00001714	800c10	orb    $0x10,(%si)	
+0x00001717	c3	ret	
+0x00001718	f6441101	testb  $0x1,0x11(%si)	
+0x0000171c	7503	jne    0x00001721	
+0x0000171e	e99f01	jmp    0x000018c0	
+0x00001721	8a6402	mov    0x2(%si),%ah	
+0x00001724	80fc19	cmp    $0x19,%ah	
+0x00001727	7507	jne    0x00001730	
+0x00001729	c644020a	movb   $0xa,0x2(%si)	
+0x0000172d	e8d6fd	call   0x00001506	
+0x00001730	08e4	or     %ah,%ah	
+0x00001732	7509	jne    0x0000173d	
+0x00001734	806411fe	andb   $0xfe,0x11(%si)	
+0x00001738	c6440200	movb   $0x0,0x2(%si)	
+0x0000173c	c3	ret	
+0x0000173d	b90102	mov    $0x201,%cx	
+0x00001740	f6441380	testb  $0x80,0x13(%si)	
+0x00001744	7403	je     0x00001749	
+0x00001746	b90405	mov    $0x504,%cx	
+0x00001749	b204	mov    $0x4,%dl	
+0x0000174b	e817f9	call   0x00001065	
+0x0000174e	7201	jb     0x00001751	
+0x00001750	c3	ret	
+0x00001751	fe4c02	decb   0x2(%si)	
+0x00001754	bb4fcf	mov    $0xcf4f,%bx	
+0x00001757	e9381a	jmp    0x00003192	
+0x0000175a	f6441101	testb  $0x1,0x11(%si)	
+0x0000175e	7503	jne    0x00001763	
+0x00001760	e95d01	jmp    0x000018c0	
+0x00001763	f6441102	testb  $0x2,0x11(%si)	
+0x00001767	753a	jne    0x000017a3	
+0x00001769	8a262af1	mov    -0xed6,%ah	
+0x0000176d	08e4	or     %ah,%ah	
+0x0000176f	74c3	je     0x00001734	
+0x00001771	88e5	mov    %ah,%ch	
+0x00001773	88e1	mov    %ah,%cl	
+0x00001775	ba0400	mov    $0x4,%dx	
+0x00001778	bf28e0	mov    $0xe028,%di	
+0x0000177b	01d7	add    %dx,%di	
+0x0000177d	8a25	mov    (%di),%ah	
+0x0000177f	08e4	or     %ah,%ah	
+0x00001781	75f8	jne    0x0000177b	
+0x00001783	c60501	movb   $0x1,(%di)	
+0x00001786	fecd	dec    %ch	
+0x00001788	75f1	jne    0x0000177b	
+0x0000178a	88cc	mov    %cl,%ah	
+0x0000178c	00e4	add    %ah,%ah	
+0x0000178e	00e4	add    %ah,%ah	
+0x00001790	886402	mov    %ah,0x2(%si)	
+0x00001793	804c1102	orb    $0x2,0x11(%si)	
+0x00001797	bb2bf1	mov    $0xf12b,%bx	
+0x0000179a	800f01	orb    $0x1,(%bx)	
+0x0000179d	30e4	xor    %ah,%ah	
+0x0000179f	88262af1	mov    %ah,-0xed6	
+0x000017a3	8a6402	mov    0x2(%si),%ah	
+0x000017a6	08e4	or     %ah,%ah	
+0x000017a8	750d	jne    0x000017b7	
+0x000017aa	bb2bf1	mov    $0xf12b,%bx	
+0x000017ad	8027fe	andb   $0xfe,(%bx)	
+0x000017b0	806411fd	andb   $0xfd,0x11(%si)	
+0x000017b4	e97dff	jmp    0x00001734	
+0x000017b7	b90102	mov    $0x201,%cx	
+0x000017ba	f6441380	testb  $0x80,0x13(%si)	
+0x000017be	7403	je     0x000017c3	
+0x000017c0	b90405	mov    $0x504,%cx	
+0x000017c3	b204	mov    $0x4,%dl	
+0x000017c5	e89df8	call   0x00001065	
+0x000017c8	7201	jb     0x000017cb	
+0x000017ca	c3	ret	
+0x000017cb	bb18cf	mov    $0xcf18,%bx	
+0x000017ce	e8c119	call   0x00003192	
+0x000017d1	fe4c02	decb   0x2(%si)	
+0x000017d4	8a6402	mov    0x2(%si),%ah	
+0x000017d7	ba1900	mov    $0x19,%dx	
+0x000017da	e85cf9	call   0x00001139	
+0x000017dd	b90515	mov    $0x1505,%cx	
+0x000017e0	b405	mov    $0x5,%ah	
+0x000017e2	e8a31b	call   0x00003388	
+0x000017e5	c3	ret	
+0x000017e6	f6441101	testb  $0x1,0x11(%si)	
+0x000017ea	7503	jne    0x000017ef	
+0x000017ec	e9d100	jmp    0x000018c0	
+0x000017ef	f6441102	testb  $0x2,0x11(%si)	
+0x000017f3	7520	jne    0x00001815	
+0x000017f5	c644020a	movb   $0xa,0x2(%si)	
+0x000017f9	bb2bf1	mov    $0xf12b,%bx	
+0x000017fc	800f80	orb    $0x80,(%bx)	
+0x000017ff	b90202	mov    $0x202,%cx	
+0x00001802	f6441380	testb  $0x80,0x13(%si)	
+0x00001806	7403	je     0x0000180b	
+0x00001808	b90505	mov    $0x505,%cx	
+0x0000180b	b201	mov    $0x1,%dl	
+0x0000180d	e855f8	call   0x00001065	
+0x00001810	804c1102	orb    $0x2,0x11(%si)	
+0x00001814	c3	ret	
+0x00001815	8a6402	mov    0x2(%si),%ah	
+0x00001818	08e4	or     %ah,%ah	
+0x0000181a	7522	jne    0x0000183e	
+0x0000181c	bb2bf1	mov    $0xf12b,%bx	
+0x0000181f	80277f	andb   $0x7f,(%bx)	
+0x00001822	8a2625f1	mov    -0xedb,%ah	
+0x00001826	80ec05	sub    $0x5,%ah	
+0x00001829	7305	jae    0x00001830	
+0x0000182b	e8d8fc	call   0x00001506	
+0x0000182e	30e4	xor    %ah,%ah	
+0x00001830	882625f1	mov    %ah,-0xedb	
+0x00001834	e8e61d	call   0x0000361d	
+0x00001837	806411fd	andb   $0xfd,0x11(%si)	
+0x0000183b	e9f6fe	jmp    0x00001734	
+0x0000183e	fe4c02	decb   0x2(%si)	
+0x00001841	bba7d3	mov    $0xd3a7,%bx	
+0x00001844	b140	mov    $0x40,%cl	
+0x00001846	f6441380	testb  $0x80,0x13(%si)	
+0x0000184a	7405	je     0x00001851	
+0x0000184c	bb75d3	mov    $0xd375,%bx	
+0x0000184f	b1c0	mov    $0xc0,%cl	
+0x00001851	becff1	mov    $0xf1cf,%si	
+0x00001854	884c13	mov    %cl,0x13(%si)	
+0x00001857	c6441400	movb   $0x0,0x14(%si)	
+0x0000185b	8a27	mov    (%bx),%ah	
+0x0000185d	886410	mov    %ah,0x10(%si)	
+0x00001860	e85b14	call   0x00002cbe	
+0x00001863	e8c6f2	call   0x00000b2c	
+0x00001866	8a6411	mov    0x11(%si),%ah	
+0x00001869	80e430	and    $0x30,%ah	
+0x0000186c	7501	jne    0x0000186f	
+0x0000186e	c3	ret	
+0x0000186f	8a6403	mov    0x3(%si),%ah	
+0x00001872	88640b	mov    %ah,0xb(%si)	
+0x00001875	8a6404	mov    0x4(%si),%ah	
+0x00001878	88640c	mov    %ah,0xc(%si)	
+0x0000187b	c6440200	movb   $0x0,0x2(%si)	
+0x0000187f	c3	ret	
+0x00001880	f6441101	testb  $0x1,0x11(%si)	
+0x00001884	743a	je     0x000018c0	
+0x00001886	8a6402	mov    0x2(%si),%ah	
+0x00001889	80fc19	cmp    $0x19,%ah	
+0x0000188c	750c	jne    0x0000189a	
+0x0000188e	b430	mov    $0x30,%ah	
+0x00001890	8826dff1	mov    %ah,-0xe21	
+0x00001894	bb2bf1	mov    $0xf12b,%bx	
+0x00001897	800f01	orb    $0x1,(%bx)	
+0x0000189a	b90405	mov    $0x504,%cx	
+0x0000189d	f6441380	testb  $0x80,0x13(%si)	
+0x000018a1	7403	je     0x000018a6	
+0x000018a3	b90a0b	mov    $0xb0a,%cx	
+0x000018a6	b204	mov    $0x4,%dl	
+0x000018a8	e8baf7	call   0x00001065	
+0x000018ab	7201	jb     0x000018ae	
+0x000018ad	c3	ret	
+0x000018ae	fe4c02	decb   0x2(%si)	
+0x000018b1	7401	je     0x000018b4	
+0x000018b3	c3	ret	
+0x000018b4	e84ffc	call   0x00001506	
+0x000018b7	bb2bf1	mov    $0xf12b,%bx	
+0x000018ba	8027fe	andb   $0xfe,(%bx)	
+0x000018bd	e974fe	jmp    0x00001734	
+0x000018c0	b312	mov    $0x12,%bl	
+0x000018c2	b217	mov    $0x17,%dl	
+0x000018c4	e8fffa	call   0x000013c6	
+0x000018c7	7309	jae    0x000018d2	
+0x000018c9	800c10	orb    $0x10,(%si)	
+0x000018cc	bbd3ce	mov    $0xced3,%bx	
+0x000018cf	e9c018	jmp    0x00003192	
+0x000018d2	8a26e0f1	mov    -0xe20,%ah	
+0x000018d6	f6c440	test   $0x40,%ah	
+0x000018d9	742b	je     0x00001906	
+0x000018db	b312	mov    $0x12,%bl	
+0x000018dd	b217	mov    $0x17,%dl	
+0x000018df	e8a3fa	call   0x00001385	
+0x000018e2	7322	jae    0x00001906	
+0x000018e4	f60607f108	testb  $0x8,-0xef9	
+0x000018e9	7512	jne    0x000018fd	
+0x000018eb	804c1101	orb    $0x1,0x11(%si)	
+0x000018ef	c6440219	movb   $0x19,0x2(%si)	
+0x000018f3	8a26e2f1	mov    -0xe1e,%ah	
+0x000018f7	326413	xor    0x13(%si),%ah	
+0x000018fa	7d01	jge    0x000018fd	
+0x000018fc	c3	ret	
+0x000018fd	8a6413	mov    0x13(%si),%ah	
+0x00001900	f6dc	neg    %ah

@@ -1,0 +1,85 @@
+// Automatically generated. DO NOT EDIT!
+#ifndef __X86_BASE_H__
+#define __X86_BASE_H__
+
+typedef unsigned char byte;
+typedef unsigned short word;
+
+class X86Base {
+ public:
+  X86Base();
+  virtual ~X86Base();
+
+  virtual void step();
+
+  // Mandatory implementations.
+  virtual byte fetch() = 0;
+  virtual void notImplemented(const char* opcode_name) = 0;
+  virtual void invalidOpcode() = 0;
+
+  virtual word* getReg16Ptr(int reg) = 0;
+  virtual byte* getReg8Ptr(int reg) = 0;
+  virtual word* getMem16Ptr(word segment, word offset) = 0;
+
+ private:
+  // Helpers.
+  word* decodeReg_w();
+  word* decodeRM_w();
+
+  byte* decodeReg_b();
+  byte* decodeRM_b();
+
+  word* decodeRRR_w(int rrr);
+  byte* decodeRRR_b(int rrr);
+
+
+  word fetch16();
+  void fetchModRM();
+
+ protected:
+  enum {
+    R16_AX,
+    R16_BX,
+    R16_CX,
+    R16_DX,
+    R16_CS,
+    R16_DS,
+    R16_SS,
+    R16_ES,
+    R16_BP,
+    R16_SP,
+    R16_DI,
+    R16_SI,
+    R16_COUNT
+  };
+
+  enum {
+    R8_AL,
+    R8_AH,
+    R8_BL,
+    R8_BH,
+    R8_CL,
+    R8_CH,
+    R8_DL,
+    R8_DH,
+    R8_COUNT
+  };
+
+  // Opcode being executed.
+  byte opcode_;
+
+  // ModRM byte.
+  byte modrm_;
+
+  // Segment override.
+
+  // Byte and Word source and destination pointers.
+  byte* barg1;
+  byte* barg2;
+  word* warg1;
+  word* warg2;
+
+  // GENERATED CODE
+};
+
+#endif  // __X86_BASE_H__

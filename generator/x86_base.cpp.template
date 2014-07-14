@@ -1,0 +1,88 @@
+// Automatically generated. DO NOT EDIT!
+#include "x86_base.h"
+
+#include <cassert>
+#include <iostream>
+
+using namespace std;
+
+static const char* BINARY2[4] = { "00", "01", "10", "11" };
+static const char* BINARY3[8] = { "000", "001", "010", "011",
+                                  "100", "101", "110", "111" };
+
+X86Base::X86Base() {
+}
+
+X86Base::~X86Base() {
+}
+
+word X86Base::fetch16() {
+  return fetch() | (fetch() << 8);
+}
+
+void X86Base::fetchModRM() {
+  modrm_ = fetch();
+}
+
+
+word* X86Base::decodeRRR_w(int rrr) {
+  static const int MODRM_REG_16[8] = { R16_AX, R16_CX, R16_DX, R16_BX,
+                                       R16_SP, R16_BP, R16_SI, R16_DI };
+  return getReg16Ptr(MODRM_REG_16[rrr]);
+}
+
+
+byte* X86Base::decodeRRR_b(int rrr) {
+  static const int MODRM_REG_8[8] = { R8_AL, R8_CL, R8_DL, R8_BL,
+                                      R8_AH, R8_CH, R8_DH, R8_BH };
+  return getReg8Ptr(MODRM_REG_8[rrr]);
+}
+
+
+word* X86Base::decodeReg_w() {
+  int reg = (modrm_ & 0b00111000) >> 3;
+  return decodeRRR_w(reg);
+}
+
+
+word* X86Base::decodeRM_w() {
+  int mod = (modrm_ & 0b11000000) >> 6;
+  int rm =  (modrm_ & 0b00000111);
+
+  if (mod == 0b11) {
+    // rm is a general register.
+    return decodeRRR_w(rm);
+  }
+
+  if (mod == 0b00 && rm == 0b110) {
+    int offset = fetch16();
+    int segment_ = 0;
+    return getMem16Ptr(segment_, offset);
+  }
+
+  cerr << "Couldn't decode ModR/M: mod = " << BINARY2[mod] << ", rm = "
+       << BINARY3[rm] << endl;
+  assert(false);
+}
+
+
+byte* X86Base::decodeReg_b() {
+  int reg = (modrm_ & 0b00111000) >> 3;
+  return decodeRRR_b(reg);
+}
+
+
+byte* X86Base::decodeRM_b() {
+  assert(false);
+  return nullptr;
+}
+
+
+void X86Base::step() {
+  opcode_ = fetch();
+  modrm_ = 0;
+  barg1 = barg2 = nullptr;
+  warg1 = warg2 = nullptr;
+
+  // GENERATED CODE
+}

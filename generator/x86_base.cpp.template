@@ -56,7 +56,6 @@ word* X86Base::decodeRM_w() {
 
   if (mod == 0b00 && rm == 0b110) {
     int offset = fetch16();
-    int segment_ = 0;
     return getMem16Ptr(segment_, offset);
   }
 
@@ -78,11 +77,20 @@ byte* X86Base::decodeRM_b() {
 }
 
 
+void X86Base::reset() {
+}
+
 void X86Base::step() {
-  opcode_ = fetch();
   modrm_ = 0;
   barg1 = barg2 = nullptr;
   warg1 = warg2 = nullptr;
+  segment_ = *getReg16Ptr(R16_DS);
 
-  // GENERATED CODE
+  bool is_prefix;
+  do {
+    is_prefix = false;
+    opcode_ = fetch();
+
+    // GENERATED CODE
+  } while (is_prefix);
 }

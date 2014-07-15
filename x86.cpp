@@ -23,6 +23,8 @@ Registers* X86::getRegisters() {
 }
 
 void X86::reset() {
+  X86Base::reset();
+
   regs_.cs = 0;
   regs_.ip = 0x100;
 

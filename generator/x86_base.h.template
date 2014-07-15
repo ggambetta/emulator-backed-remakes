@@ -10,6 +10,7 @@ class X86Base {
   X86Base();
   virtual ~X86Base();
 
+  virtual void reset();
   virtual void step();
 
   // Mandatory implementations.
@@ -68,10 +69,11 @@ class X86Base {
   // Opcode being executed.
   byte opcode_;
 
+  // Segment (default or overriden).
+  word segment_;
+
   // ModRM byte.
   byte modrm_;
-
-  // Segment override.
 
   // Byte and Word source and destination pointers.
   byte* barg1;

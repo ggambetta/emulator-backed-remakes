@@ -38,7 +38,7 @@ class X86 : public X86Base {
 
   Registers* getRegisters();
 
-  void reset();
+  virtual void reset();
   virtual void step();
 
  public:
@@ -57,6 +57,7 @@ class X86 : public X86Base {
 
   virtual word* getReg16Ptr(int reg);
   virtual byte* getReg8Ptr(int reg);
+
   virtual word* getMem16Ptr(word segment, word offset);
 
   //

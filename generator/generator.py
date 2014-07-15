@@ -7,6 +7,13 @@ import sys
 REGS_16 = ["AX", "BX", "CX", "DX", "CS", "DS", "SS", "ES", "BP", "SP", "DI", "SI"]
 REGS_8 = ["AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH"]
 
+SEGMENT_OVERRIDE_OPCODES = ["ES:", "CS:", "SS:", "DS:"]
+
+PREFIX_OPCODES = SEGMENT_OVERRIDE_OPCODES
+NOP_OPCODES = ["NOP"] 
+
+NON_MANDATORY_OPCODES = PREFIX_OPCODES + NOP_OPCODES
+
 
 CPP_OUT = "x86_base.cpp"
 H_OUT = "x86_base.h"
@@ -100,67 +107,86 @@ for opcode in opcodes:
 #
 # Generate dispatcher code and build list of method names.
 #
+class Method:
+  def __init__(self):
+    self.cpp_name = None
+    self.name = None
+
+
 DISPATCHER = "if (false) {\n"
-methods = [] 
+methods = {} 
 
 
 for opcode in opcodes:
   # Compute name of implementation method.
   # If there's only one word/byte variant of the opcode, don't add the suffix to the name.
-  impl_name = opcode.name.upper()
+  name = opcode.name.upper()
+  if len(method_variants[name]) > 1:
+    name += opcode.getWordSuffix()
 
-  if len(method_variants[impl_name]) > 1:
-    impl_name += opcode.getWordSuffix()
+  if methods.has_key(name):
+    method = methods[name]
+  else:
+    method = Method()
+    method.name = name
+    method.cpp_name = name.replace(":", "_")
+    methods[name] = method
 
-  impl_name = impl_name.replace(":", "_")
-  methods.append(impl_name)
+  #methods.append(cpp_name)
 
-  # Generate code to prepare the arguments.
   desc = opcode.name + " " + ", ".join(opcode.args)
   DISPATCHER += "} else if (opcode_ == 0x%02X) {  // %s\n" % (opcode.opcode, desc.strip())
 
-  fetched_modrm = False
+  if method.name in PREFIX_OPCODES:
+    DISPATCHER += "  is_prefix = true;\n"
 
-  suffixes = ["arg1", "arg2"]
-  for arg in opcode.args:
-    suffix = suffixes.pop(0)
-    fetch_arg_code = None
+  if method.name in SEGMENT_OVERRIDE_OPCODES:
+    assert len(method.name) == 3
+    assert method.name[2] == ":"
+    reg = method.name[:2]
+    DISPATCHER += "  segment_ = *getReg16Ptr(R16_%s);\n" % reg
 
-    #DISPATCHER += "  // %s\n" % arg
+  else:
+    # Generate code to prepare the arguments.
+    fetched_modrm = False
+    suffixes = ["arg1", "arg2"]
+    for arg in opcode.args:
+      suffix = suffixes.pop(0)
+      fetch_arg_code = None
 
-    # eAX => AX
-    if arg[0] == "e" and arg[1:] in REGS_16:
-      arg = arg[1:]
+      # eAX => AX
+      if arg[0] == "e" and arg[1:] in REGS_16:
+        arg = arg[1:]
 
-    need_modrm = False
+      need_modrm = False
 
-    if arg in REGS_16:
-      fetch_arg_code = "w%s = getReg16Ptr(R16_%s);\n" % (suffix, arg)
-    elif arg in REGS_8:
-      fetch_arg_code = "b%s = getReg8Ptr(R8_%s);\n" % (suffix, arg)
-    elif arg in ["Gv"]:
-      fetch_arg_code = "w%s = decodeReg_w();\n" % (suffix)
-      need_modrm = True
-    elif arg in ["Ev"]:
-      fetch_arg_code = "w%s = decodeRM_w();\n" % (suffix)
-      need_modrm = True
-    elif arg in ["Gb"]:
-      fetch_arg_code = "b%s = decodeReg_b();\n" % (suffix)
-      need_modrm = True
-    elif arg in ["Eb"]:
-      fetch_arg_code = "b%s = decodeRM_b();\n" % (suffix)
-      need_modrm = True
+      if arg in REGS_16:
+        fetch_arg_code = "w%s = getReg16Ptr(R16_%s);\n" % (suffix, arg)
+      elif arg in REGS_8:
+        fetch_arg_code = "b%s = getReg8Ptr(R8_%s);\n" % (suffix, arg)
+      elif arg in ["Gv"]:
+        fetch_arg_code = "w%s = decodeReg_w();\n" % (suffix)
+        need_modrm = True
+      elif arg in ["Ev"]:
+        fetch_arg_code = "w%s = decodeRM_w();\n" % (suffix)
+        need_modrm = True
+      elif arg in ["Gb"]:
+        fetch_arg_code = "b%s = decodeReg_b();\n" % (suffix)
+        need_modrm = True
+      elif arg in ["Eb"]:
+        fetch_arg_code = "b%s = decodeRM_b();\n" % (suffix)
+        need_modrm = True
 
-    if need_modrm and not fetched_modrm:
-      fetched_modrm = True
-      DISPATCHER += "  fetchModRM();\n"
+      if need_modrm and not fetched_modrm:
+        fetched_modrm = True
+        DISPATCHER += "  fetchModRM();\n"
 
-    if fetch_arg_code:
-      DISPATCHER += "  " + fetch_arg_code
+      if fetch_arg_code:
+        DISPATCHER += "  " + fetch_arg_code
 
 
   # Call the custom implementation.
-  DISPATCHER += "  %s();\n" % impl_name
+  DISPATCHER += "  %s();\n" % method.cpp_name
  
 DISPATCHER += """} else { 
   invalidOpcode();
@@ -169,10 +195,20 @@ DISPATCHER += """} else {
 cpp_code = insertCode(file(CPP_TEMPLATE, "rb").read(), DISPATCHER, GENERATED_CODE_PLACEHOLDER)
 file(CPP_OUT, "wb").write(cpp_code)
 
-max_name_len = max([len(m) for m in methods])
+declarations = []
+for mname in sorted(methods.keys()):
+  method = methods[mname]
 
-methods = sorted(list(set(methods)))
-METHODS = "\n".join(["virtual void %-6s() { notImplemented(\"%s\"); }" % (method, method) for method in methods])
+  decl = "virtual void %-6s() {" % method.cpp_name
+
+  if method.name not in NON_MANDATORY_OPCODES:
+    decl += " notImplemented(\"%s\"); " % method.name
+ 
+  decl += "}" 
+
+  declarations.append(decl)
+
+METHODS = "\n".join(declarations)
 
 h_code = insertCode(file(H_TEMPLATE, "rb").read(), METHODS, GENERATED_CODE_PLACEHOLDER)
 file(H_OUT, "wb").write(h_code)

@@ -28,8 +28,15 @@ void X86Base::addConstArgDesc(const char* desc) {
 
 
 void X86Base::addArgDesc(const string& desc) {
-  temp_arg_desc_ = desc;
-  addConstArgDesc(temp_arg_desc_.data());
+  if (arg1_desc_ == nullptr) {
+    temp_arg_desc_1_ = desc;
+    addConstArgDesc(temp_arg_desc_1_.data());
+  } else if (arg2_desc_ == nullptr) {
+    temp_arg_desc_2_ = desc;
+    addConstArgDesc(temp_arg_desc_2_.data());
+  } else {
+    assert(false);
+  }
 }
 
 
@@ -97,15 +104,62 @@ word* X86Base::decodeRM_w() {
     return decodeRRR_w(rm);
   }
 
-  if (mod == 0b00 && rm == 0b110) {
-    int offset = fetch16();
-    addArgDesc(string("[") + segment_desc_ + hex16ToString(offset) + "h]");
-    return getMem16Ptr(segment_, offset);
+  word displacement = 0;
+  if (mod == 0b00) {
+    if (rm == 0b110) {
+      displacement = fetch16();
+    } else {
+      displacement = 0;
+    }
+  } else if (mod == 0b01) {
+    displacement = fetch();
+  } else if (mod == 0b10) {
+    displacement = fetch16();
   }
 
-  cerr << "Couldn't decode ModR/M: mod = " << BINARY2[mod] << ", rm = "
-       << BINARY3[rm] << endl;
-  assert(false);
+  string desc;
+  word base = 0;
+  if (rm == 0b000) {
+    desc = "BX + SI";
+    base = *getReg16Ptr(R16_BX) + *getReg16Ptr(R16_SI);
+  } else if (rm == 0b001) {
+    desc = "BX + DI";
+    base = *getReg16Ptr(R16_BX) + *getReg16Ptr(R16_DI);
+  } else if (rm == 0b010) {
+    desc = "BP + SI";
+    base = *getReg16Ptr(R16_BP) + *getReg16Ptr(R16_SI);
+  } else if (rm == 0b011) {
+    desc = "BP + DI";
+    base = *getReg16Ptr(R16_BP) + *getReg16Ptr(R16_DI);
+  } else if (rm == 0b100) {
+    desc = "SI";
+    base = *getReg16Ptr(R16_SI);
+  } else if (rm == 0b101) {
+    desc = "DI";
+    base = *getReg16Ptr(R16_DI);
+  } else if (rm == 0b110) {
+    if (mod != 0b00) {
+      desc = "BP";
+      base = *getReg16Ptr(R16_BP);
+    }
+  } else if (rm == 0b111) {
+    desc = "BX";
+    base = *getReg16Ptr(R16_BX);
+  }
+
+  if (mod == 0b00 && rm == 0b110) {
+    desc += hex16ToString(displacement) + "h";
+  } else {
+    if (desc != "" && displacement != 0) {
+      desc += " + ";
+    }
+    if (displacement != 0) {
+      desc += hex16ToString(displacement) + "h";
+    }
+  }
+
+  addArgDesc(string("[") + segment_desc_ + desc + "]");
+  return getMem16Ptr(segment_, displacement);
 }
 
 

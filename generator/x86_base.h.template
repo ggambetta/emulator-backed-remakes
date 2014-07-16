@@ -80,7 +80,8 @@ class X86Base {
   const char* arg2_desc_;
 
   // Temp storage for non-const argument descriptions.
-  std::string temp_arg_desc_;
+  std::string temp_arg_desc_1_;
+  std::string temp_arg_desc_2_;
 
  private:
   // Helpers.

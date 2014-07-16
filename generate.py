@@ -163,7 +163,7 @@ for opcode in opcodes:
     suffixes = ["arg1", "arg2"]
     for arg in opcode.args:
       suffix = suffixes.pop(0)
-      fetch_arg_code = None
+      fetch_arg_code = []
 
       # eAX => AX, etc.
       if arg[0] == "e" and arg[1:] in REGS_16:
@@ -172,33 +172,35 @@ for opcode in opcodes:
       need_modrm = False
 
       if arg in REGS_16:
-        fetch_arg_code = "w%s = getReg16Ptr(R16_%s);\n" % (suffix, arg)
+        fetch_arg_code.append("w%s = getReg16Ptr(R16_%s);" % (suffix, arg))
+        fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
       elif arg in REGS_8:
-        fetch_arg_code = "b%s = getReg8Ptr(R8_%s);\n" % (suffix, arg)
+        fetch_arg_code.append("b%s = getReg8Ptr(R8_%s);" % (suffix, arg))
+        fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
       elif arg in ["Gv"]:
-        fetch_arg_code = "w%s = decodeReg_w();\n" % (suffix)
+        fetch_arg_code.append("w%s = decodeReg_w();" % (suffix))
         need_modrm = True
       elif arg in ["Ev", "Ew"]:
-        fetch_arg_code = "w%s = decodeRM_w();\n" % (suffix)
+        fetch_arg_code.append("w%s = decodeRM_w();" % (suffix))
         need_modrm = True
       elif arg in ["Gb"]:
-        fetch_arg_code = "b%s = decodeReg_b();\n" % (suffix)
+        fetch_arg_code.append("b%s = decodeReg_b();" % (suffix))
         need_modrm = True
       elif arg in ["Eb"]:
-        fetch_arg_code = "b%s = decodeRM_b();\n" % (suffix)
+        fetch_arg_code.append("b%s = decodeRM_b();" % (suffix))
         need_modrm = True
       elif arg in ["Sw"]:
-        fetch_arg_code = "w%s = decodeS();\n" % (suffix)
+        fetch_arg_code.append("w%s = decodeS();" % (suffix))
         need_modrm = True
       elif arg in ["Iv", "Iw"]:
-        fetch_arg_code = "w%s = decodeI_w();\n" % (suffix)
+        fetch_arg_code.append("w%s = decodeI_w();" % (suffix))
 
       if need_modrm and not fetched_modrm:
         fetched_modrm = True
-        DISPATCHER += "  fetchModRM();\n"
+        fetch_arg_code.insert(0, "fetchModRM();")
 
-      if fetch_arg_code:
-        DISPATCHER += "  " + fetch_arg_code
+      for line in fetch_arg_code:
+        DISPATCHER += "  " + line + "\n"
 
 
   # Call the custom implementation.

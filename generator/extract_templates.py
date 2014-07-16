@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
 
-CPP_OUT = "x86_base.cpp"
-H_OUT = "x86_base.h"
-
 GENERATED_CODE_PLACEHOLDER = "// GENERATED CODE"
 GENERATED_CODE_BEGIN = "// BEGIN GENERATED CODE"
 GENERATED_CODE_END = "// END GENERATED CODE"
 
-CPP_TEMPLATE = CPP_OUT + ".template"
-H_TEMPLATE = H_OUT + ".template"
+CPP_OUT = "../x86_base.cpp"
+H_OUT = "../x86_base.h"
+
+CPP_TEMPLATE = "x86_base.cpp.template"
+H_TEMPLATE = "x86_base.h.template"
 
 for src, dst in [(CPP_OUT, CPP_TEMPLATE), (H_OUT, H_TEMPLATE)]:
   out = []

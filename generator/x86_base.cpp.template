@@ -1,20 +1,12 @@
 // Automatically generated. DO NOT EDIT!
 #include "x86_base.h"
+#include "helpers.h"
 
 #include <cassert>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
-
-static const char* BINARY2[4] = { "00", "01", "10", "11" };
-static const char* BINARY3[8] = {
-    "000", "001", "010", "011", "100", "101", "110", "111" };
-
-static const char* REG16_DESC[12] = {
-    "AX", "BX", "CX", "DX", "CS", "DS", "SS", "ES", "BP", "SP", "DI", "SI" };
-
-static const char* REG8_DESC[8] = {
-    "AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH" };
 
 
 X86Base::X86Base() {
@@ -33,6 +25,13 @@ void X86Base::addConstArgDesc(const char* desc) {
     assert(false);
   }
 }
+
+
+void X86Base::addArgDesc(const string& desc) {
+  temp_arg_desc_ = desc;
+  addConstArgDesc(temp_arg_desc_.data());
+}
+
 
 word X86Base::fetch16() {
   byte lo = fetch();
@@ -68,6 +67,7 @@ byte* X86Base::decodeRRR_b(int rrr) {
 
 word* X86Base::decodeI_w() {
   immediate_ = fetch16();
+  addArgDesc(hex16ToString(immediate_) + "h");
   return &immediate_;
 }
 
@@ -99,6 +99,7 @@ word* X86Base::decodeRM_w() {
 
   if (mod == 0b00 && rm == 0b110) {
     int offset = fetch16();
+    addArgDesc(string("[") + segment_desc_ + hex16ToString(offset) + "h]");
     return getMem16Ptr(segment_, offset);
   }
 

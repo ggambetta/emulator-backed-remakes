@@ -11,31 +11,6 @@ using namespace std;
 //
 // Logging helpers.
 //
-struct _Hex8 {} Hex8;
-
-ostream& operator<< (ostream& os, const _Hex8&) {
-  os << hex << setw(2) << setfill('0'); 
-  return os;
-}
-
-
-struct _Hex16 {} Hex16;
-
-ostream& operator<< (ostream& os, const _Hex16&) {
-  os << hex << setw(4) << setfill('0'); 
-  return os;
-}
-
-
-struct Addr {
-  Addr(word seg, word off) : seg_(seg), off_(off) {}
-  word seg_, off_;
-};
-
-ostream& operator<< (ostream& os, const Addr& addr) {
-  os << "[" << Hex16 << addr.seg_ << ":" << Hex16 << addr.off_ << "]";
-  return os;
-}
 
 
 #define CHECK(COND) check(COND, #COND, __FILE__, __LINE__)

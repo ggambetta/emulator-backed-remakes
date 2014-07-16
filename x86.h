@@ -2,7 +2,7 @@
 #define __X86_H__
 
 #include "x86_base.h"
-#include "types.h"
+#include "helpers.h"
 
 class Memory;
 

@@ -79,6 +79,9 @@ class X86Base {
   word* warg2;
   const char* arg2_desc_;
 
+  // Temp storage for non-const argument descriptions.
+  std::string temp_arg_desc_;
+
  private:
   // Helpers.
   word* decodeReg_w();
@@ -98,6 +101,7 @@ class X86Base {
   void fetchModRM();
 
   void addConstArgDesc(const char* desc);
+  void addArgDesc(const std::string& desc);
 
  protected:
   // GENERATED CODE

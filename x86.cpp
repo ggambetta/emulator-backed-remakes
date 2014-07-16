@@ -143,6 +143,16 @@ void X86::setDebugLevel(int debug_level) {
 }
 
 
+void X86::clearFlag(word mask) {
+  regs_.flags &= ~mask;
+}
+
+
+void X86::setFlag(word mask) {
+  regs_.flags |= mask;
+}
+
+
 void X86::PUSH() {
   CHECK_WARG1();
 
@@ -183,3 +193,7 @@ void X86::XCHG_w() {
   *warg2 = tmp;
 }
 
+
+void X86::CLD() {
+  clearFlag(F_DF);
+}

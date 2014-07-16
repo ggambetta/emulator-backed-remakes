@@ -154,3 +154,15 @@ TEST_F(X86Test, XCHG) {
   EXPECT_EQ(0x1234, regs_->bx);
   EXPECT_EQ(0x5678, regs_->si);
 }
+
+
+TEST_F(X86Test, CLD) {
+  regs_->flags = 0xFFFF;
+
+  int off = kOffset;
+  mem_[off++] = 0xFC;  // CLD
+
+  x86_->step();
+
+  EXPECT_EQ(0xFFFF ^ X86::F_DF, regs_->flags);
+}

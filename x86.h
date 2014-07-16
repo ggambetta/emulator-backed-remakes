@@ -26,6 +26,7 @@ struct Registers {
   };
 
   word ip;
+  word flags;
 };
 
 
@@ -54,6 +55,9 @@ class X86 : public X86Base {
   void decrementAddress(word& segment, word& offset);
  
   void check(bool cond, const char* text, const char* file, int line);
+
+  void clearFlag(word mask);
+  void setFlag(word mask);
  
   //
   // X86Base overrides.
@@ -71,6 +75,7 @@ class X86 : public X86Base {
   // Opcode implementations.
   //
   virtual void ADD_w();
+  virtual void CLD();
   virtual void MOV_w();
   virtual void PUSH();
   virtual void SUB_w();

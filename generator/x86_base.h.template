@@ -27,7 +27,7 @@ class X86Base {
  protected:
   std::string getOpcodeDesc() const;
 
- protected:
+ public:
   enum {
     R16_AX,
     R16_BX,
@@ -56,6 +56,19 @@ class X86Base {
     R8_COUNT
   };
 
+  enum {
+    F_CF = (1 <<  0),
+    F_PF = (1 <<  2),
+    F_AF = (1 <<  4),
+    F_ZF = (1 <<  6),
+    F_SF = (1 <<  7),
+    F_TF = (1 <<  8),
+    F_IF = (1 <<  9),
+    F_DF = (1 << 10),
+    F_OF = (1 << 11),
+  };
+
+ protected:
   // Opcode being executed.
   byte opcode_;
   const char* opcode_desc_;
@@ -100,6 +113,8 @@ class X86Base {
 
   word fetch16();
   void fetchModRM();
+
+  word signExtend(byte val);
 
   void addConstArgDesc(const char* desc);
   void addArgDesc(const std::string& desc);

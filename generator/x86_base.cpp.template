@@ -16,8 +16,21 @@ X86Base::X86Base() {
 X86Base::~X86Base() {
 }
 
+
+void X86Base::addConstArgDesc(const char* desc) {
+  if (arg1_desc_ == nullptr) {
+    arg1_desc_ = desc;
+  } else if (arg2_desc_ == nullptr) {
+    arg2_desc_ = desc;
+  } else {
+    assert(false);
+  }
+}
+
 word X86Base::fetch16() {
-  return fetch() | (fetch() << 8);
+  byte lo = fetch();
+  byte hi = fetch();
+  return lo | (hi << 8);
 }
 
 void X86Base::fetchModRM() {
@@ -28,6 +41,7 @@ void X86Base::fetchModRM() {
 word* X86Base::decodeRRR_w(int rrr) {
   static const int MODRM_REG_16[8] = { R16_AX, R16_CX, R16_DX, R16_BX,
                                        R16_SP, R16_BP, R16_SI, R16_DI };
+  assert(rrr < 8);
   return getReg16Ptr(MODRM_REG_16[rrr]);
 }
 
@@ -35,13 +49,26 @@ word* X86Base::decodeRRR_w(int rrr) {
 byte* X86Base::decodeRRR_b(int rrr) {
   static const int MODRM_REG_8[8] = { R8_AL, R8_CL, R8_DL, R8_BL,
                                       R8_AH, R8_CH, R8_DH, R8_BH };
+  assert(rrr < 8);
   return getReg8Ptr(MODRM_REG_8[rrr]);
 }
 
+word* X86Base::decodeI_w() {
+  immediate_ = fetch16();
+  return &immediate_;
+}
 
 word* X86Base::decodeReg_w() {
   int reg = (modrm_ & 0b00111000) >> 3;
   return decodeRRR_w(reg);
+}
+
+
+word* X86Base::decodeS() {
+  static const int MODRM_SEG[4] = { R16_ES, R16_CS, R16_SS, R16_DS };
+  int seg = (modrm_ & 0b00111000) >> 3;
+  assert(seg < 4);
+  return getReg16Ptr(MODRM_SEG[seg]);
 }
 
 
@@ -80,11 +107,33 @@ byte* X86Base::decodeRM_b() {
 void X86Base::reset() {
 }
 
+
+string X86Base::getOpcodeDesc() const {
+  string desc;
+
+  desc += opcode_desc_;
+  desc += " ";
+  if (arg1_desc_) {
+    desc += arg1_desc_;
+    if (arg2_desc_) {
+      desc += ", ";
+      desc += arg2_desc_;
+    }
+  }
+
+  return desc;
+}
+
+
 void X86Base::step() {
   modrm_ = 0;
   barg1 = barg2 = nullptr;
   warg1 = warg2 = nullptr;
+  arg1_desc_ = nullptr;
+  arg2_desc_ = nullptr;
   segment_ = *getReg16Ptr(R16_DS);
+  opcode_desc_ = "";
+  segment_desc_ = "";
 
   bool is_prefix;
   do {

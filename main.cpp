@@ -19,6 +19,7 @@ class Runner {
   Runner()
       : mem_(kMemSize), x86_(&mem_) {
     regs_ = x86_.getRegisters();
+    x86_.setDebugLevel(0);
   }
 
   void load(const string& filename) {
@@ -36,6 +37,8 @@ class Runner {
 
     regs_->ss = kMemSize >> 4;
     regs_->sp = 0;
+    
+    cout << "File successfully loaded." << endl;
   }
 
   void run() {

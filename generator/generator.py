@@ -3,7 +3,7 @@
 import collections
 import sys
 
-# Keep in sync with enum in x86_base.h
+# Keep in sync with the enums in x86_base.h
 REGS_16 = ["AX", "BX", "CX", "DX", "CS", "DS", "SS", "ES", "BP", "SP", "DI", "SI"]
 REGS_8 = ["AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH"]
 
@@ -97,7 +97,7 @@ for line in file("8086_table.txt", "rb"):
 
 
 #
-# Build list of method names.
+# Build list of method variants (word/byte/immediate/etc).
 #
 method_variants = collections.defaultdict(set)
 for opcode in opcodes:
@@ -119,7 +119,8 @@ methods = {}
 
 for opcode in opcodes:
   # Compute name of implementation method.
-  # If there's only one word/byte variant of the opcode, don't add the suffix to the name.
+  # If there's only one word/byte variant of the opcode, don't add the suffix
+  # to the name.
   name = opcode.name.upper()
   if len(method_variants[name]) > 1:
     name += opcode.getWordSuffix()
@@ -132,29 +133,34 @@ for opcode in opcodes:
     method.cpp_name = name.replace(":", "_")
     methods[name] = method
 
-  #methods.append(cpp_name)
-
+  
+  # Generate switch.
   desc = opcode.name + " " + ", ".join(opcode.args)
-  DISPATCHER += "} else if (opcode_ == 0x%02X) {  // %s\n" % (opcode.opcode, desc.strip())
+  DISPATCHER += "} else if (opcode_ == 0x%02X) {  // %s\n" % (opcode.opcode,
+                                                              desc.strip())
+
+  DISPATCHER += "  opcode_desc_ = \"%s\";\n" % opcode.name.upper()
 
   if method.name in PREFIX_OPCODES:
     DISPATCHER += "  is_prefix = true;\n"
 
   if method.name in SEGMENT_OVERRIDE_OPCODES:
+    # Segment override.
     assert len(method.name) == 3
     assert method.name[2] == ":"
     reg = method.name[:2]
     DISPATCHER += "  segment_ = *getReg16Ptr(R16_%s);\n" % reg
+    DISPATCHER += "  segment_desc_ = \"%s\";\n" % method.name
 
   else:
-    # Generate code to prepare the arguments.
+    # General case opcode. Generate code to prepare the arguments.
     fetched_modrm = False
     suffixes = ["arg1", "arg2"]
     for arg in opcode.args:
       suffix = suffixes.pop(0)
       fetch_arg_code = None
 
-      # eAX => AX
+      # eAX => AX, etc.
       if arg[0] == "e" and arg[1:] in REGS_16:
         arg = arg[1:]
 
@@ -167,7 +173,7 @@ for opcode in opcodes:
       elif arg in ["Gv"]:
         fetch_arg_code = "w%s = decodeReg_w();\n" % (suffix)
         need_modrm = True
-      elif arg in ["Ev"]:
+      elif arg in ["Ev", "Ew"]:
         fetch_arg_code = "w%s = decodeRM_w();\n" % (suffix)
         need_modrm = True
       elif arg in ["Gb"]:
@@ -176,6 +182,11 @@ for opcode in opcodes:
       elif arg in ["Eb"]:
         fetch_arg_code = "b%s = decodeRM_b();\n" % (suffix)
         need_modrm = True
+      elif arg in ["Sw"]:
+        fetch_arg_code = "w%s = decodeS();\n" % (suffix)
+        need_modrm = True
+      elif arg in ["Iv", "Iw"]:
+        fetch_arg_code = "w%s = decodeI_w();\n" % (suffix)
 
       if need_modrm and not fetched_modrm:
         fetched_modrm = True
@@ -192,18 +203,24 @@ DISPATCHER += """} else {
   invalidOpcode();
 }"""
 
+
+#
+# Generate the cpp file.
+#
 cpp_code = insertCode(file(CPP_TEMPLATE, "rb").read(), DISPATCHER, GENERATED_CODE_PLACEHOLDER)
 file(CPP_OUT, "wb").write(cpp_code)
 
+
+#
+# Generate the header file.
+#
 declarations = []
 for mname in sorted(methods.keys()):
   method = methods[mname]
 
   decl = "virtual void %-6s() {" % method.cpp_name
-
   if method.name not in NON_MANDATORY_OPCODES:
     decl += " notImplemented(\"%s\"); " % method.name
- 
   decl += "}" 
 
   declarations.append(decl)

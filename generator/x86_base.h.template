@@ -2,6 +2,8 @@
 #ifndef __X86_BASE_H__
 #define __X86_BASE_H__
 
+#include <string>
+
 typedef unsigned char byte;
 typedef unsigned short word;
 
@@ -22,20 +24,8 @@ class X86Base {
   virtual byte* getReg8Ptr(int reg) = 0;
   virtual word* getMem16Ptr(word segment, word offset) = 0;
 
- private:
-  // Helpers.
-  word* decodeReg_w();
-  word* decodeRM_w();
-
-  byte* decodeReg_b();
-  byte* decodeRM_b();
-
-  word* decodeRRR_w(int rrr);
-  byte* decodeRRR_b(int rrr);
-
-
-  word fetch16();
-  void fetchModRM();
+ protected:
+  std::string getOpcodeDesc() const;
 
  protected:
   enum {
@@ -68,19 +58,48 @@ class X86Base {
 
   // Opcode being executed.
   byte opcode_;
+  const char* opcode_desc_;
 
   // Segment (default or overriden).
   word segment_;
+  const char* segment_desc_;
 
   // ModRM byte.
   byte modrm_;
 
+  // Placeholder for immediate or constant.
+  word immediate_;
+
   // Byte and Word source and destination pointers.
   byte* barg1;
-  byte* barg2;
   word* warg1;
-  word* warg2;
+  const char* arg1_desc_;
 
+  byte* barg2;
+  word* warg2;
+  const char* arg2_desc_;
+
+ private:
+  // Helpers.
+  word* decodeReg_w();
+  word* decodeRM_w();
+
+  byte* decodeReg_b();
+  byte* decodeRM_b();
+
+  word* decodeI_w();
+
+  word* decodeS();
+
+  word* decodeRRR_w(int rrr);
+  byte* decodeRRR_b(int rrr);
+
+  word fetch16();
+  void fetchModRM();
+
+  void addConstArgDesc(const char* desc);
+
+ protected:
   // GENERATED CODE
 };
 

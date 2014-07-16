@@ -42,11 +42,18 @@ class X86 : public X86Base {
   virtual void step();
 
  public:
+
+  void setDebugLevel(int level);
+
   int getCS_IP() const;
   int getSS_SP() const;
+ 
   int getLinearAddress(word segment, word offset) const;
+ 
   void incrementAddress(word& segment, word& offset);
   void decrementAddress(word& segment, word& offset);
+ 
+  void check(bool cond, const char* text, const char* file, int line);
  
   //
   // X86Base overrides.
@@ -63,6 +70,7 @@ class X86 : public X86Base {
   //
   // Opcode implementations.
   //
+  virtual void ADD_w();
   virtual void MOV_w();
   virtual void PUSH();
   virtual void SUB_w();
@@ -72,6 +80,8 @@ class X86 : public X86Base {
  
   Registers regs_;
   word current_cs_, current_ip_;
+
+  int debug_level_;
 };
 
 #endif  // __X86_H__

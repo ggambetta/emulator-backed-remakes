@@ -8,12 +8,48 @@
 #include <sstream>
 using namespace std;
 
+//
+// Logging helpers.
+//
+struct _Hex8 {} Hex8;
+
+ostream& operator<< (ostream& os, const _Hex8&) {
+  os << hex << setw(2) << setfill('0'); 
+  return os;
+}
+
+
+struct _Hex16 {} Hex16;
+
+ostream& operator<< (ostream& os, const _Hex16&) {
+  os << hex << setw(4) << setfill('0'); 
+  return os;
+}
+
+
+struct Addr {
+  Addr(word seg, word off) : seg_(seg), off_(off) {}
+  word seg_, off_;
+};
+
+ostream& operator<< (ostream& os, const Addr& addr) {
+  os << "[" << Hex16 << addr.seg_ << ":" << Hex16 << addr.off_ << "]";
+  return os;
+}
+
+
+#define CHECK(COND) check(COND, #COND, __FILE__, __LINE__)
+
+#define CHECK_WARG1() CHECK(warg1 != nullptr);
+#define CHECK_WARG2() CHECK(warg2 != nullptr);
+#define CHECK_WARGS() CHECK_WARG1(); CHECK_WARG2();
+
 
 //
 // x86 CPU.
 //
 X86::X86(Memory* mem)
-  : mem_(mem) {
+  : mem_(mem), debug_level_(0) {
   reset();
 }
 
@@ -35,6 +71,9 @@ void X86::reset() {
 
 byte X86::fetch() {
   byte val = mem_->read(getCS_IP());
+  if (debug_level_ == 2) {
+    clog << Addr(current_cs_, current_ip_) << " " << Hex8 << (int)val << endl;
+  }
   incrementAddress(regs_.cs, regs_.ip);
   return val;
 }
@@ -81,7 +120,7 @@ void X86::notImplemented(const char* opcode_name) {
 }
 
 void X86::invalidOpcode() {
-  cerr << "Invalid opcode 0x" << hex << setw(2) << setfill('0') << opcode_ << endl;
+  cerr << "Invalid opcode 0x" << Hex8 << (int)opcode_ << endl;
   assert(false);
 }
 
@@ -89,6 +128,8 @@ void X86::step() {
   current_cs_ = regs_.cs;
   current_ip_ = regs_.ip;
   X86Base::step();
+
+  clog << Addr(current_cs_, current_ip_) << " " << getOpcodeDesc() << endl;
 }
 
 
@@ -111,7 +152,20 @@ word* X86::getMem16Ptr(word segment, word offset) {
 }
 
 
+void X86::check(bool cond, const char* text, const char* file, int line) {
+  if (cond) {
+    return;
+  }
+  cerr << "Check failed at " << file << ":" << line << ": " << text << endl;
+  cerr << Addr(current_cs_, current_ip_) << " "
+       << opcode_desc_ << " (0x" << Hex8 << (int)opcode_ << ")" << endl;
+  terminate();
+}
+
+
 void X86::PUSH() {
+  CHECK_WARG1();
+
   decrementAddress(regs_.ss, regs_.sp);
   byte* dst = mem_->getPointer(getSS_SP());
   *dst = ((*warg1) >> 8) & 0xFF;
@@ -122,13 +176,26 @@ void X86::PUSH() {
 }
 
 
+void X86::ADD_w() {
+  CHECK_WARGS();
+  *warg1 += *warg2;
+  // TODO: Adjust flags
+}
+
+
 void X86::SUB_w() {
+  CHECK_WARGS();
   *warg1 -= *warg2;
   // TODO: Adjust flags
 }
 
 
 void X86::MOV_w() {
+  CHECK_WARGS();
   *warg1 = *warg2;
 }
 
+
+void X86::setDebugLevel(int debug_level) {
+  debug_level_ = debug_level;
+}

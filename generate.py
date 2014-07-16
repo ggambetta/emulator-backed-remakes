@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import collections
+import os.path
 import sys
 
 # Keep in sync with the enums in x86_base.h
@@ -8,22 +9,26 @@ REGS_16 = ["AX", "BX", "CX", "DX", "CS", "DS", "SS", "ES", "BP", "SP", "DI", "SI
 REGS_8 = ["AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH"]
 
 SEGMENT_OVERRIDE_OPCODES = ["ES:", "CS:", "SS:", "DS:"]
-
 PREFIX_OPCODES = SEGMENT_OVERRIDE_OPCODES
 NOP_OPCODES = ["NOP"] 
-
 NON_MANDATORY_OPCODES = PREFIX_OPCODES + NOP_OPCODES
 
 
+# Input and output filenames.
 CPP_OUT = "x86_base.cpp"
 H_OUT = "x86_base.h"
+GENERATOR_PATH = "generator"
 
+CPP_TEMPLATE = os.path.join(GENERATOR_PATH, CPP_OUT + ".template")
+H_TEMPLATE = os.path.join(GENERATOR_PATH, H_OUT + ".template")
+OPCODES_TABLE_FILENAME = os.path.join(GENERATOR_PATH, "8086_table.txt")
+
+
+# Generated code markers.
 GENERATED_CODE_PLACEHOLDER = "// GENERATED CODE"
 GENERATED_CODE_BEGIN = "// BEGIN GENERATED CODE"
 GENERATED_CODE_END = "// END GENERATED CODE"
 
-CPP_TEMPLATE = CPP_OUT + ".template"
-H_TEMPLATE = H_OUT + ".template"
 
 class Opcode:
   def __init__(self):
@@ -72,7 +77,7 @@ def insertCode(template, code, marker):
 # Filter and parse the opcodes table.
 #
 opcodes = []
-for line in file("8086_table.txt", "rb"):
+for line in file(OPCODES_TABLE_FILENAME, "rb"):
   tokens = line.strip().split()
 
   if not tokens:

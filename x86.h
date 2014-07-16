@@ -1,7 +1,7 @@
 #ifndef __X86_H__
 #define __X86_H__
 
-#include "generator/x86_base.h"
+#include "x86_base.h"
 #include "types.h"
 
 class Memory;

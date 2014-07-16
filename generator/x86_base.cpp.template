@@ -7,8 +7,15 @@
 using namespace std;
 
 static const char* BINARY2[4] = { "00", "01", "10", "11" };
-static const char* BINARY3[8] = { "000", "001", "010", "011",
-                                  "100", "101", "110", "111" };
+static const char* BINARY3[8] = {
+    "000", "001", "010", "011", "100", "101", "110", "111" };
+
+static const char* REG16_DESC[12] = {
+    "AX", "BX", "CX", "DX", "CS", "DS", "SS", "ES", "BP", "SP", "DI", "SI" };
+
+static const char* REG8_DESC[8] = {
+    "AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH" };
+
 
 X86Base::X86Base() {
 }
@@ -42,7 +49,10 @@ word* X86Base::decodeRRR_w(int rrr) {
   static const int MODRM_REG_16[8] = { R16_AX, R16_CX, R16_DX, R16_BX,
                                        R16_SP, R16_BP, R16_SI, R16_DI };
   assert(rrr < 8);
-  return getReg16Ptr(MODRM_REG_16[rrr]);
+  int reg = MODRM_REG_16[rrr];
+
+  addConstArgDesc(REG16_DESC[reg]);
+  return getReg16Ptr(reg);
 }
 
 
@@ -50,7 +60,10 @@ byte* X86Base::decodeRRR_b(int rrr) {
   static const int MODRM_REG_8[8] = { R8_AL, R8_CL, R8_DL, R8_BL,
                                       R8_AH, R8_CH, R8_DH, R8_BH };
   assert(rrr < 8);
-  return getReg8Ptr(MODRM_REG_8[rrr]);
+  int reg = MODRM_REG_8[rrr];
+
+  addConstArgDesc(REG8_DESC[reg]);
+  return getReg8Ptr(reg);
 }
 
 word* X86Base::decodeI_w() {
@@ -66,9 +79,12 @@ word* X86Base::decodeReg_w() {
 
 word* X86Base::decodeS() {
   static const int MODRM_SEG[4] = { R16_ES, R16_CS, R16_SS, R16_DS };
-  int seg = (modrm_ & 0b00111000) >> 3;
-  assert(seg < 4);
-  return getReg16Ptr(MODRM_SEG[seg]);
+  int sss = (modrm_ & 0b00111000) >> 3;
+  assert(sss < 4);
+  int seg = MODRM_SEG[sss];
+
+  addConstArgDesc(REG16_DESC[seg]);
+  return getReg16Ptr(seg);
 }
 
 

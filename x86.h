@@ -74,6 +74,7 @@ class X86 : public X86Base {
   virtual void MOV_w();
   virtual void PUSH();
   virtual void SUB_w();
+  virtual void XCHG_w();
 
  private:
   Memory* mem_;

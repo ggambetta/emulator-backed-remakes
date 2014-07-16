@@ -139,3 +139,18 @@ TEST_F(X86Test, MOV_MEM_REG) {
   EXPECT_EQ(0x78, mem_[0x2122]);
   EXPECT_EQ(0x56, mem_[0x2123]);
 }
+
+
+TEST_F(X86Test, XCHG) {
+  regs_->si = 0x1234;
+  regs_->bx = 0x5678;
+
+  int off = kOffset;
+  mem_[off++] = 0x87;  // XCHG SI, BX
+  mem_[off++] = 0xf3;
+
+  x86_->step();
+
+  EXPECT_EQ(0x1234, regs_->bx);
+  EXPECT_EQ(0x5678, regs_->si);
+}

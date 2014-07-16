@@ -138,6 +138,11 @@ void X86::check(bool cond, const char* text, const char* file, int line) {
 }
 
 
+void X86::setDebugLevel(int debug_level) {
+  debug_level_ = debug_level;
+}
+
+
 void X86::PUSH() {
   CHECK_WARG1();
 
@@ -171,6 +176,10 @@ void X86::MOV_w() {
 }
 
 
-void X86::setDebugLevel(int debug_level) {
-  debug_level_ = debug_level;
+void X86::XCHG_w() {
+  CHECK_WARGS();
+  word tmp = *warg1;
+  *warg1 = *warg2;
+  *warg2 = tmp;
 }
+

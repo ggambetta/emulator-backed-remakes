@@ -41,10 +41,10 @@ void X86::reset() {
   X86Base::reset();
 
   regs_.cs = 0;
-  regs_.ip = 0x100;
+  regs_.ip = 0x0100;
 
-  regs_.ss = mem_->getSize() >> 4;
-  regs_.sp = 0;
+  regs_.ss = 0;
+  regs_.sp = 0xFFFF;
 }
 
 
@@ -53,7 +53,7 @@ byte X86::fetch() {
   if (debug_level_ == 2) {
     clog << Addr(current_cs_, current_ip_) << " " << Hex8 << (int)val << endl;
   }
-  incrementAddress(regs_.cs, regs_.ip);
+  regs_.ip++;
   return val;
 }
 
@@ -70,26 +70,6 @@ int X86::getSS_SP() const {
 
 int X86::getLinearAddress(word segment, word offset) const {
   return (segment << 4) + offset;
-}
-
-
-void X86::incrementAddress(word& segment, word& offset) {
-  if (offset == 0xFFFF) {
-    offset = 0;
-    segment += (0x10000 >> 4);
-  } else {
-    offset++;
-  }
-}
-
-
-void X86::decrementAddress(word& segment, word& offset) {
-  if (offset == 0) {
-    offset = 0xFFFF;
-    segment -= (0x10000 >> 4);
-  } else {
-    offset--;
-  }
 }
 
 
@@ -165,14 +145,27 @@ void X86::setFlag(word mask) {
 
 void X86::PUSH() {
   CHECK_WARG1();
+  doPush(*warg1);
+}
 
-  decrementAddress(regs_.ss, regs_.sp);
-  byte* dst = mem_->getPointer(getSS_SP());
-  *dst = ((*warg1) >> 8) & 0xFF;
 
-  decrementAddress(regs_.ss, regs_.sp);
-  dst = mem_->getPointer(getSS_SP());
-  *dst = (*warg1) & 0xFF;
+void X86::POP() {
+  CHECK_WARG1();
+  *warg1 = doPop();
+}
+
+
+word X86::doPop() {
+  word val = *(word*)mem_->getPointer(getSS_SP());
+  regs_.sp += 2;
+  return val;
+}
+
+
+void X86::doPush(word val) {
+  //cerr << Addr(regs_.ss, regs_.sp) << endl;
+  regs_.sp -= 2;
+  *(word*)mem_->getPointer(getSS_SP()) = val;
 }
 
 
@@ -226,16 +219,39 @@ void X86::MOVSB() {
 
   *barg1 = *barg2;
   
-  if (regs_.flags & F_DF) {
-    decrementAddress(regs_.ds, regs_.si);
-    decrementAddress(regs_.es, regs_.di);
-  } else {
-    incrementAddress(regs_.ds, regs_.si);
-    incrementAddress(regs_.es, regs_.di);
-  }
+  int inc_dec = (regs_.flags & F_DF) ? -1 : 1;
+  regs_.si += inc_dec;
+  regs_.di += inc_dec;
 }
 
 void X86::CALL_w() {
   CHECK_WARG1();
-  //regs_.ip = *warg1;
+  doPush(regs_.ip);
+  regs_.ip = *warg1;
+}
+
+
+void X86::JMP_b() {
+  CHECK_WARG1();
+  regs_.ip = *warg1;
+}
+
+
+void X86::XOR_b() {
+  CHECK_BARGS();
+  *barg1 ^= *barg2;
+  
+  // TODO: Flags
+}
+
+
+void X86::INT_b() {
+  CHECK_BARG1();
+  byte intval = *barg1;
+  cerr << "Executing INT " << Hex8 << (int)intval << endl;
+}
+
+
+void X86::RET() {
+  regs_.ip = doPop(); 
 }

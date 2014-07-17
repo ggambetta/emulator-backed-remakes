@@ -35,25 +35,11 @@ TEST_F(X86Test, Registers) {
 
 
 TEST_F(X86Test, LinearAddress) {
-  // Increment.
   regs_->ss = 0x1234;
-  regs_->sp = 0xFFFF;
-  int linear1 = x86_->getSS_SP();
+  regs_->sp = 0x4567;
+  int linear = x86_->getSS_SP();
 
-  x86_->incrementAddress(regs_->ss, regs_->sp);
-  int linear2 = x86_->getSS_SP();
-
-  EXPECT_EQ(linear2, linear1 + 1);
-
-  // Decrement.
-  regs_->ss = 0x1234;
-  regs_->sp = 0x0000;
-  linear1 = x86_->getSS_SP();
-
-  x86_->decrementAddress(regs_->ss, regs_->sp);
-  linear2 = x86_->getSS_SP();
-
-  EXPECT_EQ(linear2, linear1 - 1);
+  EXPECT_EQ(linear, (0x1234 << 4) + 0x4567);
 }
 
 TEST_F(X86Test, PUSH_DS) {

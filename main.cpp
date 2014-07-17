@@ -35,8 +35,8 @@ class Runner {
     regs_->cs = regs_->ds = regs_->es = regs_->ss = 0;
     regs_->ip = kCOMOffset;
 
-    regs_->ss = kMemSize >> 4;
-    regs_->sp = 0;
+    regs_->ss = 0;
+    regs_->sp = 0xFFFF;
     
     cout << "File successfully loaded." << endl;
   }

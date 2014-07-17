@@ -129,6 +129,19 @@ word* X86Base::decodeS() {
 }
 
 
+byte* X86Base::decodeRM_b() {
+  int mod = (modrm_ & 0b11000000) >> 6;
+  int rm =  (modrm_ & 0b00000111);
+
+  if (mod == 0b11) {
+    // rm is a general register.
+    return decodeRRR_b(rm);
+  }
+
+  return (byte*)decodeRM_w();
+}
+
+
 word* X86Base::decodeRM_w() {
   int mod = (modrm_ & 0b11000000) >> 6;
   int rm =  (modrm_ & 0b00000111);
@@ -200,12 +213,6 @@ word* X86Base::decodeRM_w() {
 byte* X86Base::decodeReg_b() {
   int reg = (modrm_ & 0b00111000) >> 3;
   return decodeRRR_b(reg);
-}
-
-
-byte* X86Base::decodeRM_b() {
-  assert(false);
-  return nullptr;
 }
 
 

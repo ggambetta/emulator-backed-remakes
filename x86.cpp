@@ -19,6 +19,10 @@ using namespace std;
 #define CHECK_WARG2() CHECK(warg2 != nullptr);
 #define CHECK_WARGS() CHECK_WARG1(); CHECK_WARG2();
 
+#define CHECK_BARG1() CHECK(barg1 != nullptr);
+#define CHECK_BARG2() CHECK(barg2 != nullptr);
+#define CHECK_BARGS() CHECK_BARG1(); CHECK_BARG2();
+
 
 //
 // x86 CPU.
@@ -91,6 +95,7 @@ void X86::decrementAddress(word& segment, word& offset) {
 
 void X86::notImplemented(const char* opcode_name) {
   cerr << "Opcode '" << opcode_name << "' not implemented." << endl;
+  cerr << getOpcodeDesc() << endl;
   assert(false);
 }
 
@@ -124,6 +129,11 @@ byte* X86::getReg8Ptr(int reg) {
 
 word* X86::getMem16Ptr(word segment, word offset) {
   return (word*)mem_->getPointer(getLinearAddress(segment, offset));
+}
+
+
+byte* X86::getMem8Ptr(word segment, word offset) {
+  return mem_->getPointer(getLinearAddress(segment, offset));
 }
 
 
@@ -186,6 +196,12 @@ void X86::MOV_w() {
 }
 
 
+void X86::MOV_b() {
+  CHECK_BARGS();
+  *barg1 = *barg2;
+}
+
+
 void X86::XCHG_w() {
   CHECK_WARGS();
   word tmp = *warg1;
@@ -196,4 +212,30 @@ void X86::XCHG_w() {
 
 void X86::CLD() {
   clearFlag(F_DF);
+}
+
+
+void X86::STD() {
+  setFlag(F_DF);
+}
+
+
+void X86::MOVSB() {
+  barg1 = getMem8Ptr(regs_.es, regs_.di);
+  barg2 = getMem8Ptr(segment_, regs_.si);
+
+  *barg1 = *barg2;
+  
+  if (regs_.flags & F_DF) {
+    decrementAddress(regs_.ds, regs_.si);
+    decrementAddress(regs_.es, regs_.di);
+  } else {
+    incrementAddress(regs_.ds, regs_.si);
+    incrementAddress(regs_.es, regs_.di);
+  }
+}
+
+void X86::CALL_w() {
+  CHECK_WARG1();
+  //regs_.ip = *warg1;
 }

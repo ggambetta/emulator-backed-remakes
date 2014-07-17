@@ -9,7 +9,10 @@ REGS_16 = ["AX", "BX", "CX", "DX", "CS", "DS", "SS", "ES", "BP", "SP", "DI", "SI
 REGS_8 = ["AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH"]
 
 SEGMENT_OVERRIDE_OPCODES = ["ES:", "CS:", "SS:", "DS:"]
-PREFIX_OPCODES = SEGMENT_OVERRIDE_OPCODES
+REP_OPCODES = ["REPZ", "REPNZ"]
+
+PREFIX_OPCODES = SEGMENT_OVERRIDE_OPCODES + REP_OPCODES
+
 NOP_OPCODES = ["NOP"] 
 NON_MANDATORY_OPCODES = PREFIX_OPCODES + NOP_OPCODES
 
@@ -157,6 +160,10 @@ for opcode in opcodes:
     DISPATCHER += "  segment_ = *getReg16Ptr(R16_%s);\n" % reg
     DISPATCHER += "  segment_desc_ = \"%s\";\n" % method.name
 
+  elif method.name in REP_OPCODES:
+    DISPATCHER += "  rep_opcode_ = opcode_;\n"
+    DISPATCHER += "  rep_opcode_desc_ = \"%s \";\n" % method.name
+
   else:
     # General case opcode. Generate code to prepare the arguments.
     fetched_modrm = False
@@ -194,6 +201,12 @@ for opcode in opcodes:
         need_modrm = True
       elif arg in ["Iv", "Iw"]:
         fetch_arg_code.append("w%s = decodeI_w();" % (suffix))
+      elif arg in ["Ib"]:
+        fetch_arg_code.append("b%s = decodeI_b();" % (suffix))
+      elif arg in ["Jv"]:
+        fetch_arg_code.append("w%s = decodeJ_w();" % suffix)
+      elif arg in ["Jb"]:
+        fetch_arg_code.append("w%s = decodeJ_b();" % suffix)
 
       if need_modrm and not fetched_modrm:
         fetched_modrm = True

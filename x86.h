@@ -11,9 +11,9 @@ class Memory;
 //
 struct Registers {
   union {
-    word regs16[12];
+    word regs16[13];
     struct {
-      word ax, bx, cx, dx, cs, ds, ss, es, bp, sp, di, si;
+      word ax, bx, cx, dx, cs, ds, ss, es, bp, sp, di, si, ip;
     };
 
     byte regs8[8];
@@ -25,7 +25,6 @@ struct Registers {
     };
   };
 
-  word ip;
   word flags;
 };
 
@@ -66,18 +65,23 @@ class X86 : public X86Base {
   virtual void notImplemented(const char* opcode_name);
   virtual void invalidOpcode();
 
-  virtual word* getReg16Ptr(int reg);
   virtual byte* getReg8Ptr(int reg);
+  virtual word* getReg16Ptr(int reg);
 
+  virtual byte* getMem8Ptr(word segment, word offset);
   virtual word* getMem16Ptr(word segment, word offset);
 
   //
   // Opcode implementations.
   //
   virtual void ADD_w();
+  virtual void CALL_w();
   virtual void CLD();
+  virtual void MOVSB();
+  virtual void MOV_b();
   virtual void MOV_w();
   virtual void PUSH();
+  virtual void STD();
   virtual void SUB_w();
   virtual void XCHG_w();
 

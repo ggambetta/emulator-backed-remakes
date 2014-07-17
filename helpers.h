@@ -10,7 +10,7 @@ typedef unsigned short word;
 // Logging constants.
 extern const char* BINARY2[4];
 extern const char* BINARY3[8];
-extern const char* REG16_DESC[12];
+extern const char* REG16_DESC[13];
 extern const char* REG8_DESC[8];
 
 // Logging helpers.

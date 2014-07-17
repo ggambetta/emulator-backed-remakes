@@ -46,8 +46,19 @@ word X86Base::fetch16() {
   return lo | (hi << 8);
 }
 
+
 void X86Base::fetchModRM() {
   modrm_ = fetch();
+}
+
+
+word X86Base::getReg16(int reg) {
+  return *getReg16Ptr(reg);
+}
+
+
+byte X86Base::getReg8(int reg) {
+  return *getReg8Ptr(reg);
 }
 
 
@@ -73,10 +84,33 @@ byte* X86Base::decodeRRR_b(int rrr) {
 }
 
 word* X86Base::decodeI_w() {
-  immediate_ = fetch16();
-  addArgDesc(hex16ToString(immediate_) + "h");
-  return &immediate_;
+  immediate_w_ = fetch16();
+  addArgDesc(hex16ToString(immediate_w_) + "h");
+  return &immediate_w_;
 }
+
+byte* X86Base::decodeI_b() {
+  immediate_b_ = fetch();
+  addArgDesc(hex8ToString(immediate_b_) + "h");
+  return &immediate_b_;
+}
+
+
+word* X86Base::decodeJ_w() {
+  immediate_w_ = fetch16();
+  immediate_w_ += getReg16(R16_IP);
+  addArgDesc(hex16ToString(immediate_w_) + "h");
+  return &immediate_w_;
+}
+
+
+word* X86Base::decodeJ_b() {
+  immediate_w_ = fetch();
+  immediate_w_ += getReg16(R16_IP);
+  addArgDesc(hex16ToString(immediate_w_) + "h");
+  return &immediate_w_;
+}
+
 
 word* X86Base::decodeReg_w() {
   int reg = (modrm_ & 0b00111000) >> 3;
@@ -121,30 +155,30 @@ word* X86Base::decodeRM_w() {
   word base = 0;
   if (rm == 0b000) {
     desc = "BX + SI";
-    base = *getReg16Ptr(R16_BX) + *getReg16Ptr(R16_SI);
+    base = getReg16(R16_BX) + getReg16(R16_SI);
   } else if (rm == 0b001) {
     desc = "BX + DI";
-    base = *getReg16Ptr(R16_BX) + *getReg16Ptr(R16_DI);
+    base = getReg16(R16_BX) + getReg16(R16_DI);
   } else if (rm == 0b010) {
     desc = "BP + SI";
-    base = *getReg16Ptr(R16_BP) + *getReg16Ptr(R16_SI);
+    base = getReg16(R16_BP) + getReg16(R16_SI);
   } else if (rm == 0b011) {
     desc = "BP + DI";
-    base = *getReg16Ptr(R16_BP) + *getReg16Ptr(R16_DI);
+    base = getReg16(R16_BP) + getReg16(R16_DI);
   } else if (rm == 0b100) {
     desc = "SI";
-    base = *getReg16Ptr(R16_SI);
+    base = getReg16(R16_SI);
   } else if (rm == 0b101) {
     desc = "DI";
-    base = *getReg16Ptr(R16_DI);
+    base = getReg16(R16_DI);
   } else if (rm == 0b110) {
     if (mod != 0b00) {
       desc = "BP";
-      base = *getReg16Ptr(R16_BP);
+      base = getReg16(R16_BP);
     }
   } else if (rm == 0b111) {
     desc = "BX";
-    base = *getReg16Ptr(R16_BX);
+    base = getReg16(R16_BX);
   }
 
   if (mod == 0b00 && rm == 0b110) {
@@ -187,6 +221,7 @@ void X86Base::reset() {
 string X86Base::getOpcodeDesc() const {
   string desc;
 
+  desc += rep_opcode_desc_;
   desc += opcode_desc_;
   desc += " ";
   if (arg1_desc_) {
@@ -207,15 +242,38 @@ void X86Base::step() {
   warg1 = warg2 = nullptr;
   arg1_desc_ = nullptr;
   arg2_desc_ = nullptr;
-  segment_ = *getReg16Ptr(R16_DS);
-  opcode_desc_ = "";
+
+  segment_ = getReg16(R16_DS);
   segment_desc_ = "";
+
+  opcode_desc_ = "";
+
+  rep_opcode_ = 0;
+  rep_opcode_desc_ = "";
 
   bool is_prefix;
   do {
     is_prefix = false;
-    opcode_ = fetch();
+
+    // Fetch a new opcode except if we're in a REP loop and we haven't fetched
+    // the primitive opcode yet.
+    if (rep_opcode_ == 0 || opcode_ == rep_opcode_) {
+      opcode_ = fetch();
+    }
+
+    // Handle start of REP loop.
+    if (rep_opcode_ != 0 && opcode_ != rep_opcode_) {
+      if (getReg16(R16_CX) == 0) {
+        break;
+      }
+    }
 
     // GENERATED CODE
-  } while (is_prefix);
+
+    // Handle end of REP loop.
+    if (rep_opcode_ != 0 && opcode_ != rep_opcode_) {
+      *getReg16Ptr(R16_CX) = getReg16(R16_CX) - 1;
+    }
+
+  } while (is_prefix || rep_opcode_ != 0);
 }

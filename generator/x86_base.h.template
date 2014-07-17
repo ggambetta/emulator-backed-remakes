@@ -24,7 +24,6 @@ class X86Base {
   virtual byte* getReg8Ptr(int reg) = 0;
   virtual word* getMem16Ptr(word segment, word offset) = 0;
 
- protected:
   std::string getOpcodeDesc() const;
 
  public:
@@ -41,6 +40,9 @@ class X86Base {
     R16_SP,
     R16_DI,
     R16_SI,
+
+    R16_IP,
+
     R16_COUNT
   };
 
@@ -73,6 +75,10 @@ class X86Base {
   byte opcode_;
   const char* opcode_desc_;
 
+  // Prefix opcode, if any.
+  byte rep_opcode_;
+  const char* rep_opcode_desc_;
+
   // Segment (default or overriden).
   word segment_;
   const char* segment_desc_;
@@ -80,8 +86,9 @@ class X86Base {
   // ModRM byte.
   byte modrm_;
 
-  // Placeholder for immediate or constant.
-  word immediate_;
+  // Placeholders for immediate or constant.
+  word immediate_w_;
+  byte immediate_b_;
 
   // Byte and Word source and destination pointers.
   byte* barg1;
@@ -105,16 +112,23 @@ class X86Base {
   byte* decodeRM_b();
 
   word* decodeI_w();
+  byte* decodeI_b();
 
   word* decodeS();
 
   word* decodeRRR_w(int rrr);
   byte* decodeRRR_b(int rrr);
 
+  word* decodeJ_w();
+  word* decodeJ_b();
+
   word fetch16();
   void fetchModRM();
 
   word signExtend(byte val);
+
+  word getReg16(int reg);
+  byte getReg8(int reg);
 
   void addConstArgDesc(const char* desc);
   void addArgDesc(const std::string& desc);

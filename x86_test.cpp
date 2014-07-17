@@ -166,3 +166,55 @@ TEST_F(X86Test, CLD) {
 
   EXPECT_EQ(0xFFFF ^ X86::F_DF, regs_->flags);
 }
+
+
+TEST_F(X86Test, MOVSB) {
+  regs_->ds = 0x1000;
+  regs_->si = 0x0011;
+
+  regs_->es = 0x1100;
+  regs_->di = 0x0022;
+
+  int off = kOffset;
+  mem_[off++] = 0xFC;  // CLD
+  mem_[off++] = 0xA4;  // MOVSB
+
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si)] = 0x12;
+  mem_[x86_->getLinearAddress(regs_->es, regs_->di)] = 0x00;
+
+  x86_->step();
+  x86_->step();
+
+  EXPECT_EQ(0x0012, regs_->si);
+  EXPECT_EQ(0x0023, regs_->di);
+  EXPECT_EQ(0x12, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 1)]);
+}
+
+
+TEST_F(X86Test, REP_MOVSB) {
+  regs_->ds = 0x1000;
+  regs_->si = 0x0011;
+
+  regs_->es = 0x1100;
+  regs_->di = 0x0022;
+
+  regs_->cx = 3;
+
+  int off = kOffset;
+  mem_[off++] = 0xFC;  // CLD
+  mem_[off++] = 0xF3;  // REP
+  mem_[off++] = 0xA4;  // MOVSB
+
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si + 0)] = 0x11;
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si + 1)] = 0x22;
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si + 2)] = 0x33;
+
+  x86_->step();
+  x86_->step();
+
+  EXPECT_EQ(0x0014, regs_->si);
+  EXPECT_EQ(0x0025, regs_->di);
+  EXPECT_EQ(0x11, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 3)]);
+  EXPECT_EQ(0x22, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 2)]);
+  EXPECT_EQ(0x33, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 1)]);
+}

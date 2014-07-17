@@ -24,13 +24,16 @@ byte Memory::read(int address) const {
 void Memory::write(int address, byte value) {
   if (address >= size_) {
     cerr << "Attempt to write at " << address << ", size is " << size_ << endl;
-    assert(address < size_);
+    assert(false);
   }
   data_[address] = value;
 }
 
 byte* Memory::getPointer(int address) {
-  assert(address < size_);
+  if (address >= size_) {
+    cerr << "Attempt to get a pointer to " << address << ", size is " << size_ << endl;
+    assert(false);
+  }
   return data_ + address;
 }
 

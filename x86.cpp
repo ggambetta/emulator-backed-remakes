@@ -253,7 +253,6 @@ void X86::JMP_b() {
 void X86::XOR_b() {
   CHECK_BARGS();
   *barg1 ^= *barg2;
-  
   // TODO: Flags
 }
 
@@ -268,10 +267,16 @@ void X86::INT_b() {
   } else {
     cerr << "No interrupt handler for 0x" << Hex8 << (int)intval << endl;
   }
-
 }
 
 
 void X86::RET() {
   regs_.ip = doPop(); 
+}
+
+
+void X86::INC() {
+  CHECK_WARG1();
+  *warg1 = (*warg1) + 1;
+  // TODO: Flags
 }

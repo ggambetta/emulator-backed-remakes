@@ -85,6 +85,7 @@ class X86 : public X86Base {
   virtual void ADD_w();
   virtual void CALL_w();
   virtual void CLD();
+  virtual void INC();
   virtual void INT_b();
   virtual void JMP_b();
   virtual void MOVSB();

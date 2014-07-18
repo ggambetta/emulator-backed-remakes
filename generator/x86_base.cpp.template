@@ -258,6 +258,9 @@ void X86Base::step() {
   rep_opcode_ = 0;
   rep_opcode_desc_ = "";
 
+  current_cs_ = getReg16(R16_CS);
+  current_ip_ = getReg16(R16_IP);
+
   bool is_prefix;
   do {
     is_prefix = false;

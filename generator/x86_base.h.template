@@ -103,6 +103,9 @@ class X86Base {
   std::string temp_arg_desc_1_;
   std::string temp_arg_desc_2_;
 
+  // Address of the instruction being executed.
+  word current_cs_, current_ip_;
+
  private:
   // Helpers.
   word* decodeReg_w();

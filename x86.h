@@ -109,7 +109,6 @@ class X86 : public X86Base {
   std::unordered_map<int, IOHandler*> io_handlers_;
 
   // Debugging and logging.
-  word current_cs_, current_ip_;
   int debug_level_;
 };
 

@@ -86,8 +86,6 @@ void X86::invalidOpcode() {
 }
 
 void X86::step() {
-  current_cs_ = regs_.cs;
-  current_ip_ = regs_.ip;
   X86Base::step();
 
   clog << Addr(current_cs_, current_ip_) << " " << getOpcodeDesc() << endl;

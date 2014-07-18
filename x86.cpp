@@ -38,6 +38,11 @@ Registers* X86::getRegisters() {
   return &regs_;
 }
 
+
+Memory* X86::getMemory() {
+  return mem_;
+}
+
 void X86::reset() {
   X86Base::reset();
 

@@ -4,11 +4,12 @@
 #include <iomanip>
 
 #include "x86.h"
+#include "vga.h"
 #include "memory.h"
 
 using namespace std;
 
-static const int kMemSize = 2 << 16;
+static const int kMemSize = 2 << 20;  // 1 MB
 static const int kCOMOffset = 0x0100;
 
 //
@@ -17,7 +18,7 @@ static const int kCOMOffset = 0x0100;
 class Runner {
  public:
   Runner()
-      : mem_(kMemSize), x86_(&mem_) {
+      : mem_(kMemSize), x86_(&mem_), vga_(&x86_) {
     regs_ = x86_.getRegisters();
     x86_.setDebugLevel(0);
   }
@@ -51,6 +52,8 @@ class Runner {
  private:
   Memory mem_;
   X86 x86_;
+  VGA vga_;
+
   Registers* regs_;
 };
 

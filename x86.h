@@ -4,7 +4,11 @@
 #include "x86_base.h"
 #include "helpers.h"
 
+#include <unordered_map>
+
 class Memory;
+class InterruptHandler;
+class IOHandler;
 
 //
 // Registers.
@@ -37,9 +41,13 @@ class X86 : public X86Base {
   X86(Memory* mem);
 
   Registers* getRegisters();
+  Memory* getMemory();
 
   virtual void reset();
   virtual void step();
+
+  virtual void registerInterruptHandler(InterruptHandler* handler, int num);
+  virtual void registerIOHandler(IOHandler* handler, int num);
 
  public:
 
@@ -91,11 +99,16 @@ class X86 : public X86Base {
   virtual void XOR_b();
 
  private:
+  // Memory and registers.
   Memory* mem_;
- 
   Registers regs_;
-  word current_cs_, current_ip_;
 
+  // Interrupt and I/O handlers.
+  std::unordered_map<int, InterruptHandler*> int_handlers_;
+  std::unordered_map<int, IOHandler*> io_handlers_;
+
+  // Debugging and logging.
+  word current_cs_, current_ip_;
   int debug_level_;
 };
 

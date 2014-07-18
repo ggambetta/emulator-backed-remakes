@@ -1,5 +1,6 @@
 #include "x86.h"
 
+#include "device.h"
 #include "memory.h"
 
 #include <cassert>
@@ -169,6 +170,18 @@ void X86::doPush(word val) {
 }
 
 
+void X86::registerInterruptHandler(InterruptHandler* handler, int num) {
+  assert(int_handlers_.count(num) == 0);
+  int_handlers_[num] = handler;
+}
+
+
+void X86::registerIOHandler(IOHandler* handler, int num) {
+  assert(io_handlers_.count(num) == 0);
+  io_handlers_[num] = handler;
+}
+
+
 void X86::ADD_w() {
   CHECK_WARGS();
   *warg1 += *warg2;
@@ -248,7 +261,14 @@ void X86::XOR_b() {
 void X86::INT_b() {
   CHECK_BARG1();
   byte intval = *barg1;
-  cerr << "Executing INT " << Hex8 << (int)intval << endl;
+  
+  auto handler = int_handlers_.find(intval);
+  if (handler != int_handlers_.end()) {
+    handler->second->handleInterrupt(intval);
+  } else {
+    cerr << "No interrupt handler for 0x" << Hex8 << (int)intval << endl;
+  }
+
 }
 
 

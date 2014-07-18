@@ -14,7 +14,14 @@ class VGA : public InterruptHandler, public IOHandler {
   virtual void handleOUT(int port, byte val);
 
  private:
+  void setVideoMode(int mode);
+  void setPalette(int palette);
+
+ private:
   X86* x86_;
+
+  byte mode_;
+  byte cga_palette_;
 };
 
 #endif // __VGA_H__

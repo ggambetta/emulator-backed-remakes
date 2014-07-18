@@ -204,3 +204,35 @@ TEST_F(X86Test, REP_MOVSB) {
   EXPECT_EQ(0x22, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 2)]);
   EXPECT_EQ(0x33, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 1)]);
 }
+
+
+TEST_F(X86Test, CALL_RET) {
+  int off = kOffset;
+  mem_[off++] = 0xE8;  // CALL
+  mem_[off++] = 0x01;  // 
+  mem_[off++] = 0x00;  // $ + 1
+  mem_[off++] = 0x90;  // NOP
+  mem_[off++] = 0x29;  // SUB AX, AX
+  mem_[off++] = 0xC0;
+  mem_[off++] = 0xC3;  // RET
+
+  regs_->ax = 0x1234;
+
+  // CALL
+  x86_->step();
+  EXPECT_EQ(0x0104, regs_->ip);
+  EXPECT_EQ(0x1234, regs_->ax);
+
+  // SUB AX, AX
+  x86_->step();
+  EXPECT_EQ(0x0106, regs_->ip);
+  EXPECT_EQ(0, regs_->ax);
+
+  // RET
+  x86_->step();
+  EXPECT_EQ(0x0103, regs_->ip);
+
+  // NOP
+  x86_->step();
+}
+

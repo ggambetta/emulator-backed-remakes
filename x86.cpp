@@ -260,7 +260,7 @@ void X86::XOR_b() {
 }
 
 
-void X86::INT_b() {
+void X86::INT() {
   CHECK_BARG1();
   byte intval = *barg1;
   
@@ -278,7 +278,7 @@ void X86::RET() {
 }
 
 
-void X86::INC() {
+void X86::INC_w() {
   CHECK_WARG1();
   *warg1 = (*warg1) + 1;
   // TODO: Flags

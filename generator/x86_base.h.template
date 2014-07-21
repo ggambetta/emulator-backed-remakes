@@ -85,6 +85,7 @@ class X86Base {
 
   // ModRM byte.
   byte modrm_;
+  bool fetched_modrm_;
 
   // Placeholders for immediate or constant.
   word immediate_w_;
@@ -108,6 +109,8 @@ class X86Base {
 
  private:
   // Helpers.
+  byte decodeGRP();
+
   word* decodeReg_w();
   word* decodeRM_w();
 
@@ -126,7 +129,7 @@ class X86Base {
   word* decodeJ_b();
 
   word fetch16();
-  void fetchModRM();
+  byte modRM();
 
   word signExtend(byte val);
 

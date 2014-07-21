@@ -82,22 +82,22 @@ class X86 : public X86Base {
   //
   // Opcode implementations.
   //
-  virtual void ADD_w();
-  virtual void CALL_w();
-  virtual void CLD();
-  virtual void INC();
-  virtual void INT_b();
-  virtual void JMP_b();
-  virtual void MOVSB();
-  virtual void MOV_b();
-  virtual void MOV_w();
-  virtual void POP();
-  virtual void PUSH();
-  virtual void RET();
-  virtual void STD();
-  virtual void SUB_w();
-  virtual void XCHG_w();
-  virtual void XOR_b();
+  virtual void ADD_w() override;
+  virtual void CALL_w() override;
+  virtual void CLD() override;
+  virtual void INC_w() override;
+  virtual void INT() override;
+  virtual void JMP_b() override;
+  virtual void MOVSB() override;
+  virtual void MOV_b() override;
+  virtual void MOV_w() override;
+  virtual void POP() override;
+  virtual void PUSH() override;
+  virtual void RET() override;
+  virtual void STD() override;
+  virtual void SUB_w() override;
+  virtual void XCHG_w() override;
+  virtual void XOR_b() override;
 
  private:
   // Memory and registers.

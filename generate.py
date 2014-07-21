@@ -41,12 +41,14 @@ class Opcode:
     self.word_suffix = None
 
 
-  def getWordSuffix(self):
+  def getWordSuffix(self, args = None):
     if self.word_suffix is not None:
       return self.word_suffix
 
+    args = args or self.args
+
     self.word_suffix = ""
-    for arg in self.args:
+    for arg in args:
       if len(arg) == 2:
         if arg[1] in "0b":
           self.word_suffix = "_b"
@@ -54,6 +56,18 @@ class Opcode:
           self.word_suffix = "_w"
         elif arg[1] == "p":
           self.word_suffix = "_p"
+        elif arg in REGS_16:
+          self.word_suffix = "_w"
+        if arg.upper() in REGS_16:
+          self.word_suffix = "_w"
+
+      if len(arg) == 1:
+        if arg in ["1", "3"]:
+          self.word_suffix = "_b"
+
+    if self.args:
+      assert(self.word_suffix != "")
+
     return self.word_suffix
 
 
@@ -77,39 +91,65 @@ def insertCode(template, code, marker):
 
 
 #
-# Filter and parse the opcodes table.
+# Parse the opcodes table.
 #
-opcodes = []
+all_opcodes = []
+base_opcodes = []
+group_opcodes = collections.defaultdict(list)
+
 for line in file(OPCODES_TABLE_FILENAME, "rb"):
   tokens = line.strip().split()
 
-  if not tokens:
-    break
-
-  if len(tokens) < 2:
+  if len(tokens) < 2 or tokens[1] == "--":
     continue
 
-  if len(tokens[0]) != 2:
-    continue
-
-  if tokens[1] == "--":
-    continue
-
+  group = None
   opcode = Opcode()
-  opcode.opcode = int(tokens[0], 16)
   opcode.name = tokens[1].upper()
   opcode.args = tokens[2:]
 
-  opcodes.append(opcode)
+  for i, arg in enumerate(opcode.args):
+    if arg[0] == "e" and arg[1:] in REGS_16:
+      opcode.args[i] = arg[1:]
 
+  if tokens[0].startswith("GRP"):
+    # Group opcode, e.g. GRP1/5
+    group, op = tokens[0].split("/")
+    group = group.upper()
+    opcode.opcode = int(op)
+
+  else:
+    # Regular opcode.
+    opcode.opcode = int(tokens[0], 16)
+
+
+  all_opcodes.append(opcode)
+  if group:
+    group_opcodes[group].append(opcode)
+  else:
+    base_opcodes.append(opcode)
 
 
 #
 # Build list of method variants (word/byte/immediate/etc).
 #
 method_variants = collections.defaultdict(set)
-for opcode in opcodes:
-  method_variants[opcode.name.upper()].add(opcode.getWordSuffix())
+for opcode in base_opcodes:
+  if not opcode.name.startswith("GRP"):
+    method_variants[opcode.name.upper()].add(opcode.getWordSuffix())
+    continue
+
+  # For group opcodes without arguments, use the group's.
+  group = opcode.name 
+  group_args = opcode.args
+  for subopcode in group_opcodes[group]:
+    args = subopcode.args or group_args
+    method_variants[subopcode.name].add(opcode.getWordSuffix(args))
+
+#for k in sorted(method_variants.keys()):
+#  print k, list(method_variants[k])
+
+#sys.exit(1)
 
 
 #
@@ -121,17 +161,19 @@ class Method:
     self.name = None
 
 
-DISPATCHER = "if (false) {\n"
 methods = {} 
 
+def addMethod(opcode, args = None):
+  global methods
 
-for opcode in opcodes:
   # Compute name of implementation method.
   # If there's only one word/byte variant of the opcode, don't add the suffix
   # to the name.
-  name = opcode.name.upper()
+  name = opcode.name
+  args = args or opcode.args
+
   if len(method_variants[name]) > 1:
-    name += opcode.getWordSuffix()
+    name += opcode.getWordSuffix(args)
 
   if methods.has_key(name):
     method = methods[name]
@@ -141,83 +183,107 @@ for opcode in opcodes:
     method.cpp_name = name.replace(":", "_")
     methods[name] = method
 
-  
-  # Generate switch.
+  return method
+
+
+def getFetchArgCode(suffix, arg):
+  fetch_arg_code = []
+  if arg in REGS_16:
+    fetch_arg_code.append("w%s = getReg16Ptr(R16_%s);" % (suffix, arg))
+    fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
+  elif arg in REGS_8:
+    fetch_arg_code.append("b%s = getReg8Ptr(R8_%s);" % (suffix, arg))
+    fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
+  elif arg in ["Gv"]:
+    fetch_arg_code.append("w%s = decodeReg_w();" % suffix)
+  elif arg in ["Ev", "Ew"]:
+    fetch_arg_code.append("w%s = decodeRM_w();" % suffix)
+  elif arg in ["Gb"]:
+    fetch_arg_code.append("b%s = decodeReg_b();" % suffix)
+  elif arg in ["Eb"]:
+    fetch_arg_code.append("b%s = decodeRM_b();" % suffix)
+  elif arg in ["Sw"]:
+    fetch_arg_code.append("w%s = decodeS();" % suffix)
+  elif arg in ["Iv", "Iw"]:
+    fetch_arg_code.append("w%s = decodeI_w();" % suffix)
+  elif arg in ["Ib"]:
+    fetch_arg_code.append("b%s = decodeI_b();" % suffix)
+  elif arg in ["Jv"]:
+    fetch_arg_code.append("w%s = decodeJ_w();" % suffix)
+  elif arg in ["Jb"]:
+    fetch_arg_code.append("w%s = decodeJ_b();" % suffix)
+
+  return fetch_arg_code
+
+
+DISPATCHER = "if (false) {\n"
+for opcode in base_opcodes:  
+  # Generate top-level switch.
   desc = opcode.name + " " + ", ".join(opcode.args)
   DISPATCHER += "} else if (opcode_ == 0x%02X) {  // %s\n" % (opcode.opcode,
                                                               desc.strip())
+  
+  group = None
+  if opcode.name.startswith("GRP"):
+    group = opcode.name
+    DISPATCHER += "  int op = decodeGRP();\n"
 
-  DISPATCHER += "  opcode_desc_ = \"%s\";\n" % opcode.name.upper()
+    assert group_opcodes.has_key(group)
+    op_group = group_opcodes[group]
+    
+    first = True
+    for subopcode in op_group:
+      if first:
+        cppif = "if "
+        first = False
+      else:
+        cppif = "} else if "
 
-  if method.name in PREFIX_OPCODES:
-    DISPATCHER += "  is_prefix = true;\n"
+      args = subopcode.args or opcode.args
+      method = addMethod(subopcode, args)
+      desc = subopcode.name + " " + ", ".join(args)
+      DISPATCHER += "  " + cppif + "(op == 0x%02X) {  // %s\n" % (subopcode.opcode, desc.strip())
+      DISPATCHER += "  opcode_desc_ = \"%s\";\n" % subopcode.name
 
-  if method.name in SEGMENT_OVERRIDE_OPCODES:
-    # Segment override.
-    assert len(method.name) == 3
-    assert method.name[2] == ":"
-    reg = method.name[:2]
-    DISPATCHER += "  segment_ = *getReg16Ptr(R16_%s);\n" % reg
-    DISPATCHER += "  segment_desc_ = \"%s\";\n" % method.name
+      suffixes = ["arg1", "arg2"]
+      for arg in args:
+        for line in getFetchArgCode(suffixes.pop(0), arg):
+          DISPATCHER += "    " + line + "\n"
+   
+      DISPATCHER += "    %s();\n" % method.cpp_name
 
-  elif method.name in REP_OPCODES:
-    DISPATCHER += "  rep_opcode_ = opcode_;\n"
-    DISPATCHER += "  rep_opcode_desc_ = \"%s \";\n" % method.name
+    DISPATCHER += "  }\n"
 
   else:
-    # General case opcode. Generate code to prepare the arguments.
-    fetched_modrm = False
-    suffixes = ["arg1", "arg2"]
-    for arg in opcode.args:
-      suffix = suffixes.pop(0)
-      fetch_arg_code = []
+    DISPATCHER += "  opcode_desc_ = \"%s\";\n" % opcode.name
+    method = addMethod(opcode)
 
-      # eAX => AX, etc.
-      if arg[0] == "e" and arg[1:] in REGS_16:
-        arg = arg[1:]
+    if method.name in PREFIX_OPCODES:
+      # Prefix opcode.
+      DISPATCHER += "  is_prefix = true;\n"
 
-      need_modrm = False
-
-      if arg in REGS_16:
-        fetch_arg_code.append("w%s = getReg16Ptr(R16_%s);" % (suffix, arg))
-        fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
-      elif arg in REGS_8:
-        fetch_arg_code.append("b%s = getReg8Ptr(R8_%s);" % (suffix, arg))
-        fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
-      elif arg in ["Gv"]:
-        fetch_arg_code.append("w%s = decodeReg_w();" % (suffix))
-        need_modrm = True
-      elif arg in ["Ev", "Ew"]:
-        fetch_arg_code.append("w%s = decodeRM_w();" % (suffix))
-        need_modrm = True
-      elif arg in ["Gb"]:
-        fetch_arg_code.append("b%s = decodeReg_b();" % (suffix))
-        need_modrm = True
-      elif arg in ["Eb"]:
-        fetch_arg_code.append("b%s = decodeRM_b();" % (suffix))
-        need_modrm = True
-      elif arg in ["Sw"]:
-        fetch_arg_code.append("w%s = decodeS();" % (suffix))
-        need_modrm = True
-      elif arg in ["Iv", "Iw"]:
-        fetch_arg_code.append("w%s = decodeI_w();" % (suffix))
-      elif arg in ["Ib"]:
-        fetch_arg_code.append("b%s = decodeI_b();" % (suffix))
-      elif arg in ["Jv"]:
-        fetch_arg_code.append("w%s = decodeJ_w();" % suffix)
-      elif arg in ["Jb"]:
-        fetch_arg_code.append("w%s = decodeJ_b();" % suffix)
-
-      if need_modrm and not fetched_modrm:
-        fetched_modrm = True
-        fetch_arg_code.insert(0, "fetchModRM();")
-
-      for line in fetch_arg_code:
-        DISPATCHER += "  " + line + "\n"
-
-
-  # Call the custom implementation.
-  DISPATCHER += "  %s();\n" % method.cpp_name
+    if method.name in SEGMENT_OVERRIDE_OPCODES:
+      # Segment override.
+      assert len(method.name) == 3
+      assert method.name[2] == ":"
+      reg = method.name[:2]
+      DISPATCHER += "  segment_ = *getReg16Ptr(R16_%s);\n" % reg
+      DISPATCHER += "  segment_desc_ = \"%s\";\n" % method.name
+  
+    elif method.name in REP_OPCODES:
+      # REP opcode.
+      DISPATCHER += "  rep_opcode_ = opcode_;\n"
+      DISPATCHER += "  rep_opcode_desc_ = \"%s \";\n" % method.name
+  
+    else:
+      # General case opcode. Generate code to prepare the arguments.
+      suffixes = ["arg1", "arg2"]
+      for arg in opcode.args:
+        for line in getFetchArgCode(suffixes.pop(0), arg):
+          DISPATCHER += "  " + line + "\n"
+  
+      # Call the custom implementation.
+      DISPATCHER += "  %s();\n" % method.cpp_name
  
 DISPATCHER += """} else { 
   invalidOpcode();

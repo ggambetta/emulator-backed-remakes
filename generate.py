@@ -243,7 +243,7 @@ for opcode in base_opcodes:
       method = addMethod(subopcode, args)
       desc = subopcode.name + " " + ", ".join(args)
       DISPATCHER += "  " + cppif + "(op == 0x%02X) {  // %s\n" % (subopcode.opcode, desc.strip())
-      DISPATCHER += "  opcode_desc_ = \"%s\";\n" % subopcode.name
+      DISPATCHER += "    opcode_desc_ = \"%s\";\n" % subopcode.name
 
       suffixes = ["arg1", "arg2"]
       for arg in args:

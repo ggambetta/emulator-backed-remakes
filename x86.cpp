@@ -137,13 +137,17 @@ void X86::setDebugLevel(int debug_level) {
 }
 
 
-void X86::clearFlag(word mask) {
-  regs_.flags &= ~mask;
+bool X86::getFlag(word mask) const {
+  return (regs_.flags & mask) == mask;
 }
 
 
-void X86::setFlag(word mask) {
-  regs_.flags |= mask;
+void X86::setFlag(word mask, bool value) {
+  if (value) {
+    regs_.flags |= mask;
+  } else {
+    regs_.flags &= ~mask;
+  }
 }
 
 
@@ -185,10 +189,32 @@ void X86::registerIOHandler(IOHandler* handler, int num) {
 }
 
 
+void X86::adjustFlagZS(byte value) {
+  setFlag(F_ZF, value == 0);
+  setFlag(F_SF, (value & 0x80) == 0x80);
+}
+
+
+void X86::adjustFlagZS(word value) {
+  setFlag(F_ZF, value == 0);
+  setFlag(F_SF, (value & 0x8000) == 0x8000);
+}
+
+
 void X86::ADD_w() {
   CHECK_WARGS();
   *warg1 += *warg2;
+
   // TODO: Adjust flags
+  adjustFlagZS(*warg1);
+}
+
+
+void X86::SUB_b() {
+  CHECK_BARGS();
+  *barg1 -= *barg2;
+  // TODO: Adjust flags
+  adjustFlagZS(*barg1);
 }
 
 
@@ -196,6 +222,7 @@ void X86::SUB_w() {
   CHECK_WARGS();
   *warg1 -= *warg2;
   // TODO: Adjust flags
+  adjustFlagZS(*warg1);
 }
 
 
@@ -220,12 +247,12 @@ void X86::XCHG_w() {
 
 
 void X86::CLD() {
-  clearFlag(F_DF);
+  setFlag(F_DF, false);
 }
 
 
 void X86::STD() {
-  setFlag(F_DF);
+  setFlag(F_DF, true);
 }
 
 
@@ -253,10 +280,59 @@ void X86::JMP_b() {
 }
 
 
+void X86::JMP_w() {
+  JMP_b();
+}
+
+
 void X86::XOR_b() {
   CHECK_BARGS();
   *barg1 ^= *barg2;
+
   // TODO: Flags
+  adjustFlagZS(*barg1);
+  setFlag(F_OF | F_CF, false);
+}
+
+
+void X86::OR_b() {
+  CHECK_BARGS();
+  *barg1 |= *barg2;
+
+  // TODO: Flags
+  adjustFlagZS(*barg1);
+  setFlag(F_OF | F_CF, false);
+}
+
+
+void X86::AND_b() {
+  CHECK_BARGS();
+  *barg1 &= *barg2;
+
+  // TODO: Flags
+  adjustFlagZS(*barg1);
+  setFlag(F_OF | F_CF, false);
+}
+
+
+void X86::TEST_b() {
+  byte val = *barg1;
+  AND_b();
+  *barg1 = val;
+}
+
+
+void X86::CMP_b() {
+  byte val = *barg1;
+  SUB_b();
+  *barg1 = val;
+}
+
+
+void X86::CMP_w() {
+  word val = *warg1;
+  SUB_w();
+  *warg1 = val;
 }
 
 
@@ -281,5 +357,34 @@ void X86::RET() {
 void X86::INC_w() {
   CHECK_WARG1();
   *warg1 = (*warg1) + 1;
+
   // TODO: Flags
+  adjustFlagZS(*warg1);
 }
+
+
+void X86::DEC_b() {
+  CHECK_BARG1();
+  *barg1 = (*barg1) - 1;
+
+  // TODO: Flags
+  adjustFlagZS(*barg1);
+}
+ 
+
+void X86::JNZ() {
+  CHECK_WARG1();
+  if (!getFlag(F_ZF)) {
+    regs_.ip = *warg1;
+  }
+}
+ 
+
+void X86::JZ() {
+  CHECK_WARG1();
+  if (getFlag(F_ZF)) {
+    regs_.ip = *warg1;
+  }
+}
+
+

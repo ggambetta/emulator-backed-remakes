@@ -70,8 +70,25 @@ TEST_F(X86Test, SUB_REG_REG) {
   x86_->step();
 
   EXPECT_EQ(0, regs_->ax);
+}
 
-  // TODO: Test flags
+
+TEST_F(X86Test, FLAGS) {
+  regs_->ax = 0x1234;
+
+  int off = kOffset;
+  mem_[off++] = 0x29;  // SUB AX, AX
+  mem_[off++] = 0xC0;
+  x86_->step();
+
+  EXPECT_EQ(0, regs_->ax);
+  EXPECT_TRUE(x86_->getFlag(X86::F_ZF));
+
+  mem_[off++] = 0x40;  // INC AX
+  x86_->step();
+
+  EXPECT_EQ(1, regs_->ax);
+  EXPECT_FALSE(x86_->getFlag(X86::F_ZF));
 }
 
 

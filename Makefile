@@ -1,4 +1,4 @@
-CXXFLAGS=-std=c++0x -Wall
+CXXFLAGS=-std=c++0x -Wall -g
 TESTFLAGS=-I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -L. -lemu
 LIBRARY=libemu.a
 

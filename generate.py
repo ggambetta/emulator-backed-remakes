@@ -55,8 +55,8 @@ class Opcode:
           arg_suffix = "p"
         elif arg in REGS_16:
           arg_suffix = "w"
-        if arg.upper() in REGS_16:
-          arg_suffix = "w"
+        if arg in REGS_8:
+          arg_suffix = "b"
 
       if len(arg) == 1:
         if arg in ["1", "3"]:

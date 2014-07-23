@@ -128,6 +128,9 @@ class X86Base {
   word* decodeJ_w();
   word* decodeJ_b();
 
+  word* addConstArg_w(word arg);
+  byte* addConstArg_b(byte arg);
+
   word fetch16();
   byte modRM();
 

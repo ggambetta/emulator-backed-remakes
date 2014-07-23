@@ -38,37 +38,39 @@ class Opcode:
     self.opcode = None
     self.name = ""
     self.args = []
-    self.word_suffix = None
 
 
   def getWordSuffix(self, args = None):
-    if self.word_suffix is not None:
-      return self.word_suffix
-
     args = args or self.args
 
-    self.word_suffix = ""
+    word_suffix = ""
     for arg in args:
+
+      arg_suffix = ""
       if len(arg) == 2:
         if arg[1] in "0b":
-          self.word_suffix = "_b"
+          arg_suffix = "b"
         elif arg[1] in "wv":
-          self.word_suffix = "_w"
+          arg_suffix = "w"
         elif arg[1] == "p":
-          self.word_suffix = "_p"
+          arg_suffix = "p"
         elif arg in REGS_16:
-          self.word_suffix = "_w"
+          arg_suffix = "w"
         if arg.upper() in REGS_16:
-          self.word_suffix = "_w"
+          arg_suffix = "w"
 
       if len(arg) == 1:
         if arg in ["1", "3"]:
-          self.word_suffix = "_b"
+          arg_suffix = word_suffix or "b"
 
-    if self.args:
-      assert(self.word_suffix != "")
+      if arg_suffix and arg_suffix != word_suffix:
+        word_suffix += arg_suffix
 
-    return self.word_suffix
+    if args:
+      assert(word_suffix != "")
+      word_suffix = "_" + word_suffix
+
+    return word_suffix
 
 
 def insertCode(template, code, marker):
@@ -186,34 +188,45 @@ def addMethod(opcode, args = None):
   return method
 
 
-def getFetchArgCode(suffix, arg):
-  fetch_arg_code = []
-  if arg in REGS_16:
-    fetch_arg_code.append("w%s = getReg16Ptr(R16_%s);" % (suffix, arg))
-    fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
-  elif arg in REGS_8:
-    fetch_arg_code.append("b%s = getReg8Ptr(R8_%s);" % (suffix, arg))
-    fetch_arg_code.append("addConstArgDesc(\"%s\");" % arg)
-  elif arg in ["Gv"]:
-    fetch_arg_code.append("w%s = decodeReg_w();" % suffix)
-  elif arg in ["Ev", "Ew"]:
-    fetch_arg_code.append("w%s = decodeRM_w();" % suffix)
-  elif arg in ["Gb"]:
-    fetch_arg_code.append("b%s = decodeReg_b();" % suffix)
-  elif arg in ["Eb"]:
-    fetch_arg_code.append("b%s = decodeRM_b();" % suffix)
-  elif arg in ["Sw"]:
-    fetch_arg_code.append("w%s = decodeS();" % suffix)
-  elif arg in ["Iv", "Iw"]:
-    fetch_arg_code.append("w%s = decodeI_w();" % suffix)
-  elif arg in ["Ib"]:
-    fetch_arg_code.append("b%s = decodeI_b();" % suffix)
-  elif arg in ["Jv"]:
-    fetch_arg_code.append("w%s = decodeJ_w();" % suffix)
-  elif arg in ["Jb"]:
-    fetch_arg_code.append("w%s = decodeJ_b();" % suffix)
+def getFetchArgCode(args):
+  lines = []
+  suffixes = ["arg1", "arg2"]
 
-  return fetch_arg_code
+  for arg in args:
+    suffix = suffixes.pop(0)
+    
+    if arg in REGS_16:
+      lines.append("addConstArgDesc(\"%s\");" % arg)
+      lines.append("w%s = getReg16Ptr(R16_%s);" % (suffix, arg))
+    elif arg in REGS_8:
+      lines.append("addConstArgDesc(\"%s\");" % arg)
+      lines.append("b%s = getReg8Ptr(R8_%s);" % (suffix, arg))
+    elif arg in ["Gv"]:
+      lines.append("w%s = decodeReg_w();" % suffix)
+    elif arg in ["Ev", "Ew"]:
+      lines.append("w%s = decodeRM_w();" % suffix)
+    elif arg in ["Gb"]:
+      lines.append("b%s = decodeReg_b();" % suffix)
+    elif arg in ["Eb"]:
+      lines.append("b%s = decodeRM_b();" % suffix)
+    elif arg in ["Sw"]:
+      lines.append("w%s = decodeS();" % suffix)
+    elif arg in ["Iv", "Iw"]:
+      lines.append("w%s = decodeI_w();" % suffix)
+    elif arg in ["Ib"]:
+      lines.append("b%s = decodeI_b();" % suffix)
+    elif arg in ["Jv"]:
+      lines.append("w%s = decodeJ_w();" % suffix)
+    elif arg in ["Jb"]:
+      lines.append("w%s = decodeJ_b();" % suffix)
+    elif arg in ["1", "3"]:
+      is_byte = not lines or lines[-1][0] == "b"
+      if is_byte:
+        lines.append("b%s = addConstArg_b(%s);" % (suffix, arg))
+      else:
+        lines.append("w%s = addConstArg_w(%s);" % (suffix, arg))
+
+  return lines
 
 
 DISPATCHER = "if (false) {\n"
@@ -245,10 +258,8 @@ for opcode in base_opcodes:
       DISPATCHER += "  " + cppif + "(op == 0x%02X) {  // %s\n" % (subopcode.opcode, desc.strip())
       DISPATCHER += "    opcode_desc_ = \"%s\";\n" % subopcode.name
 
-      suffixes = ["arg1", "arg2"]
-      for arg in args:
-        for line in getFetchArgCode(suffixes.pop(0), arg):
-          DISPATCHER += "    " + line + "\n"
+      for line in getFetchArgCode(args):
+        DISPATCHER += "    " + line + "\n"
    
       DISPATCHER += "    %s();\n" % method.cpp_name
 
@@ -277,10 +288,8 @@ for opcode in base_opcodes:
   
     else:
       # General case opcode. Generate code to prepare the arguments.
-      suffixes = ["arg1", "arg2"]
-      for arg in opcode.args:
-        for line in getFetchArgCode(suffixes.pop(0), arg):
-          DISPATCHER += "  " + line + "\n"
+      for line in getFetchArgCode(opcode.args):
+        DISPATCHER += "  " + line + "\n"
   
       # Call the custom implementation.
       DISPATCHER += "  %s();\n" % method.cpp_name

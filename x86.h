@@ -65,9 +65,6 @@ class X86 : public X86Base {
 
   virtual byte* getMem8Ptr(word segment, word offset);
 
-  bool getFlag(word mask) const;
-  void setFlag(word mask, bool value);
-
   void adjustFlagZS(byte value);
   void adjustFlagZS(word value);
 
@@ -83,6 +80,10 @@ class X86 : public X86Base {
 
   virtual word* getMem16Ptr(word segment, word offset) override;
 
+  virtual bool getFlag(word mask) const override;
+  virtual void setFlag(word mask, bool value) override;
+
+
   //
   // Opcode implementations.
   //
@@ -91,6 +92,7 @@ class X86 : public X86Base {
   virtual void CALL_w() override;
   virtual void CLD() override;
   virtual void CMP_b() override;
+  virtual void CMPSB() override;
   virtual void CMP_w() override;
   virtual void DEC_b() override;
   virtual void INC_w() override;
@@ -112,6 +114,7 @@ class X86 : public X86Base {
   virtual void TEST_b() override;
   virtual void XCHG_w() override;
   virtual void XOR_b() override;
+  virtual void SHL_wb() override;
 
  private:
   // Memory and registers.

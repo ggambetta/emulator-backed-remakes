@@ -253,3 +253,33 @@ TEST_F(X86Test, CALL_RET) {
   x86_->step();
 }
 
+
+TEST_F(X86Test, REP_CMPSB) {
+  regs_->ds = 0x1000;
+  regs_->si = 0x0011;
+
+  regs_->es = 0x1100;
+  regs_->di = 0x0022;
+
+  regs_->cx = 3;
+
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si + 0)] = 0x11;
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si + 1)] = 0x22;
+  mem_[x86_->getLinearAddress(regs_->ds, regs_->si + 2)] = 0x33;
+
+  mem_[x86_->getLinearAddress(regs_->es, regs_->di + 0)] = 0x11;
+  mem_[x86_->getLinearAddress(regs_->es, regs_->di + 1)] = 0x00;  // <--
+  mem_[x86_->getLinearAddress(regs_->es, regs_->di + 2)] = 0x33;
+
+  int off = kOffset;
+  mem_[off++] = 0xFC;  // CLD
+  mem_[off++] = 0xF3;  // REP
+  mem_[off++] = 0xA6;  // CMPSB
+
+  x86_->step();  // CLD
+  x86_->step();  // REP CMPSB
+
+  EXPECT_EQ(0x0011 + 1, regs_->si);
+  EXPECT_EQ(0x0022 + 1, regs_->di);
+}
+

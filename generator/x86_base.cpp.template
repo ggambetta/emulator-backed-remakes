@@ -316,6 +316,17 @@ void X86Base::step() {
     // Handle end of REP loop.
     if (rep_opcode_ != 0) {
       *getReg16Ptr(R16_CX) = getReg16(R16_CX) - 1;
+      if (opcode_ == 0xA6 || // CMPB
+          opcode_ == 0xA7 || // CMPW
+          opcode_ == 0xAE || // SCASB
+          opcode_ == 0xAF) { // SCASW
+
+        if ((rep_opcode_ == 0xF3 &&  getFlag(F_ZF)) || // REPZ
+            (rep_opcode_ == 0xF2 && !getFlag(F_ZF))) { // REPNZ
+          break;
+        }
+
+      }
     }
   } while (rep_opcode_ != 0);
 

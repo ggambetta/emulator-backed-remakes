@@ -24,6 +24,8 @@ using namespace std;
 #define CHECK_BARG2() CHECK(barg2 != nullptr);
 #define CHECK_BARGS() CHECK_BARG1(); CHECK_BARG2();
 
+#define CHECK_WBARGS() CHECK_WARG1(); CHECK_BARG2();
+
 
 //
 // x86 CPU.
@@ -256,6 +258,18 @@ void X86::STD() {
 }
 
 
+void X86::CMPSB() {
+  // Note inverted order of the operands.
+  barg2 = getMem8Ptr(regs_.es, regs_.di);
+  barg1 = getMem8Ptr(segment_, regs_.si);
+
+  CMP_b();
+  
+  int inc_dec = (regs_.flags & F_DF) ? -1 : 1;
+  regs_.si += inc_dec;
+  regs_.di += inc_dec;
+}
+
 void X86::MOVSB() {
   barg1 = getMem8Ptr(regs_.es, regs_.di);
   barg2 = getMem8Ptr(segment_, regs_.si);
@@ -388,3 +402,10 @@ void X86::JZ() {
 }
 
 
+void X86::SHL_wb() {
+  CHECK_WBARGS();
+  *warg1 <<= *barg2;
+ 
+  // TODO: Flags
+  adjustFlagZS(*warg1);
+}

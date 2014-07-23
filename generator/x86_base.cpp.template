@@ -266,6 +266,7 @@ string X86Base::getOpcodeDesc() const {
 
 
 void X86Base::step() {
+  // Clear the execution state.
   fetched_modrm_ = false;
   barg1 = barg2 = nullptr;
   warg1 = warg2 = nullptr;
@@ -275,6 +276,7 @@ void X86Base::step() {
   segment_ = getReg16(R16_DS);
   segment_desc_ = "";
 
+  opcode_ = 0;
   opcode_desc_ = "";
 
   rep_opcode_ = 0;
@@ -283,33 +285,38 @@ void X86Base::step() {
   current_cs_ = getReg16(R16_CS);
   current_ip_ = getReg16(R16_IP);
 
-  bool is_prefix;
+  void (X86Base::*handler)() = nullptr;
+
+  // Fetch the opcode and decode its arguments. Also process segment override
+  // and take note of REP opcodes.
+  bool have_opcode = true;
   do {
-    is_prefix = false;
-
-    // Fetch a new opcode except if we're in a REP loop and we haven't fetched
-    // the primitive opcode yet.
-    if (rep_opcode_ == 0 || opcode_ == rep_opcode_) {
-      opcode_ = fetch();
-    }
-
-    // Handle start of REP loop.
-    if (rep_opcode_ != 0 && opcode_ != rep_opcode_) {
-      if (getReg16(R16_CX) == 0) {
-        break;
-      }
-      barg1 = barg2 = nullptr;
-      warg1 = warg2 = nullptr;
-      arg1_desc_ = nullptr;
-      arg2_desc_ = nullptr;
-    }
+    // Fetch the next opcode. Assume it's a primitive opcode.
+    opcode_ = fetch();
+    have_opcode = true;
 
     // GENERATED CODE
 
-    // Handle end of REP loop.
-    if (rep_opcode_ != 0 && opcode_ != rep_opcode_) {
-      *getReg16Ptr(R16_CX) = getReg16(R16_CX) - 1;
+  } while (!have_opcode);
+
+  if (handler == nullptr) {
+    invalidOpcode();
+  }
+
+  // Execute the opcode handler, repeatedly if there's a REP prefix active.
+  do {
+    // Handle start of REP loop.
+    if (rep_opcode_ != 0 && getReg16(R16_CX) == 0) {
+      break;
     }
 
-  } while (is_prefix || rep_opcode_ != 0);
+    // Call the custom implementation.
+    (this->*handler)();
+
+    // Handle end of REP loop.
+    if (rep_opcode_ != 0) {
+      *getReg16Ptr(R16_CX) = getReg16(R16_CX) - 1;
+    }
+  } while (rep_opcode_ != 0);
+
 }

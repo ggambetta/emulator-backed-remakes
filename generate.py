@@ -12,7 +12,6 @@ SEGMENT_OVERRIDE_OPCODES = ["ES:", "CS:", "SS:", "DS:"]
 REP_OPCODES = ["REPZ", "REPNZ"]
 
 PREFIX_OPCODES = SEGMENT_OVERRIDE_OPCODES + REP_OPCODES
-
 NOP_OPCODES = ["NOP"] 
 NON_MANDATORY_OPCODES = PREFIX_OPCODES + NOP_OPCODES
 
@@ -261,17 +260,18 @@ for opcode in base_opcodes:
       for line in getFetchArgCode(args):
         DISPATCHER += "    " + line + "\n"
    
-      DISPATCHER += "    %s();\n" % method.cpp_name
+      DISPATCHER += "    handler = &X86Base::%s;\n" % method.cpp_name
 
     DISPATCHER += "  }\n"
 
   else:
-    DISPATCHER += "  opcode_desc_ = \"%s\";\n" % opcode.name
     method = addMethod(opcode)
 
     if method.name in PREFIX_OPCODES:
       # Prefix opcode.
-      DISPATCHER += "  is_prefix = true;\n"
+      DISPATCHER += "  have_opcode = false;\n"
+    else:
+      DISPATCHER += "  opcode_desc_ = \"%s\";\n" % opcode.name
 
     if method.name in SEGMENT_OVERRIDE_OPCODES:
       # Segment override.
@@ -292,11 +292,9 @@ for opcode in base_opcodes:
         DISPATCHER += "  " + line + "\n"
   
       # Call the custom implementation.
-      DISPATCHER += "  %s();\n" % method.cpp_name
+      DISPATCHER += "  handler = &X86Base::%s;\n" % method.cpp_name
  
-DISPATCHER += """} else { 
-  invalidOpcode();
-}"""
+DISPATCHER += "}"
 
 
 #

@@ -101,8 +101,11 @@ class X86 : public X86Base {
   virtual void JMP_w() override;
   virtual void JNZ() override;
   virtual void JZ() override;
+  virtual void LOOP() override;
+  virtual void LDS() override;
   virtual void MUL_w() override;
   virtual void MOVSB() override;
+  virtual void MOVSW() override;
   virtual void MOV_b() override;
   virtual void MOV_w() override;
   virtual void OR_b() override;

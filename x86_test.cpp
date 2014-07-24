@@ -34,6 +34,11 @@ TEST_F(X86Test, Registers) {
 };
 
 
+TEST_F(X86Test, SignExtend) {
+  EXPECT_EQ(0xFFE8, x86_->signExtend(0xE8));
+  EXPECT_EQ(0x0008, x86_->signExtend(0x08));
+};
+
 TEST_F(X86Test, LinearAddress) {
   regs_->ss = 0x1234;
   regs_->sp = 0x4567;

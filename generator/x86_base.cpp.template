@@ -114,16 +114,18 @@ byte* X86Base::decodeI_b() {
 
 
 word* X86Base::decodeJ_w() {
-  immediate_w_ = fetch16();
-  immediate_w_ += getReg16(R16_IP);
+  short offset = (short)fetch16();
+  immediate_w_ = getReg16(R16_IP);
+  immediate_w_ += offset;
   addArgDesc(hex16ToString(immediate_w_) + "h");
   return &immediate_w_;
 }
 
 
 word* X86Base::decodeJ_b() {
-  immediate_w_ = fetch();
-  immediate_w_ += getReg16(R16_IP);
+  char offset = (char)fetch();
+  immediate_w_ = getReg16(R16_IP);
+  immediate_w_ += offset;
   addArgDesc(hex16ToString(immediate_w_) + "h");
   return &immediate_w_;
 }
@@ -239,8 +241,11 @@ byte* X86Base::decodeReg_b() {
 
 
 word X86Base::signExtend(byte val) {
-  // TODO
-  return val;
+  word ret = val;
+  if (val & 0b10000000) {
+    ret |= 0xFF00;
+  }
+  return ret;
 }
 
 void X86Base::reset() {
@@ -320,9 +325,8 @@ void X86Base::step() {
           opcode_ == 0xA7 || // CMPW
           opcode_ == 0xAE || // SCASB
           opcode_ == 0xAF) { // SCASW
-
-        if ((rep_opcode_ == 0xF3 &&  getFlag(F_ZF)) || // REPZ
-            (rep_opcode_ == 0xF2 && !getFlag(F_ZF))) { // REPNZ
+        if ((rep_opcode_ == 0xF3 && !getFlag(F_ZF)) || // REPZ
+            (rep_opcode_ == 0xF2 &&  getFlag(F_ZF))) { // REPNZ
           break;
         }
 

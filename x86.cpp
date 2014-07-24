@@ -88,13 +88,13 @@ void X86::notImplemented(const char* opcode_name) {
 }
 
 void X86::invalidOpcode() {
-  cerr << "Invalid opcode 0x" << Hex8 << (int)opcode_ << endl;
+  cerr << Addr(current_cs_, current_ip_) << " Invalid opcode 0x" << Hex8 << (int)opcode_ << endl;
   assert(false);
 }
 
+
 void X86::step() {
   X86Base::step();
-
   clog << Addr(current_cs_, current_ip_) << " " << getOpcodeDesc() << endl;
 }
 
@@ -281,6 +281,19 @@ void X86::MOVSB() {
   regs_.di += inc_dec;
 }
 
+
+void X86::MOVSW() {
+  warg1 = getMem16Ptr(regs_.es, regs_.di);
+  warg2 = getMem16Ptr(segment_, regs_.si);
+
+  *warg1 = *warg2;
+  
+  int inc_dec = (regs_.flags & F_DF) ? -2 : 2;
+  regs_.si += inc_dec;
+  regs_.di += inc_dec;
+}
+
+
 void X86::CALL_w() {
   CHECK_WARG1();
   doPush(regs_.ip);
@@ -418,4 +431,25 @@ void X86::MUL_w() {
   regs_.dx = product >> 16;
 
   setFlag(F_CF | F_OF, regs_.dx != 0);
+}
+
+
+void X86::LOOP() {
+  CHECK_WARG1();
+
+  regs_.cx--;
+  if (regs_.cx != 0) {
+    regs_.ip = *warg1;
+  }
+}
+
+
+void X86::LDS() {
+  CHECK_WARGS();
+
+  word* src = getMem16Ptr(regs_.ds, *warg2);
+  *warg1 = *src++;
+  regs_.ds = *src++;
+
+  cerr << Addr(regs_.ds, *warg1) << endl;
 }

@@ -110,6 +110,10 @@ class X86Base {
   // Address of the instruction being executed.
   word current_cs_, current_ip_;
 
+ public:
+  word fetch16();
+  word signExtend(byte val);
+
  private:
   // Helpers.
   byte decodeGRP();
@@ -134,10 +138,8 @@ class X86Base {
   word* addConstArg_w(word arg);
   byte* addConstArg_b(byte arg);
 
-  word fetch16();
   byte modRM();
 
-  word signExtend(byte val);
 
   word getReg16(int reg);
   byte getReg8(int reg);

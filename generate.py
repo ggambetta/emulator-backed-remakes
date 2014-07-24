@@ -202,7 +202,7 @@ def getFetchArgCode(args):
       lines.append("b%s = getReg8Ptr(R8_%s);" % (suffix, arg))
     elif arg in ["Gv"]:
       lines.append("w%s = decodeReg_w();" % suffix)
-    elif arg in ["Ev", "Ew"]:
+    elif arg in ["Ev", "Ew", "Mp"]:
       lines.append("w%s = decodeRM_w();" % suffix)
     elif arg in ["Gb"]:
       lines.append("b%s = decodeReg_b();" % suffix)

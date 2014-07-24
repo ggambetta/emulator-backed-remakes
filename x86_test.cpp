@@ -220,6 +220,7 @@ TEST_F(X86Test, REP_MOVSB) {
   EXPECT_EQ(0x11, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 3)]);
   EXPECT_EQ(0x22, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 2)]);
   EXPECT_EQ(0x33, mem_[x86_->getLinearAddress(regs_->es, regs_->di - 1)]);
+  EXPECT_EQ(0, regs_->cx);
 }
 
 
@@ -279,7 +280,42 @@ TEST_F(X86Test, REP_CMPSB) {
   x86_->step();  // CLD
   x86_->step();  // REP CMPSB
 
-  EXPECT_EQ(0x0011 + 1, regs_->si);
-  EXPECT_EQ(0x0022 + 1, regs_->di);
+  // Stops after 1 even though CX != 0
+  EXPECT_EQ(0x0011 + 2, regs_->si);
+  EXPECT_EQ(0x0022 + 2, regs_->di);
+  EXPECT_EQ(1, regs_->cx);
 }
 
+
+TEST_F(X86Test, MUL) {
+  regs_->ax = 3;
+  regs_->cx = 5;
+  regs_->dx = 0x1234;
+
+  int off = kOffset;
+  mem_[off++] = 0xF7;  // MUL
+  mem_[off++] = 0xE1;  // CX
+  x86_->step();
+
+  EXPECT_EQ(0, regs_->dx);
+  EXPECT_EQ(15, regs_->ax);
+  EXPECT_EQ(5, regs_->cx);
+
+  EXPECT_FALSE(x86_->getFlag(X86::F_CF));
+  EXPECT_FALSE(x86_->getFlag(X86::F_OF));
+
+  // Now multiply big numbers.
+  regs_->ax = 0xAA55;
+  regs_->cx = 0x1234;
+  regs_->dx = 0xFFFF;
+
+  mem_[off++] = 0xF7;  // MUL
+  mem_[off++] = 0xE1;  // CX
+  x86_->step();
+
+  EXPECT_EQ(0x0C1C, regs_->dx);
+  EXPECT_EQ(0x9344, regs_->ax);
+
+  EXPECT_TRUE(x86_->getFlag(X86::F_CF));
+  EXPECT_TRUE(x86_->getFlag(X86::F_OF));
+}

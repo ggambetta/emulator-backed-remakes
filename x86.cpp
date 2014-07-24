@@ -409,3 +409,13 @@ void X86::SHL_wb() {
   // TODO: Flags
   adjustFlagZS(*warg1);
 }
+
+void X86::MUL_w() {
+  CHECK_WARG1();
+
+  unsigned int product = regs_.ax * (*warg1);
+  regs_.ax = product & 0xFFFF;
+  regs_.dx = product >> 16;
+
+  setFlag(F_CF | F_OF, regs_.dx != 0);
+}

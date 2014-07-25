@@ -224,6 +224,8 @@ def getFetchArgCode(args):
         lines.append("b%s = addConstArg_b(%s);" % (suffix, arg))
       else:
         lines.append("w%s = addConstArg_w(%s);" % (suffix, arg))
+    elif arg in ["Ov", "Ow"]:
+      lines.append("w%s = decodeO_w();" % suffix);
 
   return lines
 

@@ -135,6 +135,8 @@ class X86Base {
   word* decodeJ_w();
   word* decodeJ_b();
 
+  word* decodeO_w();
+
   word* addConstArg_w(word arg);
   byte* addConstArg_b(byte arg);
 

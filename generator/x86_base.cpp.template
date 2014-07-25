@@ -103,6 +103,12 @@ byte* X86Base::addConstArg_b(byte arg) {
   return &immediate_b_;
 }
 
+word* X86Base::decodeO_w() {
+  word offset = fetch16();
+  addArgDesc(string("[") + segment_desc_ + hex16ToString(offset) + "h]");
+  return getMem16Ptr(segment_, offset);
+}
+
 
 word* X86Base::decodeI_w() {
   return addConstArg_w(fetch16());
@@ -230,7 +236,7 @@ word* X86Base::decodeRM_w() {
   }
 
   addArgDesc(string("[") + segment_desc_ + desc + "]");
-  return getMem16Ptr(segment_, displacement);
+  return getMem16Ptr(segment_, base + displacement);
 }
 
 

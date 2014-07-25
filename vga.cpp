@@ -19,6 +19,23 @@ enum {
 };
 
 
+static const byte kCGAColors[2][4][3] = {
+  { // Palette 0
+    { 0x00, 0x00, 0x00 },  // Black
+    { 0x00, 0xAA, 0x00 },  // Green
+    { 0xAA, 0x00, 0x00 },  // Red
+    { 0xAA, 0x55, 0x00 },  // Brown
+  },
+  { // Palette 1
+    { 0x00, 0x00, 0x00 },  // Black
+    { 0x00, 0xAA, 0xAA },  // Cyan
+    { 0xAA, 0x00, 0xAA },  // Magenta
+    { 0xAA, 0xAA, 0xAA },  // Gray
+  },
+};
+
+
+
 VGA::VGA(X86* x86) : x86_(x86), mode_(0) {
   x86_->registerInterruptHandler(this, 0x10);
 }
@@ -55,6 +72,12 @@ void VGA::setVideoMode(int mode) {
   if (mode_ == MODE_CGA_320x200) {
     clog << "VGA: Video mode 0x" << Hex8 << mode_ << " (CGA 320x200)" << endl;
     cga_palette_ = 0;
+  
+    // Randomize VRAM.
+    /*byte* vram = x86_->getMem8Ptr(0xB800, 0);
+    for (int i = 0; i < 320*200/4; i++) {
+      *vram++ = rand() % 256;
+    }*/
   } else {
     cerr << "VGA: Unsupported video mode 0x" << Hex8 << mode << endl;
   }
@@ -64,7 +87,49 @@ void VGA::setVideoMode(int mode) {
 void VGA::setPalette(int palette) {
   if (mode_ == MODE_CGA_320x200) {
     clog << "Setting CGA palette " << palette << endl;
+    cga_palette_ = palette;
   }
 }
  
 
+void VGA::save(const char* filename) {
+  if (mode_ != MODE_CGA_320x200) {
+    clog << "Can't save screen in mode " << (int)mode_ << endl;
+    return;
+  }
+
+
+  byte* vram = x86_->getMem8Ptr(0xB800, 0);
+  byte* rgb = new byte[320*200*3];
+
+  byte* out = rgb;
+  for (int y = 0; y < 200; y++) {
+    byte* vram_row = vram + (y/2)*320/4 + (y%2)*8192;
+
+    for (int x = 0; x < 320; x += 4) {
+      //byte val = *vram++; 
+      byte val = *vram_row++; 
+
+      byte mask = 0b11000000;
+      int shift = 6;
+      for (int px = 0; px < 4; px++) {
+        byte color = (val & mask) >> shift;
+        shift -= 2;
+        mask >>= 2;
+  
+        *out++ = kCGAColors[cga_palette_][color][0];
+        *out++ = kCGAColors[cga_palette_][color][1];
+        *out++ = kCGAColors[cga_palette_][color][2];
+      }
+    }
+  }
+
+  FILE* file = fopen(filename, "wb");
+  fprintf(file, "P6\n");
+  fprintf(file, "320 200 ");
+  fprintf(file, "255\n");
+  fwrite(rgb, 320*200*3, 1, file);
+  fclose(file);
+
+  delete[] rgb;
+}

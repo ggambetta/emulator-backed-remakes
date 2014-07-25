@@ -88,9 +88,11 @@ class X86 : public X86Base {
   // Opcode implementations.
   //
   virtual void ADD_w() override;
+  virtual void ADD_wb() override;
   virtual void AND_b() override;
   virtual void CALL_w() override;
   virtual void CLD() override;
+  virtual void CLI() override;
   virtual void CMP_b() override;
   virtual void CMPSB() override;
   virtual void CMP_w() override;
@@ -113,6 +115,7 @@ class X86 : public X86Base {
   virtual void PUSH() override;
   virtual void RET() override;
   virtual void STD() override;
+  virtual void STI() override;
   virtual void SUB_b() override;
   virtual void SUB_w() override;
   virtual void TEST_b() override;

@@ -212,6 +212,16 @@ void X86::ADD_w() {
 }
 
 
+void X86::ADD_wb() {
+  CHECK_WARG1();
+  CHECK_BARG2();
+  *warg1 += *barg2;
+
+  // TODO: Adjust flags
+  adjustFlagZS(*warg1);
+}
+
+
 void X86::SUB_b() {
   CHECK_BARGS();
   *barg1 -= *barg2;
@@ -237,6 +247,11 @@ void X86::MOV_w() {
 void X86::MOV_b() {
   CHECK_BARGS();
   *barg1 = *barg2;
+
+  /*if (current_ip_ == 0x3723) {
+    clog << "MOV: " << Addr(regs_.es, regs_.di) << endl;
+    clog << (int)(barg1 - getMem8Ptr(0xB800, 0)) << endl;
+  }*/
 }
 
 
@@ -255,6 +270,16 @@ void X86::CLD() {
 
 void X86::STD() {
   setFlag(F_DF, true);
+}
+
+
+void X86::CLI() {
+  setFlag(F_IF, false);
+}
+
+
+void X86::STI() {
+  setFlag(F_IF, true);
 }
 
 

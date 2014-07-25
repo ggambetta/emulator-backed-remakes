@@ -29,6 +29,11 @@ class Runner {
   void run() {
     while (true) {
       x86_.step();
+  
+     if (x86_.getCS_IP() == 0x372C) {
+        clog << "BREAKPOINT" << endl;
+        vga_.save("screenshot.ppm");
+      }
     }
   }
 

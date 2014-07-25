@@ -401,6 +401,18 @@ void X86::INT() {
 }
 
 
+void X86::OUT_b() {
+  CHECK_BARGS();
+
+  auto handler = io_handlers_.find(*barg1);
+  if (handler != io_handlers_.end()) {
+    handler->second->handleOUT(*barg1, *barg2);
+  } else {
+    cerr << "No I/O handler for 0x" << Hex8 << (int)(*barg1) << endl;
+  }
+}
+
+
 void X86::RET() {
   regs_.ip = doPop(); 
 }

@@ -106,6 +106,7 @@ class X86 : public X86Base {
   virtual void LOOP() override;
   virtual void LDS() override;
   virtual void MUL_w() override;
+  virtual void OUT_b() override;
   virtual void MOVSB() override;
   virtual void MOVSW() override;
   virtual void MOV_b() override;

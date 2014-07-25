@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cassert>
 #include <iomanip>
+#include <sstream>
 
 #include "x86.h"
 #include "vga.h"
@@ -30,9 +31,13 @@ class Runner {
     while (true) {
       x86_.step();
   
-     if (x86_.getCS_IP() == 0x372C) {
+     if (x86_.getCS_IP() == 0x3735) {
         clog << "BREAKPOINT" << endl;
-        vga_.save("screenshot.ppm");
+
+        static int idx = 0;
+        stringstream ss;
+        ss << "screenshot" << setw(3) << setfill('0') << idx++ << ".ppm";
+        vga_.save(ss.str().data());
       }
     }
   }

@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -98,18 +99,19 @@ void VGA::save(const char* filename) {
     return;
   }
 
-
   byte* vram = x86_->getMem8Ptr(0xB800, 0);
   byte* rgb = new byte[320*200*3];
 
   byte* out = rgb;
   for (int y = 0; y < 200; y++) {
+    // CGA video memory is interlaced: all even rows, then all odd rows
+    // with a 8K offset.
     byte* vram_row = vram + (y/2)*320/4 + (y%2)*8192;
 
     for (int x = 0; x < 320; x += 4) {
-      //byte val = *vram++; 
       byte val = *vram_row++; 
 
+      // 4 pixels per byte.
       byte mask = 0b11000000;
       int shift = 6;
       for (int px = 0; px < 4; px++) {
@@ -124,12 +126,12 @@ void VGA::save(const char* filename) {
     }
   }
 
-  FILE* file = fopen(filename, "wb");
-  fprintf(file, "P6\n");
-  fprintf(file, "320 200 ");
-  fprintf(file, "255\n");
-  fwrite(rgb, 320*200*3, 1, file);
-  fclose(file);
+  ofstream file(filename);
+  file << "P6\n";
+  file << "320 200\n";
+  file << "255\n";
+  file.write((const char*)rgb, 320*200*3);
+  file.close();
 
   delete[] rgb;
 }

@@ -17,6 +17,7 @@ all: $(SOURCES) $(MAIN) $(LIBRARY) tests
     
 clean:
 	rm -f *.o $(MAIN) $(TEST_BINARIES) $(GENERATED_FILES) run_tests.sh $(LIBRARY)
+	rm -rf *.dSYM
 
 # Generated code.
 x86_base.cpp x86_base.h: generate.py generator/x86_base.cpp.template generator/x86_base.h.template

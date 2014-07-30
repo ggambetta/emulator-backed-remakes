@@ -94,6 +94,15 @@ TEST_F(X86Test, FLAGS) {
 
   EXPECT_EQ(1, regs_->ax);
   EXPECT_FALSE(x86_->getFlag(X86::F_ZF));
+
+  mem_[off++] = 0x00;  // ADD
+  mem_[off++] = 0xF0;  // AL, DH
+  regs_->al = 0xFF;
+  regs_->dh = 0x02;
+  x86_->step();
+
+  EXPECT_EQ(0x01, regs_->al);
+  EXPECT_TRUE(x86_->getFlag(X86::F_CF));
 }
 
 

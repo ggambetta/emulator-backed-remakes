@@ -58,10 +58,12 @@ void X86::reset() {
 
 byte X86::fetch() {
   byte val = mem_->read(getCS_IP());
-  if (debug_level_ == 2) {
+  regs_.ip++;
+  bytes_fetched_++;
+
+  if (debug_level_ >= 2) {
     clog << Addr(current_cs_, current_ip_) << " " << Hex8 << (int)val << endl;
   }
-  regs_.ip++;
   return val;
 }
 
@@ -83,7 +85,7 @@ int X86::getLinearAddress(word segment, word offset) const {
 
 void X86::notImplemented(const char* opcode_name) {
   cerr << "Opcode '" << opcode_name << "' not implemented." << endl;
-  cerr << getOpcodeDesc() << endl;
+  outputCurrentOperation(cerr);
   assert(false);
 }
 
@@ -93,9 +95,28 @@ void X86::invalidOpcode() {
 }
 
 
+void X86::outputCurrentOperation(std::ostream& os) {
+  os << Addr(current_cs_, current_ip_) << " ";
+
+  byte* code = getMem8Ptr(current_cs_, current_ip_);
+  for (int i = 0; i < bytes_fetched_; i++) {
+    os << Hex8 << (int)(*code++);
+  }
+  for (int i = 0; i < 6 - bytes_fetched_; i++) {
+    os << "  ";
+  }
+
+  os << getOpcodeDesc() << endl;
+}
+
+
 void X86::step() {
+  bytes_fetched_ = 0;
   X86Base::step();
-  clog << Addr(current_cs_, current_ip_) << " " << getOpcodeDesc() << endl;
+
+  if (debug_level_ >= 1) {
+    outputCurrentOperation(clog);
+  }
 }
 
 
@@ -205,17 +226,35 @@ void X86::adjustFlagZS(word value) {
 
 void X86::ADD_w() {
   CHECK_WARGS();
-  *warg1 += *warg2;
+
+  int result = (*warg1) + (*warg2);
+  *warg1 = result & 0xFFFF;
+  setFlag(F_CF, (result & 0x10000) != 0);
 
   // TODO: Adjust flags
   adjustFlagZS(*warg1);
 }
 
 
+void X86::ADD_b() {
+  CHECK_BARGS();
+
+  int result = (*barg1) + (*barg2);
+  *barg1 = result & 0xFF;
+  setFlag(F_CF, (result & 0x100) != 0);
+
+  // TODO: Adjust flags
+  adjustFlagZS(*barg1);
+}
+
+
 void X86::ADD_wb() {
   CHECK_WARG1();
   CHECK_BARG2();
-  *warg1 += *barg2;
+
+  int result = (*warg1) + (*barg2);
+  *warg1 = result & 0xFFFF;
+  setFlag(F_CF, (result & 0x10000) != 0);
 
   // TODO: Adjust flags
   adjustFlagZS(*warg1);
@@ -224,7 +263,11 @@ void X86::ADD_wb() {
 
 void X86::SUB_b() {
   CHECK_BARGS();
+
+  bool borrow = (*barg1) < (*barg2);
   *barg1 -= *barg2;
+  setFlag(F_CF, borrow);
+
   // TODO: Adjust flags
   adjustFlagZS(*barg1);
 }
@@ -232,9 +275,36 @@ void X86::SUB_b() {
 
 void X86::SUB_w() {
   CHECK_WARGS();
+
+  bool borrow = (*warg1) < (*warg2);
   *warg1 -= *warg2;
+  setFlag(F_CF, borrow);
+
   // TODO: Adjust flags
   adjustFlagZS(*warg1);
+}
+
+
+void X86::SBB_w() {
+  CHECK_WARGS();
+
+  bool borrow = (*warg1) < (*warg2) + (int)getFlag(F_CF);
+  *warg1 -= *warg2 + (int)getFlag(F_CF);
+  setFlag(F_CF, borrow);
+
+  // TODO: Adjust flags
+  adjustFlagZS(*warg1);
+}
+
+
+void X86::SBB_b() {
+  CHECK_BARGS();
+
+  bool borrow = (*barg1) < (*barg2) + (int)getFlag(F_CF);
+  *barg1 -= *barg2 + (int)getFlag(F_CF);
+  setFlag(F_CF, borrow);
+  // TODO: Adjust flags
+  adjustFlagZS(*barg1);
 }
 
 
@@ -247,11 +317,6 @@ void X86::MOV_w() {
 void X86::MOV_b() {
   CHECK_BARGS();
   *barg1 = *barg2;
-
-  /*if (current_ip_ == 0x3723) {
-    clog << "MOV: " << Addr(regs_.es, regs_.di) << endl;
-    clog << (int)(barg1 - getMem8Ptr(0xB800, 0)) << endl;
-  }*/
 }
 
 
@@ -323,6 +388,14 @@ void X86::CALL_w() {
   CHECK_WARG1();
   doPush(regs_.ip);
   regs_.ip = *warg1;
+}
+
+
+void X86::JNB() {
+  CHECK_WARG1();
+  if (!getFlag(F_CF)) {
+    regs_.ip = *warg1;
+  }
 }
 
 
@@ -420,10 +493,23 @@ void X86::RET() {
 
 void X86::INC_w() {
   CHECK_WARG1();
+
+  setFlag(F_CF, (*warg1) == 0xFFFF);
   *warg1 = (*warg1) + 1;
 
   // TODO: Flags
   adjustFlagZS(*warg1);
+}
+
+
+void X86::INC_b() {
+  CHECK_BARG1();
+
+  setFlag(F_CF, (*barg1) == 0xFF);
+  *barg1 = (*barg1) + 1;
+
+  // TODO: Flags
+  adjustFlagZS(*barg1);
 }
 
 

@@ -5,6 +5,7 @@
 #include "helpers.h"
 
 #include <unordered_map>
+#include <iostream>
 
 class Memory;
 class InterruptHandler;
@@ -68,6 +69,8 @@ class X86 : public X86Base {
   void adjustFlagZS(byte value);
   void adjustFlagZS(word value);
 
+  void outputCurrentOperation(std::ostream& os);
+
   //
   // X86Base overrides.
   //
@@ -88,33 +91,39 @@ class X86 : public X86Base {
   // Opcode implementations.
   //
   virtual void ADD_w() override;
+  virtual void ADD_b() override;
   virtual void ADD_wb() override;
   virtual void AND_b() override;
   virtual void CALL_w() override;
   virtual void CLD() override;
   virtual void CLI() override;
-  virtual void CMP_b() override;
   virtual void CMPSB() override;
+  virtual void CMP_b() override;
   virtual void CMP_w() override;
   virtual void DEC_b() override;
   virtual void INC_w() override;
+  virtual void INC_b() override;
   virtual void INT() override;
   virtual void JMP_b() override;
   virtual void JMP_w() override;
+  virtual void JNB() override;
   virtual void JNZ() override;
   virtual void JZ() override;
-  virtual void LOOP() override;
   virtual void LDS() override;
-  virtual void MUL_w() override;
-  virtual void OUT_b() override;
+  virtual void LOOP() override;
   virtual void MOVSB() override;
   virtual void MOVSW() override;
   virtual void MOV_b() override;
   virtual void MOV_w() override;
+  virtual void MUL_w() override;
   virtual void OR_b() override;
+  virtual void OUT_b() override;
   virtual void POP() override;
   virtual void PUSH() override;
   virtual void RET() override;
+  virtual void SBB_b() override;
+  virtual void SBB_w() override;
+  virtual void SHL_wb() override;
   virtual void STD() override;
   virtual void STI() override;
   virtual void SUB_b() override;
@@ -122,7 +131,6 @@ class X86 : public X86Base {
   virtual void TEST_b() override;
   virtual void XCHG_w() override;
   virtual void XOR_b() override;
-  virtual void SHL_wb() override;
 
  private:
   // Memory and registers.
@@ -135,6 +143,9 @@ class X86 : public X86Base {
 
   // Debugging and logging.
   int debug_level_;
+
+  // Number of times fetch() is called.
+  int bytes_fetched_;
 };
 
 #endif  // __X86_H__

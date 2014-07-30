@@ -20,7 +20,7 @@ class Runner {
  public:
   Runner()
       : mem_(kMemSize), x86_(&mem_), vga_(&x86_) {
-    x86_.setDebugLevel(0);
+    x86_.setDebugLevel(1);
   }
 
   void load(const string& filename) {

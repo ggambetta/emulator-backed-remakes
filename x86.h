@@ -66,8 +66,8 @@ class X86 : public X86Base {
 
   virtual byte* getMem8Ptr(word segment, word offset);
 
-  void adjustFlagZS(byte value);
-  void adjustFlagZS(word value);
+  void adjustFlagZSP(byte value);
+  void adjustFlagZSP(word value);
 
   void outputCurrentOperation(std::ostream& os);
 
@@ -90,8 +90,8 @@ class X86 : public X86Base {
   //
   // Opcode implementations.
   //
-  virtual void ADD_w() override;
   virtual void ADD_b() override;
+  virtual void ADD_w() override;
   virtual void ADD_wb() override;
   virtual void AND_b() override;
   virtual void CALL_w() override;
@@ -101,12 +101,13 @@ class X86 : public X86Base {
   virtual void CMP_b() override;
   virtual void CMP_w() override;
   virtual void DEC_b() override;
-  virtual void INC_w() override;
   virtual void INC_b() override;
+  virtual void INC_w() override;
   virtual void INT() override;
   virtual void JMP_b() override;
   virtual void JMP_w() override;
   virtual void JNB() override;
+  virtual void JB() override;
   virtual void JNZ() override;
   virtual void JZ() override;
   virtual void LDS() override;
@@ -117,15 +118,18 @@ class X86 : public X86Base {
   virtual void MOV_w() override;
   virtual void MUL_w() override;
   virtual void OR_b() override;
+  virtual void OR_w() override;
   virtual void OUT_b() override;
   virtual void POP() override;
   virtual void PUSH() override;
   virtual void RET() override;
   virtual void SBB_b() override;
   virtual void SBB_w() override;
+  virtual void SHL_b() override;
   virtual void SHL_wb() override;
   virtual void STD() override;
   virtual void STI() override;
+  virtual void STOSB() override;
   virtual void SUB_b() override;
   virtual void SUB_w() override;
   virtual void TEST_b() override;
@@ -146,6 +150,9 @@ class X86 : public X86Base {
 
   // Number of times fetch() is called.
   int bytes_fetched_;
+
+  // Parity flag lookup table.
+  static const bool byte_parity_[256];
 };
 
 #endif  // __X86_H__

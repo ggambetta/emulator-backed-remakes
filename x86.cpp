@@ -27,6 +27,25 @@ using namespace std;
 #define CHECK_WBARGS() CHECK_WARG1(); CHECK_BARG2();
 
 
+const bool X86::byte_parity_[256] = {
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
+};
+
 //
 // x86 CPU.
 //
@@ -34,7 +53,6 @@ X86::X86(Memory* mem)
   : mem_(mem), debug_level_(0) {
   reset();
 }
-
 
 Registers* X86::getRegisters() {
   return &regs_;
@@ -212,15 +230,17 @@ void X86::registerIOHandler(IOHandler* handler, int num) {
 }
 
 
-void X86::adjustFlagZS(byte value) {
+void X86::adjustFlagZSP(byte value) {
   setFlag(F_ZF, value == 0);
   setFlag(F_SF, (value & 0x80) == 0x80);
+  setFlag(F_PF, byte_parity_[value]);
 }
 
 
-void X86::adjustFlagZS(word value) {
+void X86::adjustFlagZSP(word value) {
   setFlag(F_ZF, value == 0);
   setFlag(F_SF, (value & 0x8000) == 0x8000);
+  setFlag(F_PF, byte_parity_[value & 0xFF]);
 }
 
 
@@ -229,10 +249,9 @@ void X86::ADD_w() {
 
   int result = (*warg1) + (*warg2);
   *warg1 = result & 0xFFFF;
-  setFlag(F_CF, (result & 0x10000) != 0);
 
-  // TODO: Adjust flags
-  adjustFlagZS(*warg1);
+  setFlag(F_CF, (result & 0x10000) != 0);
+  adjustFlagZSP(*warg1);
 }
 
 
@@ -241,10 +260,9 @@ void X86::ADD_b() {
 
   int result = (*barg1) + (*barg2);
   *barg1 = result & 0xFF;
-  setFlag(F_CF, (result & 0x100) != 0);
 
-  // TODO: Adjust flags
-  adjustFlagZS(*barg1);
+  setFlag(F_CF, (result & 0x100) != 0);
+  adjustFlagZSP(*barg1);
 }
 
 
@@ -254,10 +272,9 @@ void X86::ADD_wb() {
 
   int result = (*warg1) + (*barg2);
   *warg1 = result & 0xFFFF;
-  setFlag(F_CF, (result & 0x10000) != 0);
 
-  // TODO: Adjust flags
-  adjustFlagZS(*warg1);
+  setFlag(F_CF, (result & 0x10000) != 0);
+  adjustFlagZSP(*warg1);
 }
 
 
@@ -266,10 +283,9 @@ void X86::SUB_b() {
 
   bool borrow = (*barg1) < (*barg2);
   *barg1 -= *barg2;
-  setFlag(F_CF, borrow);
 
-  // TODO: Adjust flags
-  adjustFlagZS(*barg1);
+  setFlag(F_CF, borrow);
+  adjustFlagZSP(*barg1);
 }
 
 
@@ -278,10 +294,9 @@ void X86::SUB_w() {
 
   bool borrow = (*warg1) < (*warg2);
   *warg1 -= *warg2;
-  setFlag(F_CF, borrow);
 
-  // TODO: Adjust flags
-  adjustFlagZS(*warg1);
+  setFlag(F_CF, borrow);
+  adjustFlagZSP(*warg1);
 }
 
 
@@ -290,10 +305,9 @@ void X86::SBB_w() {
 
   bool borrow = (*warg1) < (*warg2) + (int)getFlag(F_CF);
   *warg1 -= *warg2 + (int)getFlag(F_CF);
-  setFlag(F_CF, borrow);
 
-  // TODO: Adjust flags
-  adjustFlagZS(*warg1);
+  setFlag(F_CF, borrow);
+  adjustFlagZSP(*warg1);
 }
 
 
@@ -302,9 +316,9 @@ void X86::SBB_b() {
 
   bool borrow = (*barg1) < (*barg2) + (int)getFlag(F_CF);
   *barg1 -= *barg2 + (int)getFlag(F_CF);
+
   setFlag(F_CF, borrow);
-  // TODO: Adjust flags
-  adjustFlagZS(*barg1);
+  adjustFlagZSP(*barg1);
 }
 
 
@@ -384,6 +398,17 @@ void X86::MOVSW() {
 }
 
 
+void X86::STOSB() {
+  barg1 = getMem8Ptr(regs_.es, regs_.di);
+  barg2 = &regs_.al;
+
+  *barg1 = *barg2;
+  
+  int inc_dec = (regs_.flags & F_DF) ? -1 : 1;
+  regs_.di += inc_dec;
+}
+
+
 void X86::CALL_w() {
   CHECK_WARG1();
   doPush(regs_.ip);
@@ -394,6 +419,14 @@ void X86::CALL_w() {
 void X86::JNB() {
   CHECK_WARG1();
   if (!getFlag(F_CF)) {
+    regs_.ip = *warg1;
+  }
+}
+
+
+void X86::JB() {
+  CHECK_WARG1();
+  if (getFlag(F_CF)) {
     regs_.ip = *warg1;
   }
 }
@@ -414,8 +447,7 @@ void X86::XOR_b() {
   CHECK_BARGS();
   *barg1 ^= *barg2;
 
-  // TODO: Flags
-  adjustFlagZS(*barg1);
+  adjustFlagZSP(*barg1);
   setFlag(F_OF | F_CF, false);
 }
 
@@ -424,8 +456,16 @@ void X86::OR_b() {
   CHECK_BARGS();
   *barg1 |= *barg2;
 
-  // TODO: Flags
-  adjustFlagZS(*barg1);
+  adjustFlagZSP(*barg1);
+  setFlag(F_OF | F_CF, false);
+}
+
+
+void X86::OR_w() {
+  CHECK_WARGS();
+  *warg1 |= *warg2;
+
+  adjustFlagZSP(*warg1);
   setFlag(F_OF | F_CF, false);
 }
 
@@ -434,8 +474,7 @@ void X86::AND_b() {
   CHECK_BARGS();
   *barg1 &= *barg2;
 
-  // TODO: Flags
-  adjustFlagZS(*barg1);
+  adjustFlagZSP(*barg1);
   setFlag(F_OF | F_CF, false);
 }
 
@@ -493,32 +532,22 @@ void X86::RET() {
 
 void X86::INC_w() {
   CHECK_WARG1();
-
-  setFlag(F_CF, (*warg1) == 0xFFFF);
   *warg1 = (*warg1) + 1;
-
-  // TODO: Flags
-  adjustFlagZS(*warg1);
+  adjustFlagZSP(*warg1);
 }
 
 
 void X86::INC_b() {
   CHECK_BARG1();
-
-  setFlag(F_CF, (*barg1) == 0xFF);
   *barg1 = (*barg1) + 1;
-
-  // TODO: Flags
-  adjustFlagZS(*barg1);
+  adjustFlagZSP(*barg1);
 }
 
 
 void X86::DEC_b() {
   CHECK_BARG1();
   *barg1 = (*barg1) - 1;
-
-  // TODO: Flags
-  adjustFlagZS(*barg1);
+  adjustFlagZSP(*barg1);
 }
  
 
@@ -541,10 +570,16 @@ void X86::JZ() {
 void X86::SHL_wb() {
   CHECK_WBARGS();
   *warg1 <<= *barg2;
- 
-  // TODO: Flags
-  adjustFlagZS(*warg1);
+  adjustFlagZSP(*warg1);
 }
+
+
+void X86::SHL_b() {
+  CHECK_BARGS();
+  *barg1 <<= *barg2;
+  adjustFlagZSP(*barg1);
+}
+
 
 void X86::MUL_w() {
   CHECK_WARG1();

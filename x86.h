@@ -45,7 +45,7 @@ class X86 : public X86Base {
   Memory* getMemory();
 
   virtual void reset();
-  virtual void step();
+  virtual void fetchAndDecode();
 
   virtual void registerInterruptHandler(InterruptHandler* handler, int num);
   virtual void registerIOHandler(IOHandler* handler, int num);

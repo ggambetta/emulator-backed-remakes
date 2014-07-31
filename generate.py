@@ -262,17 +262,14 @@ for opcode in base_opcodes:
       for line in getFetchArgCode(args):
         DISPATCHER += "    " + line + "\n"
    
-      DISPATCHER += "    handler = &X86Base::%s;\n" % method.cpp_name
+      DISPATCHER += "    handler_ = &X86Base::%s;\n" % method.cpp_name
 
     DISPATCHER += "  }\n"
 
   else:
     method = addMethod(opcode)
 
-    if method.name in PREFIX_OPCODES:
-      # Prefix opcode.
-      DISPATCHER += "  have_opcode = false;\n"
-    else:
+    if method.name not in PREFIX_OPCODES:
       DISPATCHER += "  opcode_desc_ = \"%s\";\n" % opcode.name
 
     if method.name in SEGMENT_OVERRIDE_OPCODES:
@@ -294,7 +291,7 @@ for opcode in base_opcodes:
         DISPATCHER += "  " + line + "\n"
   
       # Call the custom implementation.
-      DISPATCHER += "  handler = &X86Base::%s;\n" % method.cpp_name
+      DISPATCHER += "  handler_ = &X86Base::%s;\n" % method.cpp_name
  
 DISPATCHER += "}"
 

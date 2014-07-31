@@ -128,9 +128,9 @@ void X86::outputCurrentOperation(std::ostream& os) {
 }
 
 
-void X86::step() {
+void X86::fetchAndDecode() {
   bytes_fetched_ = 0;
-  X86Base::step();
+  X86Base::fetchAndDecode();
 
   if (debug_level_ >= 1) {
     outputCurrentOperation(clog);

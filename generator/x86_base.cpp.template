@@ -276,8 +276,7 @@ string X86Base::getOpcodeDesc() const {
 }
 
 
-void X86Base::step() {
-  // Clear the execution state.
+void X86Base::clearExecutionState() {
   fetched_modrm_ = false;
   barg1 = barg2 = nullptr;
   warg1 = warg2 = nullptr;
@@ -296,21 +295,23 @@ void X86Base::step() {
   current_cs_ = getReg16(R16_CS);
   current_ip_ = getReg16(R16_IP);
 
-  void (X86Base::*handler)() = nullptr;
+  handler_ = nullptr;
+}
 
+
+void X86Base::fetchAndDecode() {
   // Fetch the opcode and decode its arguments. Also process segment override
   // and take note of REP opcodes.
-  bool have_opcode = true;
-  do {
+  while (handler_ == nullptr) {
     // Fetch the next opcode. Assume it's a primitive opcode.
     opcode_ = fetch();
-    have_opcode = true;
 
     // GENERATED CODE
+  }
+}
 
-  } while (!have_opcode);
-
-  if (handler == nullptr) {
+void X86Base::execute() {
+  if (handler_ == nullptr) {
     invalidOpcode();
   }
 
@@ -322,7 +323,7 @@ void X86Base::step() {
     }
 
     // Call the custom implementation.
-    (this->*handler)();
+    (this->*handler_)();
 
     // Handle end of REP loop.
     if (rep_opcode_ != 0) {
@@ -339,5 +340,10 @@ void X86Base::step() {
       }
     }
   } while (rep_opcode_ != 0);
+}
 
+void X86Base::step() {
+  clearExecutionState();
+  fetchAndDecode();
+  execute();
 }

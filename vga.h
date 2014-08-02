@@ -13,7 +13,8 @@ class VGA : public InterruptHandler, public IOHandler {
   virtual byte handleIN(int port);
   virtual void handleOUT(int port, byte val);
 
-  virtual void save(const char* filename);
+  virtual void getModeSize(int& width, int& height);
+  virtual void renderRGB(byte* buffer);
 
  private:
   void setVideoMode(int mode);

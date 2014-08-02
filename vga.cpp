@@ -90,18 +90,15 @@ void VGA::setPalette(int palette) {
     cga_palette_ = palette;
   }
 }
- 
 
-void VGA::save(const char* filename) {
+
+void VGA::renderRGB(byte* buffer) {
   if (mode_ != MODE_CGA_320x200) {
-    clog << "Can't save screen in mode " << (int)mode_ << endl;
+    clog << "Can't render screen in mode " << (int)mode_ << endl;
     return;
   }
 
   byte* vram = x86_->getMem8Ptr(0xB800, 0);
-  byte* rgb = new byte[320*200*3];
-
-  byte* out = rgb;
   for (int y = 0; y < 200; y++) {
     // CGA video memory is interlaced: all even rows, then all odd rows
     // with a 8K offset.
@@ -118,19 +115,19 @@ void VGA::save(const char* filename) {
         shift -= 2;
         mask >>= 2;
   
-        *out++ = kCGAColors[cga_palette_][color][0];
-        *out++ = kCGAColors[cga_palette_][color][1];
-        *out++ = kCGAColors[cga_palette_][color][2];
+        *buffer++ = kCGAColors[cga_palette_][color][0];
+        *buffer++ = kCGAColors[cga_palette_][color][1];
+        *buffer++ = kCGAColors[cga_palette_][color][2];
       }
     }
   }
+}
 
-  ofstream file(filename);
-  file << "P6\n";
-  file << "320 200\n";
-  file << "255\n";
-  file.write((const char*)rgb, 320*200*3);
-  file.close();
 
-  delete[] rgb;
+void VGA::getModeSize(int& width, int& height) {
+  width = height = 0;
+  if (mode_ == MODE_CGA_320x200) {
+    width = 320;
+    height = 200;
+  }
 }

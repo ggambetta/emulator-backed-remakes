@@ -1,33 +1,29 @@
-#include <iostream>
 #include <fstream>
-#include <vector>
 #include <iomanip>
-#include <sstream>
+#include <iostream>
 #include <signal.h>
+#include <sstream>
+#include <vector>
 
-#include "x86.h"
-#include "vga.h"
-#include "memory.h"
 #include "loader.h"
+#include "memory.h"
+#include "monitor.h"
+#include "vga.h"
+#include "x86.h"
 
 using namespace std;
 
+const char kPrompt[] = ">>> ";
+
 class Runner {
  public:
-  Runner (X86* x86, VGA* vga) : x86_(x86), vga_(vga) {
+  Runner (X86* x86, Monitor* monitor) : x86_(x86), monitor_(monitor) {
     error_ = false;
-    screenshot_ = 0;
     instance_ = this;
+    running_ = false;
 
     signal(SIGINT, &Runner::catchSignal);
     signal(SIGABRT, &Runner::catchSignal);
-  }
-
-
-  void saveScreenshot() {
-    stringstream ss;
-    ss << "screenshot" << setw(3) << setfill('0') << screenshot_++ << ".ppm";
-    vga_->save(ss.str().data());
   }
 
 
@@ -39,7 +35,7 @@ class Runner {
       }
       x86_->outputCurrentOperation(cout);
 
-      cout << ">>> ";
+      cout << kPrompt;
       string command;
       getline(cin, command);
 
@@ -69,6 +65,11 @@ class Runner {
     } else if (signal == 2) {
       error_ = true;
       cout << endl;
+
+      if (!running_) {
+        cerr << endl << "Press ^D to quit." << endl;
+        cerr << kPrompt;
+      }
     } else {
       cerr << "Got signal " << signal << endl;
       exit(1);
@@ -81,12 +82,14 @@ class Runner {
   }
 
   void doStep(int steps) {
+    running_ = true;
     while ((steps == -1 || steps--) && !error_) {
       if (!x86_->isExecutePending()) {
         x86_->fetchAndDecode();
       }
       x86_->execute();
     }
+    running_ = false;
   }
 
   void doSkip() {
@@ -115,20 +118,27 @@ class Runner {
         doRun();
       } else if (action == "skip") {
         doSkip();
+      } else if (action == "ss") {
+        if (tokens.size() > 1) {
+          monitor_->saveToFile(tokens[1]);
+        } else {
+          cerr << "Syntax: ss <filename>" << endl;
+        }
       } else {
         cerr << "Unknown command '" << action << "'" << endl;
       }
     } catch(const runtime_error& e) {
       cerr << "ERROR: " << e.what() << endl;
     }
+    cerr << endl;
   }
 
  private:
   X86* x86_;
-  VGA* vga_;
+  Monitor* monitor_;
 
   bool error_;
-  int screenshot_;
+  bool running_;
 
   static Runner* instance_;
 };
@@ -141,10 +151,11 @@ int main (int argc, char** argv) {
   Memory mem(1 << 20);  // 1 MB
   X86 x86(&mem);
   VGA vga(&x86);
+  Monitor monitor(&vga);
 
   Loader::loadCOM("goody.com", &x86);
 
-  Runner runner(&x86, &vga);
+  Runner runner(&x86, &monitor);
   runner.run();
 
   cout << endl;

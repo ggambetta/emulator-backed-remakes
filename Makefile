@@ -1,6 +1,7 @@
-CXXFLAGS=-std=c++0x -Wall -g
+CXXFLAGS=-std=c++0x -Wall -g -F /Library/Frameworks 
 TESTFLAGS=-I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -L. -lemu
 LIBRARY=libemu.a
+SDL=-framework SDL2
 
 MAIN=main
 MAIN_SRC=$(MAIN).cpp
@@ -29,7 +30,7 @@ $(LIBRARY): $(OBJECTS)
 
 # Main.
 $(MAIN): $(MAIN_SRC) $(LIBRARY)
-	g++ $(CXXFLAGS) -o $(MAIN) $(MAIN_SRC) -L. -lemu
+	g++ $(CXXFLAGS) -o $(MAIN) $(MAIN_SRC) -L. -lemu $(SDL)
 
 # Tests.
 tests: $(LIBRARY) $(TEST_BINARIES)

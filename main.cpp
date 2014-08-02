@@ -46,10 +46,10 @@ class Runner {
       if (command.empty()) {
         command = last_command;
       }
+      last_command = command;
 
       executeCommand(command);
-
-      last_command = command;
+      monitor_->update();
     }
   }
 
@@ -122,7 +122,13 @@ class Runner {
         if (tokens.size() > 1) {
           monitor_->saveToFile(tokens[1]);
         } else {
-          cerr << "Syntax: ss <filename>" << endl;
+          cerr << "Syntax: " << action << " <filename>" << endl;
+        }
+      } else if (action == "scale") {
+        if (tokens.size() > 1) {
+          monitor_->setScale(stoi(tokens[1]));
+        } else {
+          cerr << "Syntax: " << action << " <scale>" << endl;
         }
       } else {
         cerr << "Unknown command '" << action << "'" << endl;

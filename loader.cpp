@@ -3,7 +3,6 @@
 #include "memory.h"
 
 #include <fstream>
-#include <cassert>
 
 using namespace std;
 
@@ -16,7 +15,7 @@ void Loader::loadCOM(const string& filename, X86* x86) {
     ifstream file(filename, ios::in | ios::binary | ios::ate);
     int size = (int)file.tellg();
     cout << "File is "<< size << " bytes long." << endl;
-    assert(kCOMOffset + size < mem->getSize());
+    ASSERT(kCOMOffset + size < mem->getSize());
 
     file.seekg(0, ios::beg);
     file.read((char*)mem->getPointer(kCOMOffset), size);

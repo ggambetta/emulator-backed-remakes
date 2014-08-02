@@ -255,6 +255,7 @@ word X86Base::signExtend(byte val) {
 }
 
 void X86Base::reset() {
+  clearExecutionState();
 }
 
 
@@ -300,6 +301,11 @@ void X86Base::clearExecutionState() {
 
 
 void X86Base::fetchAndDecode() {
+  // Make sure there's no execute pending. Otherwise we may skip instructions.
+  assert(handler_ == nullptr);
+
+  clearExecutionState();
+
   // Fetch the opcode and decode its arguments. Also process segment override
   // and take note of REP opcodes.
   while (handler_ == nullptr) {
@@ -313,6 +319,7 @@ void X86Base::fetchAndDecode() {
 void X86Base::execute() {
   if (handler_ == nullptr) {
     invalidOpcode();
+    return;
   }
 
   // Execute the opcode handler, repeatedly if there's a REP prefix active.
@@ -340,6 +347,8 @@ void X86Base::execute() {
       }
     }
   } while (rep_opcode_ != 0);
+
+  handler_ = nullptr;
 }
 
 void X86Base::step() {

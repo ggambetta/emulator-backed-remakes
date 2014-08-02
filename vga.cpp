@@ -1,7 +1,6 @@
 #include "vga.h"
 #include "x86.h"
 
-#include <cassert>
 #include <iostream>
 #include <fstream>
 
@@ -43,7 +42,7 @@ VGA::VGA(X86* x86) : x86_(x86), mode_(0) {
 
  
 void VGA::handleInterrupt(int num) {
-  assert(num == 0x10);
+  ASSERT(num == 0x10);
   Registers* regs = x86_->getRegisters();
 
   if (regs->ah == 0x00) {

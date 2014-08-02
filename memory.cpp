@@ -1,8 +1,8 @@
 #include "memory.h"
 
 #include <cstring>
-#include <cassert>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -23,16 +23,18 @@ byte Memory::read(int address) const {
 
 void Memory::write(int address, byte value) {
   if (address >= size_) {
-    cerr << "Attempt to write at " << address << ", size is " << size_ << endl;
-    assert(false);
+    stringstream ss;
+    ss << "Attempt to write at " << address << ", size is " << size_;
+    FATAL(ss.str());
   }
   data_[address] = value;
 }
 
 byte* Memory::getPointer(int address) {
   if (address >= size_) {
-    cerr << "Attempt to get a pointer to " << address << ", size is " << size_ << endl;
-    assert(false);
+    stringstream ss;
+    ss << "Attempt to get a pointer to " << address << ", size is " << size_;
+    FATAL(ss.str());
   }
   return data_ + address;
 }

@@ -2,6 +2,8 @@
 #define __HELPERS_H__
 
 #include <iostream>
+#include <vector>
+
 
 // Fixed size types.
 typedef unsigned char byte;
@@ -32,5 +34,18 @@ std::ostream& operator<< (std::ostream& os, const Addr& addr);
 std::string hex8ToString(byte val);
 std::string hex16ToString(word val);
 std::string addrToString(const Addr& addr);
+
+
+// String functions.
+std::vector<std::string> split(const std::string& input);
+
+
+// ASSERT and related functionality.
+#define ASSERT(COND) assertHelper(COND, #COND, __FILE__, __LINE__)
+#define FATAL(MSG) fatalHelper(MSG, __FILE__, __LINE__)
+
+void fatalHelper(const std::string& msg, const char* file, int line);
+void assertHelper(bool cond, const std::string& msg, const char* file, int line);
+
 
 #endif  // __HELPERS_H__

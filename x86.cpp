@@ -3,7 +3,6 @@
 #include "device.h"
 #include "memory.h"
 
-#include <cassert>
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -102,14 +101,13 @@ int X86::getLinearAddress(word segment, word offset) const {
 
 
 void X86::notImplemented(const char* opcode_name) {
-  cerr << "Opcode '" << opcode_name << "' not implemented." << endl;
-  outputCurrentOperation(cerr);
-  assert(false);
+  FATAL("Opcode " + string(opcode_name) + " not implemented.");
 }
 
 void X86::invalidOpcode() {
-  cerr << Addr(current_cs_, current_ip_) << " Invalid opcode 0x" << Hex8 << (int)opcode_ << endl;
-  assert(false);
+  stringstream ss;
+  ss << "Invalid opcode 0x" << Hex8 << (int)opcode_;
+  FATAL(ss.str());
 }
 
 
@@ -128,6 +126,11 @@ void X86::outputCurrentOperation(std::ostream& os) {
 }
 
 
+int X86::getBytesFetched() const {
+  return bytes_fetched_;
+}
+
+
 void X86::fetchAndDecode() {
   bytes_fetched_ = 0;
   X86Base::fetchAndDecode();
@@ -138,16 +141,21 @@ void X86::fetchAndDecode() {
 }
 
 
+bool X86::isExecutePending() const {
+  return (handler_ != nullptr);
+}
+
+
 word* X86::getReg16Ptr(int reg) {
-  assert(reg >= 0);
-  assert(reg <= R16_COUNT);
+  ASSERT(reg >= 0);
+  ASSERT(reg <= R16_COUNT);
   return &regs_.regs16[reg];
 }
 
 
 byte* X86::getReg8Ptr(int reg) {
-  assert(reg >= 0);
-  assert(reg <= R8_COUNT);
+  ASSERT(reg >= 0);
+  ASSERT(reg <= R8_COUNT);
   return &regs_.regs8[reg];
 }
 
@@ -219,13 +227,13 @@ void X86::doPush(word val) {
 
 
 void X86::registerInterruptHandler(InterruptHandler* handler, int num) {
-  assert(int_handlers_.count(num) == 0);
+  ASSERT(int_handlers_.count(num) == 0);
   int_handlers_[num] = handler;
 }
 
 
 void X86::registerIOHandler(IOHandler* handler, int num) {
-  assert(io_handlers_.count(num) == 0);
+  ASSERT(io_handlers_.count(num) == 0);
   io_handlers_[num] = handler;
 }
 

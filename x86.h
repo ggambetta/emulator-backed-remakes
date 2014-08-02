@@ -45,7 +45,9 @@ class X86 : public X86Base {
   Memory* getMemory();
 
   virtual void reset();
-  virtual void fetchAndDecode();
+  virtual void fetchAndDecode() override;
+
+  bool isExecutePending() const;
 
   virtual void registerInterruptHandler(InterruptHandler* handler, int num);
   virtual void registerIOHandler(IOHandler* handler, int num);
@@ -69,6 +71,7 @@ class X86 : public X86Base {
   void adjustFlagZSP(byte value);
   void adjustFlagZSP(word value);
 
+  int getBytesFetched() const;
   void outputCurrentOperation(std::ostream& os);
 
   //

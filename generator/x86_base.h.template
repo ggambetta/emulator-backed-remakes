@@ -15,6 +15,10 @@ class X86Base {
   virtual void reset();
   virtual void step();
 
+  virtual void clearExecutionState();
+  virtual void fetchAndDecode();
+  virtual void execute();
+
   // Mandatory implementations.
   virtual byte fetch() = 0;
   virtual void notImplemented(const char* opcode_name) = 0;
@@ -116,11 +120,6 @@ class X86Base {
  public:
   word fetch16();
   word signExtend(byte val);
-
- protected:
-  virtual void clearExecutionState();
-  virtual void fetchAndDecode();
-  virtual void execute();
 
  private:
   // Helpers.

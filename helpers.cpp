@@ -52,3 +52,38 @@ string addrToString(const Addr& addr) {
   ss << addr;
   return ss.str();
 }
+
+
+vector<string> split(const string& input) {
+  vector<string> tokens;
+  const string delimiters = " \t";
+
+  int end = -1;
+  do
+  {
+    int start = end + 1;
+    end = input.find_first_of(delimiters, start);
+    string token = input.substr(start, end - start);
+    if (!token.empty()) {
+      tokens.push_back(token);
+    }
+  } while (end != string::npos);
+
+  return tokens;
+}
+ 
+
+void fatalHelper(const string& desc, const char* file, int line) {
+  stringstream ss;
+  ss << file << ":" << line << ": " << desc;
+  throw runtime_error(ss.str());
+}
+
+
+void assertHelper(bool cond, const string& desc, const char* file, int line) {
+  if (!cond) {
+    fatalHelper("Assert failed: " + desc, file, line);
+  }
+}
+
+

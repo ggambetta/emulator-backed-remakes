@@ -17,6 +17,7 @@
 00000126  F3A4              rep movsb
 00000128  87F3              xchg si,bx
 0000012A  87FA              xchg di,dx
+
 0000012C  BBE3ED            mov bx,0xede3
 0000012F  BAE4ED            mov dx,0xede4
 00000132  C707FF00          mov word [bx],0xff
@@ -27,6 +28,7 @@
 0000013E  F3A4              rep movsb
 00000140  87F3              xchg si,bx
 00000142  87FA              xchg di,dx
+
 00000144  BBE3ED            mov bx,0xede3
 00000147  BAF3F4            mov dx,0xf4f3
 0000014A  B92003            mov cx,0x320

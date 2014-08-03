@@ -3,11 +3,12 @@
 
 #include <string>
 
-class X86;
+class Memory;
+class X86Base;
 
 class Loader {
  public:
-  static void loadCOM(const std::string& filename, X86* x86, int& start, int& end);
+  static void loadCOM(const std::string& filename, Memory* mem, X86Base* x86, int& start, int& end);
 };
 
 #endif  // __LOADER_H__

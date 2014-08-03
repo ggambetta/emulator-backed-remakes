@@ -100,7 +100,6 @@ class Runner {
         fetched_address_ = x86_->getCS_IP();
         x86_->fetchAndDecode();
       }
-      addToDisassembly();
 
       // Handle breakpoints.
       if (fetched_address_ == breakpoint_once_) {
@@ -119,21 +118,6 @@ class Runner {
   }
 
 
-  void addToDisassembly() {
-    if (!disassemble_) {
-      return;
-    }
-
-    int size = x86_->getBytesFetched();
-    int address = x86_->getCS_IP() - size;
-    if (disassembly_.count(address)) {
-      // TODO: If the disassembly is different, code if self-modifying.
-      // Think what to do with this.
-      return;
-    }
-    disassembly_.insert({address, {size, x86_->getOpcodeDesc()}});
-  }
-
   void doSkip() {
     x86_->getRegisters()->ip += x86_->getBytesFetched(); 
     x86_->clearExecutionState();
@@ -141,48 +125,9 @@ class Runner {
 
 
   void doLoad(const string& filename) {
-    Loader::loadCOM(filename, x86_, start_offset_, end_offset_);
+    Loader::loadCOM(filename, x86_->getMemory(), x86_, start_offset_, end_offset_);
     cout << "File loaded, [" << Hex16 << start_offset_ << " - " 
       << Hex16 << end_offset_ << "]" << endl;
-    disassembly_.clear();
-  }
-
-
-  void disassembleBytes(ostream& os, byte* data, int size) {
-    if (size == 0) {
-      return;
-    }
-    os << endl;
-    os << ".DB (" << dec << size << ")" << endl;
-  }
-
-
-  void doSaveASM(ostream& os) {
-    byte* ram = x86_->getMemory()->getPointer(0);
-
-    int next_address = start_offset_;
-    for (const auto& entry: disassembly_) {
-      int address = entry.first;
-      int size = entry.second.first;
-      const string& source = entry.second.second;
-
-      if (address != next_address || address == start_offset_) {
-        disassembleBytes(os, ram + address, address - next_address);
-        os << endl;
-      }
-
-      os << Hex16 << address << "        " << source << endl;
-
-      next_address = address + size;
-    }
-
-    disassembleBytes(os, ram + next_address, end_offset_ - next_address); 
-  }
-
-
-  void doSaveASM(const string& filename) {
-    ofstream file(filename);
-    doSaveASM(file);
   }
 
 
@@ -297,12 +242,6 @@ class Runner {
         } else {
           cerr << "Syntax: " << action << " <filename>" << endl;
         }
-      } else if (action == "saveasm") {
-        if (tokens.size() > 1) {
-          doSaveASM(tokens[1]);
-        } else {
-          doSaveASM(cout);
-        }
       } else if (action == "state") {
         doState();
       } else if (action == "break") {
@@ -311,12 +250,6 @@ class Runner {
         } else {
           cerr << "Syntax: " << action << " <address>" << endl;
         }
-      } else if (action == "disassemble") {
-        disassemble_ = true;
-        if (tokens.size() > 1) {
-          disassemble_ = parseBool(tokens[1]);
-        }
-        cout << "Disassembly " << (disassemble_ ? "en" : "dis") << "abled." << endl;
       } else if (action == "set") {
         if (tokens.size() > 2) {
           doSet(tokens[1], tokens[2]);
@@ -351,13 +284,8 @@ class Runner {
   bool error_;
   bool running_;
 
-  bool disassemble_;
-
   // Start and end offset of the loaded binary.
   int start_offset_, end_offset_;
-
-  // Map of { start => size, disassembly }.
-  map<int, pair<int, string>> disassembly_;
 
   // Address of last fetched instruction.
   int fetched_address_;
@@ -370,7 +298,6 @@ class Runner {
 };
 
 Runner* Runner::instance_ = nullptr;
-
 
 
 int main (int argc, char** argv) {

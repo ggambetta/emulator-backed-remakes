@@ -29,7 +29,6 @@ class X86Base {
   virtual word* getMem16Ptr(word segment, word offset) = 0;
 
   virtual bool getFlag(word mask) const = 0;
-  virtual void setFlag(word mask, bool value) = 0;
 
   std::string getOpcodeDesc() const;
 

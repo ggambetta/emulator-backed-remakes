@@ -15,6 +15,8 @@ const char* REG16_DESC[13] = {
 const char* REG8_DESC[8] = {
     "AL", "AH", "BL", "BH", "CL", "CH", "DL", "DH" };
 
+const char FLAG_NAME[17] = "----ODITSZ-A-P-C";
+
 _Hex8 Hex8;
 _Hex16 Hex16;
 
@@ -87,3 +89,36 @@ void assertHelper(bool cond, const string& desc, const char* file, int line) {
 }
 
 
+bool parseBool(const std::string& str) {
+  return (str != "false" && str != "no");
+}
+
+
+int parseNumber(const std::string& str) {
+  if (str.empty()) {
+    return 0;
+  }
+  if (str.back() == 'h' || str.back() == 'H') {
+    return (int)strtol(str.data(), NULL, 16);
+  }
+  return stoi(str);
+}
+
+
+void writeBytes(ostream& os, byte* data, int count, int width) {
+  for (int i = 0; i < count; i++) {
+    os << Hex8 << (int)(*data++);
+  }
+  for (int i = 0; i < width - count; i++) {
+    os << "  ";
+  }
+}
+
+
+string upper(const string& str) {
+  string ret;
+  for (char k: str) {
+    ret.push_back(toupper(k));
+  }
+  return ret;
+}

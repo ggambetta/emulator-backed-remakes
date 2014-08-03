@@ -14,6 +14,7 @@ extern const char* BINARY2[4];
 extern const char* BINARY3[8];
 extern const char* REG16_DESC[13];
 extern const char* REG8_DESC[8];
+extern const char FLAG_NAME[17];
 
 // Logging helpers.
 struct _Hex8 {};
@@ -36,9 +37,15 @@ std::string hex16ToString(word val);
 std::string addrToString(const Addr& addr);
 
 
+void writeBytes(std::ostream& os, byte* data, int count, int width);
+
+
 // String functions.
 std::vector<std::string> split(const std::string& input);
+std::string upper(const std::string& str);
 
+bool parseBool(const std::string& str);
+int parseNumber(const std::string& str);
 
 // ASSERT and related functionality.
 #define ASSERT(COND) assertHelper(COND, #COND, __FILE__, __LINE__)

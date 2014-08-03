@@ -1,6 +1,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <set>
 #include <signal.h>
 #include <sstream>
 #include <vector>
@@ -17,7 +19,7 @@ const char kPrompt[] = ">>> ";
 
 class Runner {
  public:
-  Runner (X86* x86, Monitor* monitor) : x86_(x86), monitor_(monitor) {
+  Runner (X86* x86, VGA* vga, Monitor* monitor) : x86_(x86), vga_(vga), monitor_(monitor) {
     error_ = false;
     instance_ = this;
     running_ = false;
@@ -26,6 +28,13 @@ class Runner {
     signal(SIGABRT, &Runner::catchSignal);
   }
 
+  void runScript(const string& filename) {
+    ifstream infile(filename);
+    string line;
+    while (getline(infile, line)) {
+      executeCommand(line);
+    }
+  }
 
   void run() {
     string last_command;
@@ -35,7 +44,7 @@ class Runner {
       }
       x86_->outputCurrentOperation(cout);
 
-      cout << kPrompt;
+      cout << endl << kPrompt;
       string command;
       getline(cin, command);
 
@@ -84,12 +93,37 @@ class Runner {
   void doStep(int steps) {
     running_ = true;
     while ((steps == -1 || steps--) && !error_) {
+      int address = x86_->getCS_IP();
+
       if (!x86_->isExecutePending()) {
         x86_->fetchAndDecode();
       }
+      addToDisassembly();
+
+      if (breakpoints_.find(address) != breakpoints_.end()) {
+        cout << "Breakpoint." << endl;
+        break;
+      }
+
       x86_->execute();
     }
     running_ = false;
+  }
+
+
+  void addToDisassembly() {
+    if (!disassemble_) {
+      return;
+    }
+
+    int size = x86_->getBytesFetched();
+    int address = x86_->getCS_IP() - size;
+    if (disassembly_.find(address) != disassembly_.end()) {
+      // TODO: If the disassembly is different, code if self-modifying.
+      // Think what to do with this.
+      return;
+    }
+    disassembly_.insert({address, {size, x86_->getOpcodeDesc()}});
   }
 
   void doSkip() {
@@ -97,6 +131,116 @@ class Runner {
     x86_->clearExecutionState();
   }
 
+
+  void doLoad(const string& filename) {
+    Loader::loadCOM(filename, x86_, start_offset_, end_offset_);
+    cout << "File loaded, [" << Hex16 << start_offset_ << " - " 
+      << Hex16 << end_offset_ << "]" << endl;
+    disassembly_.clear();
+  }
+
+
+  void disassembleBytes(ostream& os, byte* data, int size) {
+    if (size == 0) {
+      return;
+    }
+    os << endl;
+    os << ".DB (" << dec << size << ")" << endl;
+  }
+
+
+  void doSaveASM(ostream& os) {
+    byte* ram = x86_->getMemory()->getPointer(0);
+
+    int next_address = start_offset_;
+    for (const auto& entry: disassembly_) {
+      int address = entry.first;
+      int size = entry.second.first;
+      const string& source = entry.second.second;
+
+      if (address != next_address || address == start_offset_) {
+        disassembleBytes(os, ram + address, address - next_address);
+        os << endl;
+        os << ".ORG " << Hex16 << address << "h" << endl;
+      }
+
+      os << "        " << source << endl;
+
+      next_address = address + size;
+    }
+
+    disassembleBytes(os, ram + next_address, end_offset_ - next_address); 
+  }
+
+
+  void doSaveASM(const string& filename) {
+    ofstream file(filename);
+    doSaveASM(file);
+  }
+
+
+  void doState() {
+    Registers* regs = x86_->getRegisters();
+    cout << "AX " << Hex16 << regs->ax << "  "
+         << "BX " << Hex16 << regs->bx << "  "
+         << "CX " << Hex16 << regs->cx << "  "
+         << "DX " << Hex16 << regs->dx << endl;
+
+    cout << "CS " << Hex16 << regs->cs << "  "
+         << "SS " << Hex16 << regs->ss << "  "
+         << "DS " << Hex16 << regs->ds << "  "
+         << "ES " << Hex16 << regs->es << endl;
+
+    cout << "BP " << Hex16 << regs->bp << "  "
+         << "SP " << Hex16 << regs->sp << "  "
+         << "DI " << Hex16 << regs->di << "  "
+         << "SI " << Hex16 << regs->si << endl;
+    
+    cout << "IP " << Hex16 << regs->ip - x86_->getBytesFetched() << "  "
+         << "FLAGS ";
+  
+    for (int i = 15; i >= 0; i--) {
+      int mask = i << 15;
+      if (regs->flags & mask) {
+        cout << FLAG_NAME[i]; 
+      } else {
+        cout << "-";
+      }
+    }
+    cout << endl;
+
+    cout << endl;
+  }
+
+
+  void doBreak(const string& addr_string) {
+    int addr = parseNumber(addr_string);
+    if (breakpoints_.find(addr) != breakpoints_.end()) {
+      cerr << "Breakpoint at " << addr_string << " already set." << endl;
+    } else {
+      breakpoints_.insert(addr);
+      cout << "Set breakpoint at " << addr_string << "." << endl;
+    }
+  }
+
+  void doSet(const string& reg, const string& val_str) {
+    string ureg = upper(reg);
+    int value = parseNumber(val_str);
+
+    for (int i = 0; i < X86::R16_COUNT; i++) {
+      if (ureg == REG16_DESC[i]) {
+        *x86_->getReg16Ptr(i) = value;    
+        cout << ureg << " = " << Hex16 << value << "h" << endl;
+      }
+    }
+
+    for (int i = 0; i < X86::R8_COUNT; i++) {
+      if (ureg == REG8_DESC[i]) {
+        *x86_->getReg8Ptr(i) = value & 0xFF;
+        cout << ureg << " = " << Hex8 << (int)(value & 0xFF) << "h" << endl;
+      }
+    }
+  }
 
   void executeCommand(const string& command) {
     error_ = false;
@@ -130,21 +274,68 @@ class Runner {
         } else {
           cerr << "Syntax: " << action << " <scale>" << endl;
         }
+      } else if (action == "load") {
+        if (tokens.size() > 1) {
+          doLoad(tokens[1]);
+        } else {
+          cerr << "Syntax: " << action << " <filename>" << endl;
+        }
+      } else if (action == "saveasm") {
+        if (tokens.size() > 1) {
+          doSaveASM(tokens[1]);
+        } else {
+          doSaveASM(cout);
+        }
+      } else if (action == "state") {
+        doState();
+      } else if (action == "break") {
+        if (tokens.size() > 1) {
+          doBreak(tokens[1]);
+        } else {
+          cerr << "Syntax: " << action << " <address>" << endl;
+        }
+      } else if (action == "disassemble") {
+        disassemble_ = true;
+        if (tokens.size() > 1) {
+          disassemble_ = parseBool(tokens[1]);
+        }
+        cout << "Disassembly " << (disassemble_ ? "en" : "dis") << "abled." << endl;
+      } else if (action == "set") {
+        if (tokens.size() > 2) {
+          doSet(tokens[1], tokens[2]);
+        } else {
+          cerr << "Syntax: " << action << " <register> <value>" << endl;
+        }
+      } else if (action == "reset") {
+        x86_->reset();
+        vga_->setVideoMode(0);
+        breakpoints_.clear();
       } else {
         cerr << "Unknown command '" << action << "'" << endl;
       }
     } catch(const runtime_error& e) {
       cerr << "ERROR: " << e.what() << endl;
     }
-    cerr << endl;
   }
 
  private:
   X86* x86_;
+  VGA* vga_;
   Monitor* monitor_;
 
   bool error_;
   bool running_;
+
+  bool disassemble_;
+
+  // Start and end offset of the loaded binary.
+  int start_offset_, end_offset_;
+
+  // Map of { start => size, disassembly }.
+  map<int, pair<int, string>> disassembly_;
+
+  // Breakpoints.
+  set<int> breakpoints_;
 
   static Runner* instance_;
 };
@@ -159,9 +350,8 @@ int main (int argc, char** argv) {
   VGA vga(&x86);
   Monitor monitor(&vga);
 
-  Loader::loadCOM("goody.com", &x86);
-
-  Runner runner(&x86, &monitor);
+  Runner runner(&x86, &vga, &monitor);
+  runner.runScript("startup.cmd");
   runner.run();
 
   cout << endl;

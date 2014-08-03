@@ -73,11 +73,9 @@ void VGA::setVideoMode(int mode) {
     clog << "VGA: Video mode 0x" << Hex8 << mode_ << " (CGA 320x200)" << endl;
     cga_palette_ = 0;
   
-    // Randomize VRAM.
-    /*byte* vram = x86_->getMem8Ptr(0xB800, 0);
-    for (int i = 0; i < 320*200/4; i++) {
-      *vram++ = rand() % 256;
-    }*/
+    // Clear VRAM.
+    byte* vram = x86_->getMem8Ptr(0xB800, 0);
+    memset(vram, 0, 16384);
   } else {
     cerr << "VGA: Unsupported video mode 0x" << Hex8 << mode << endl;
   }
@@ -131,6 +129,7 @@ void VGA::getModeSize(int& width, int& height) {
     height = 200;
   }
 }
+
 
 float VGA::getPixelAspectRatio() {
   if (mode_ == MODE_CGA_320x200) {

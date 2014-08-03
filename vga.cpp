@@ -131,3 +131,10 @@ void VGA::getModeSize(int& width, int& height) {
     height = 200;
   }
 }
+
+float VGA::getPixelAspectRatio() {
+  if (mode_ == MODE_CGA_320x200) {
+    return 1.2f;
+  }
+  return 1.0f;
+}

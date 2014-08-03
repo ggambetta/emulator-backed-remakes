@@ -67,17 +67,20 @@ void Monitor::update() {
   }
 
   // If the window size changed, destroy the old window.
+  int req_width = scale_*width;
+  int req_height = scale_*height*vga_->getPixelAspectRatio();
+
   if (window_) {
-    int wwidth, wheight;
-    SDL_GetWindowSize(window_, &wwidth, &wheight);
-    if (wwidth != scale_*width || wheight != scale_*height) {
+    int current_width, current_height;
+    SDL_GetWindowSize(window_, &current_width, &current_height);
+    if (current_width != req_width || current_height != req_height) {
       closeWindow();
     }
   }
 
   // Create the window if necessary.
   if (!window_) {
-    SDL_CreateWindowAndRenderer(scale_*width, scale_*height, 0, &window_, &renderer_);
+    SDL_CreateWindowAndRenderer(req_width, req_height, 0, &window_, &renderer_);
   }
 
   // Render to a buffer.

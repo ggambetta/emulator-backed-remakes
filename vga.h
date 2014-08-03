@@ -14,6 +14,7 @@ class VGA : public InterruptHandler, public IOHandler {
   virtual void handleOUT(int port, byte val);
 
   virtual void getModeSize(int& width, int& height);
+  virtual float getPixelAspectRatio();
   virtual void renderRGB(byte* buffer);
 
  private:

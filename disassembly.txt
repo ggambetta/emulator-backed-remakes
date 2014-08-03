@@ -36,7 +36,7 @@
 00000152  F3A4              rep movsb
 00000154  87F3              xchg si,bx
 00000156  87FA              xchg di,dx
-00000158  E81E36            call word 0x3779
+00000158  E81E36            call word 0x3779  ; Set video mode
 0000015B  E89535            call word 0x36f3
 0000015E  E8F82E            call word 0x3059
 00000161  E8920E            call word 0xff6
@@ -5895,20 +5895,29 @@
 00003775  75D9              jnz 0x3750
 00003777  1F                pop ds
 00003778  C3                ret
+
+
+; Set CGA mode and palette 0
 00003779  B80400            mov ax,0x4
 0000377C  CD10              int 0x10
 0000377E  E80100            call word 0x3782
 00003781  C3                ret
+
+; Set CGA palette 0
 00003782  BB0001            mov bx,0x100
-00003785  2E881E4339        mov [cs:0x3943],bl
+00003785  2E881E4339        mov [cs:0x3943],bl    ; 0x3943 = current palette
 0000378A  B8000B            mov ax,0xb00
 0000378D  CD10              int 0x10
 0000378F  C3                ret
+
+; Set CGA palette 1
 00003790  BB0101            mov bx,0x101
-00003793  2E881E4339        mov [cs:0x3943],bl
+00003793  2E881E4339        mov [cs:0x3943],bl    ; 0x3943 = current palette
 00003798  B8000B            mov ax,0xb00
 0000379B  CD10              int 0x10
 0000379D  C3                ret
+
+
 0000379E  C60615F100        mov byte [0xf115],0x0
 000037A3  A04DCE            mov al,[0xce4d]
 000037A6  0A065CCE          or al,[0xce5c]
@@ -5978,6 +5987,17 @@
 0000384A  05C263            add ax,0x63c2
 0000384D  89C6              mov si,ax
 0000384F  EB16              jmp short 0x3867
+
+; ------------------------------
+;  Draw a character
+; ------------------------------
+;
+; AH = character index
+; CL = row
+; CH = column
+;
+; Row and Column are in 8x8 blocks.
+;
 00003851  56                push si
 00003852  57                push di
 00003853  50                push ax
@@ -5986,29 +6006,33 @@
 00003856  53                push bx
 00003857  06                push es
 00003858  89CB              mov bx,cx
-0000385A  88E0              mov al,ah
+0000385A  88E0              mov al,ah       ; Character in AH 
 0000385C  B400              mov ah,0x0
-0000385E  B104              mov cl,0x4
+0000385E  B104              mov cl,0x4      ; 2^4 = 16 bytes per character
 00003860  D3E0              shl ax,cl
-00003862  05C273            add ax,0x73c2
+00003862  05C273            add ax,0x73c2   ; Start of character map
 00003865  89C6              mov si,ax
-00003867  BA00B8            mov dx,0xb800
+
+00003867  BA00B8            mov dx,0xb800   ; ES = B800:0 (CGA vram)
 0000386A  8EC2              mov es,dx
-0000386C  88FA              mov dl,bh
+
+0000386C  88FA              mov dl,bh       ; Y in BH 
 0000386E  B600              mov dh,0x0
 00003870  B84001            mov ax,0x140
-00003873  F7E2              mul dx
+00003873  F7E2              mul dx          ; AX = 320 * Y (320 = 80 bytes / row * 4 double lines per character)
 00003875  B700              mov bh,0x0
 00003877  01D8              add ax,bx
 00003879  01D8              add ax,bx
-0000387B  89C7              mov di,ax
+0000387B  89C7              mov di,ax       ; DI = 320*Y + 2*X
 0000387D  FC                cld
-0000387E  B90400            mov cx,0x4
-00003881  A5                movsw
+
+0000387E  B90400            mov cx,0x4      ; 4 iterations x 2 lines = 8 lines
+00003881  A5                movsw           ; 1 word = 16 bits = 8 pixels
 00003882  81C7FE1F          add di,0x1ffe
 00003886  A5                movsw
 00003887  81EFB21F          sub di,0x1fb2
 0000388B  E2F4              loop 0x3881
+
 0000388D  07                pop es
 0000388E  5B                pop bx
 0000388F  5A                pop dx
@@ -6017,6 +6041,9 @@
 00003892  5F                pop di
 00003893  5E                pop si
 00003894  C3                ret
+
+
+
 00003895  56                push si
 00003896  57                push di
 00003897  50                push ax

@@ -7,7 +7,7 @@ class X86;
 
 class Loader {
  public:
-  static void loadCOM(const std::string& filename, X86* x86);
+  static void loadCOM(const std::string& filename, X86* x86, int& start, int& end);
 };
 
 #endif  // __LOADER_H__

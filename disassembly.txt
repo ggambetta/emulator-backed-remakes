@@ -36,13 +36,16 @@
 00000152  F3A4              rep movsb
 00000154  87F3              xchg si,bx
 00000156  87FA              xchg di,dx
+
 00000158  E81E36            call word 0x3779  ; Set video mode
-0000015B  E89535            call word 0x36f3
+0000015B  E89535            call word 0x36f3  ; Draw UI
 0000015E  E8F82E            call word 0x3059
 00000161  E8920E            call word 0xff6
 00000164  E8B400            call word 0x21b
 00000167  E8CF36            call word 0x3839
 0000016A  2E89260904        mov [cs:0x409],sp
+
+; Restart
 0000016F  2E8B260904        mov sp,[cs:0x409]
 00000174  E86701            call word 0x2de
 00000177  E87D01            call word 0x2f7
@@ -96,9 +99,10 @@
 0000020F  C706AFF10800      mov word [0xf1af],0x8
 00000215  E8F301            call word 0x40b
 00000218  E954FF            jmp word 0x16f
-0000021B  B40F              mov ah,0xf
-0000021D  88261BF1          mov [0xf11b],ah
-00000221  E84F21            call word 0x2373
+
+0000021B  B40F              mov ah,0xf        ; Start with 15 lives
+0000021D  88261BF1          mov [0xf11b],ah   ; F11B = lives counter
+00000221  E84F21            call word 0x2373  ; Draw lives counter
 00000224  E84F00            call word 0x276
 00000227  BB0000            mov bx,0x0
 0000022A  891E2AF1          mov [0xf12a],bx
@@ -110,6 +114,7 @@
 0000023E  891E7EF1          mov [0xf17e],bx
 00000242  8826F4F1          mov [0xf1f4],ah
 00000246  C3                ret
+
 00000247  30E4              xor ah,ah
 00000249  88262CF1          mov [0xf12c],ah
 0000024D  88262AF1          mov [0xf12a],ah
@@ -129,6 +134,7 @@
 0000026F  BB24F1            mov bx,0xf124
 00000272  C60708            mov byte [bx],0x8
 00000275  C3                ret
+
 00000276  BBCFF1            mov bx,0xf1cf
 00000279  C7070000          mov word [bx],0x0
 0000027D  BAD0F1            mov dx,0xf1d0
@@ -161,6 +167,7 @@
 000002BB  87FA              xchg di,dx
 000002BD  E80100            call word 0x2c1
 000002C0  C3                ret
+
 000002C1  BBF9DF            mov bx,0xdff9
 000002C4  E80300            call word 0x2ca
 000002C7  BB2AE0            mov bx,0xe02a
@@ -780,15 +787,17 @@
 00000920  C3                ret
 00000921  886414            mov [si+0x14],ah
 00000924  C3                ret
-00000925  8A261BF1          mov ah,[0xf11b]
+
+00000925  8A261BF1          mov ah,[0xf11b]   ; Decrement lives counter
 00000929  FECC              dec ah
 0000092B  88261BF1          mov [0xf11b],ah
 0000092F  50                push ax
-00000930  E8401A            call word 0x2373
+00000930  E8401A            call word 0x2373  ; Draw lives counter
 00000933  58                pop ax
-00000934  80FCFF            cmp ah,0xff
-00000937  7503              jnz 0x93c
-00000939  E933F8            jmp word 0x16f
+00000934  80FCFF            cmp ah,0xff       ; 0 -> -1
+00000937  7503              jnz 0x93c         ; Alive
+00000939  E933F8            jmp word 0x16f    ; Dead
+
 0000093C  BECFF1            mov si,0xf1cf
 0000093F  C6441100          mov byte [si+0x11],0x0
 00000943  C6442400          mov byte [si+0x24],0x0
@@ -1050,7 +1059,7 @@
 00000BBA  E8872D            call word 0x3944
 00000BBD  E864F6            call word 0x224
 00000BC0  E81BF7            call word 0x2de
-00000BC3  E8AD17            call word 0x2373
+00000BC3  E8AD17            call word 0x2373  ; Draw lives counter
 00000BC6  E83304            call word 0xffc
 00000BC9  30E4              xor ah,ah
 00000BCB  88264DDF          mov [0xdf4d],ah
@@ -1686,7 +1695,7 @@
 00001169  30E4              xor ah,ah
 0000116B  B601              mov dh,0x1
 0000116D  52                push dx
-0000116E  E8E026            call word 0x3851
+0000116E  E8E026            call word 0x3851  ; Draw character
 00001171  5A                pop dx
 00001172  FEC1              inc cl
 00001174  FECA              dec dl
@@ -1724,7 +1733,7 @@
 000011B2  BA0000            mov dx,0x0
 000011B5  8B0EB9F1          mov cx,[0xf1b9]
 000011B9  BAFFFF            mov dx,0xffff
-000011BC  E89226            call word 0x3851
+000011BC  E89226            call word 0x3851  ; Draw character
 000011BF  5A                pop dx
 000011C0  8B0EB9F1          mov cx,[0xf1b9]
 000011C4  FEC1              inc cl
@@ -3629,14 +3638,19 @@
 0000236C  7502              jnz 0x2370
 0000236E  B380              mov bl,0x80
 00002370  E901EF            jmp word 0x1274
+
+;
+; Draw lives counter
+;
 00002373  30E4              xor ah,ah
 00002375  88E7              mov bh,ah
 00002377  8A261BF1          mov ah,[0xf11b]
 0000237B  88E3              mov bl,ah
-0000237D  B402              mov ah,0x2
-0000237F  B517              mov ch,0x17
-00002381  B113              mov cl,0x13
+0000237D  B402              mov ah,0x2    ; 2 digits
+0000237F  B517              mov ch,0x17   ; col = 23
+00002381  B113              mov cl,0x13   ; row = 19
 00002383  E90210            jmp word 0x3388
+
 00002386  B304              mov bl,0x4
 00002388  B204              mov dl,0x4
 0000238A  E8F8EF            call word 0x1385
@@ -3709,11 +3723,12 @@
 00002437  8B0E2FF1          mov cx,[0xf12f]
 0000243B  B500              mov ch,0x0
 0000243D  E8830F            call word 0x33c3
-00002440  BB1BF1            mov bx,0xf11b
+00002440  BB1BF1            mov bx,0xf11b     ; Extra life
 00002443  FE07              inc byte [bx]
-00002445  E82BFF            call word 0x2373
+00002445  E82BFF            call word 0x2373  ; Draw lives counter
 00002448  BBFACE            mov bx,0xcefa
 0000244B  E9440D            jmp word 0x3192
+
 0000244E  8A261DF1          mov ah,[0xf11d]
 00002452  B1FF              mov cl,0xff
 00002454  BFDCD3            mov di,0xd3dc
@@ -4993,6 +5008,7 @@
 00003054  75EE              jnz 0x3044
 00003056  08E4              or ah,ah
 00003058  C3                ret
+
 00003059  FA                cli
 0000305A  1E                push ds
 0000305B  B80000            mov ax,0x0
@@ -5017,7 +5033,8 @@
 0000308A  2EA3A630          mov [cs:0x30a6],ax
 0000308E  8CC8              mov ax,cs
 00003090  8907              mov [bx],ax
-00003092  B99E2E            mov cx,0x2e9e
+
+00003092  B99E2E            mov cx,0x2e9e   ; Program the timer at 100 Hz
 00003095  88C8              mov al,cl
 00003097  E640              out 0x40,al
 00003099  88E8              mov al,ch
@@ -5025,6 +5042,7 @@
 0000309D  1F                pop ds
 0000309E  FB                sti
 0000309F  C3                ret
+
 000030A0  5F                pop di
 000030A1  1100              adc [bx+si],ax
 000030A3  FC                cld
@@ -5242,6 +5260,7 @@
 000032C9  8B0F              mov cx,[bx]
 000032CB  890E5148          mov [0x4851],cx
 000032CF  C3                ret
+
 000032D0  A05048            mov al,[0x4850]
 000032D3  243F              and al,0x3f
 000032D5  0C02              or al,0x2
@@ -5262,16 +5281,17 @@
 000032FB  890E5D48          mov [0x485d],cx
 000032FF  E461              in al,0x61
 00003301  50                push ax
-00003302  B0B6              mov al,0xb6
+00003302  B0B6              mov al,0xb6   ; Timer 2, LSB -> MSB, square wave, binary
 00003304  E643              out 0x43,al
-00003306  88C8              mov al,cl
+00003306  88C8              mov al,cl     ; Output frequency.
 00003308  E642              out 0x42,al
 0000330A  88E8              mov al,ch
 0000330C  E642              out 0x42,al
 0000330E  58                pop ax
-0000330F  0C03              or al,0x3
+0000330F  0C03              or al,0x3     ; Turn on the note.
 00003311  E661              out 0x61,al
 00003313  C3                ret
+
 00003314  A05048            mov al,[0x4850]
 00003317  247F              and al,0x7f
 00003319  0C42              or al,0x42
@@ -5282,41 +5302,55 @@
 00003325  43                inc bx
 00003326  A35348            mov [0x4853],ax
 00003329  891E5148          mov [0x4851],bx
-0000332D  E461              in al,0x61
+
+0000332D  E461              in al,0x61    ; Turn off the note.
 0000332F  24FC              and al,0xfc
 00003331  E661              out 0x61,al
 00003333  C3                ret
+
+
+;
+; Number to decimal
+;
+; BX = number
+; Output copied to 5 numbers at F3D4
+;
 00003334  08E4              or ah,ah
-00003336  B6FF              mov dh,0xff
-00003338  B91027            mov cx,0x2710
+00003336  B6FF              mov dh,0xff     ; -1
+00003338  B91027            mov cx,0x2710   ; 10000
+
 0000333B  FEC6              inc dh
 0000333D  19CB              sbb bx,cx
 0000333F  73FA              jnc 0x333b
+
 00003341  01CB              add bx,cx
 00003343  08E4              or ah,ah
-00003345  B9E803            mov cx,0x3e8
-00003348  B2FF              mov dl,0xff
+00003345  B9E803            mov cx,0x3e8    ; 1000
+00003348  B2FF              mov dl,0xff     ; -1
 0000334A  FEC2              inc dl
 0000334C  19CB              sbb bx,cx
 0000334E  73FA              jnc 0x334a
+
 00003350  01CB              add bx,cx
 00003352  52                push dx
 00003353  08E4              or ah,ah
-00003355  BA6400            mov dx,0x64
-00003358  B5FF              mov ch,0xff
+00003355  BA6400            mov dx,0x64     ; 100
+00003358  B5FF              mov ch,0xff     ; -1
 0000335A  FEC5              inc ch
 0000335C  19D3              sbb bx,dx
 0000335E  73FA              jnc 0x335a
 00003360  01D3              add bx,dx
+
 00003362  08E4              or ah,ah
-00003364  BA0A00            mov dx,0xa
-00003367  B1FF              mov cl,0xff
+00003364  BA0A00            mov dx,0xa      ; 10
+00003367  B1FF              mov cl,0xff     ; -1
 00003369  FEC1              inc cl
 0000336B  19D3              sbb bx,dx
 0000336D  73FA              jnc 0x3369
+
 0000336F  01D3              add bx,dx
 00003371  5A                pop dx
-00003372  BED4F3            mov si,0xf3d4
+00003372  BED4F3            mov si,0xf3d4   ; Buffer
 00003375  8834              mov [si],dh
 00003377  885401            mov [si+0x1],dl
 0000337A  886C02            mov [si+0x2],ch
@@ -5324,37 +5358,49 @@
 00003380  885C04            mov [si+0x4],bl
 00003383  C64405FF          mov byte [si+0x5],0xff
 00003387  C3                ret
+
+
+; Draw a number
+; BX = number
+; AH = digits?
 00003388  56                push si
 00003389  52                push dx
 0000338A  51                push cx
 0000338B  50                push ax
-0000338C  E8A5FF            call word 0x3334
+0000338C  E8A5FF            call word 0x3334  ; Convert to digits
 0000338F  58                pop ax
+
 00003390  88E2              mov dl,ah
 00003392  B405              mov ah,0x5
-00003394  28D4              sub ah,dl
+00003394  28D4              sub ah,dl         ; AH = 5 - digits
 00003396  88E2              mov dl,ah
 00003398  B600              mov dh,0x0
-0000339A  01D6              add si,dx
+0000339A  01D6              add si,dx         ; Skip digits
 0000339C  59                pop cx
+
 0000339D  8A24              mov ah,[si]
-0000339F  F6C480            test ah,0x80
+0000339F  F6C480            test ah,0x80      ; High bit => end of string
 000033A2  750E              jnz 0x33b2
-000033A4  80C41E            add ah,0x1e
+
+000033A4  80C41E            add ah,0x1e       ; Index 1E = '0'
 000033A7  BAFFFF            mov dx,0xffff
-000033AA  E8A404            call word 0x3851
-000033AD  FEC1              inc cl
-000033AF  46                inc si
+000033AA  E8A404            call word 0x3851  ; Draw character
+000033AD  FEC1              inc cl            ; Next column
+000033AF  46                inc si            ; Next input character
 000033B0  EBEB              jmp short 0x339d
 000033B2  5A                pop dx
 000033B3  5E                pop si
 000033B4  C3                ret
+
+
 000033B5  C3                ret
+
 000033B6  E8D502            call word 0x368e
 000033B9  E86102            call word 0x361d
 000033BC  BA0000            mov dx,0x0
 000033BF  E828EF            call word 0x22ea
 000033C2  C3                ret
+
 000033C3  BB08F1            mov bx,0xf108
 000033C6  01CB              add bx,cx
 000033C8  B41A              mov ah,0x1a
@@ -5362,19 +5408,21 @@
 000033CC  88E1              mov cl,ah
 000033CE  B517              mov ch,0x17
 000033D0  8A27              mov ah,[bx]
-000033D2  80C41E            add ah,0x1e
-000033D5  E97904            jmp word 0x3851
+000033D2  80C41E            add ah,0x1e      ; Index 1E = '0'
+000033D5  E97904            jmp word 0x3851  ; Draw character
+
 000033D8  B50D              mov ch,0xd
 000033DA  B11A              mov cl,0x1a
 000033DC  51                push cx
 000033DD  B517              mov ch,0x17
 000033DF  30E4              xor ah,ah
-000033E1  E86D04            call word 0x3851
+000033E1  E86D04            call word 0x3851  ; Draw character
 000033E4  59                pop cx
 000033E5  FEC1              inc cl
 000033E7  FECD              dec ch
 000033E9  75F1              jnz 0x33dc
 000033EB  C3                ret
+
 000033EC  B90404            mov cx,0x404
 000033EF  BA2205            mov dx,0x522
 000033F2  E86DDD            call word 0x1162
@@ -5820,52 +5868,70 @@
 000036EE  B400              mov ah,0x0
 000036F0  EB4C              jmp short 0x373e
 000036F2  C3                ret
-000036F3  BB63E1            mov bx,0xe163
-000036F6  BA0019            mov dx,0x1900
-000036F9  B150              mov cl,0x50
-000036FB  B528              mov ch,0x28
+
+;
+; Draw the UI
+;
+000036F3  BB63E1            mov bx,0xe163   ; Raw data
+000036F6  BA0019            mov dx,0x1900   ; Destination = (0, 160)
+000036F9  B150              mov cl,0x50     ; 80 bytes = 320 pixels (1 row)
+000036FB  B528              mov ch,0x28     ; 40 rows
 000036FD  EB00              jmp short 0x36ff
+
+
+; Start copying the bitmap pointed to by BX, dimensions CL x CH, to the screen at DX,
+; starting at an EVEN row.
 000036FF  06                push es
 00003700  B800B8            mov ax,0xb800
 00003703  8EC0              mov es,ax
+
 00003705  51                push cx
 00003706  89D7              mov di,dx
-00003708  8A07              mov al,[bx]
+00003708  8A07              mov al,[bx]     ; Copy pixel
 0000370A  268805            mov [es:di],al
 0000370D  43                inc bx
 0000370E  47                inc di
 0000370F  FEC9              dec cl
-00003711  75F5              jnz 0x3708
+00003711  75F5              jnz 0x3708      ; Next pixel
 00003713  59                pop cx
 00003714  FECD              dec ch
-00003716  7502              jnz 0x371a
+00003716  7502              jnz 0x371a      ; Next row (odd)
 00003718  07                pop es
 00003719  C3                ret
+
 0000371A  51                push cx
 0000371B  89D7              mov di,dx
-0000371D  81C70020          add di,0x2000
-00003721  8A07              mov al,[bx]
+0000371D  81C70020          add di,0x2000   ; Odd rows
+00003721  8A07              mov al,[bx]     ; Copy pixel
 00003723  268805            mov [es:di],al
 00003726  43                inc bx
 00003727  47                inc di
 00003728  FEC9              dec cl
-0000372A  75F5              jnz 0x3721
+0000372A  75F5              jnz 0x3721      ; Next pixel
 0000372C  59                pop cx
-0000372D  83C250            add dx,byte +0x50
+0000372D  83C250            add dx,byte +0x50 ; Next y
 00003730  FECD              dec ch
-00003732  75D1              jnz 0x3705
+00003732  75D1              jnz 0x3705      ; Next row (even)
 00003734  07                pop es
 00003735  C3                ret
+
+
+; Start copying the bitmap pointed to by BX, dimensions CL x CH, to the screen at DX,
+; starting at an ODD row.
 00003736  06                push es
 00003737  B800B8            mov ax,0xb800
 0000373A  8EC0              mov es,ax
 0000373C  EBDC              jmp short 0x371a
+
+
 0000373E  1E                push ds
 0000373F  50                push ax
 00003740  B800B8            mov ax,0xb800
 00003743  8ED8              mov ds,ax
 00003745  58                pop ax
 00003746  EB19              jmp short 0x3761
+
+
 00003748  1E                push ds
 00003749  50                push ax
 0000374A  B800B8            mov ax,0xb800
@@ -5882,6 +5948,7 @@
 0000375D  7502              jnz 0x3761
 0000375F  1F                pop ds
 00003760  C3                ret
+
 00003761  51                push cx
 00003762  89D3              mov bx,dx
 00003764  81C30020          add bx,0x2000
@@ -5988,13 +6055,12 @@
 0000384D  89C6              mov si,ax
 0000384F  EB16              jmp short 0x3867
 
-; ------------------------------
-;  Draw a character
-; ------------------------------
+;
+;  Draw character.
 ;
 ; AH = character index
-; CL = row
-; CH = column
+; CL = column
+; CH = row
 ;
 ; Row and Column are in 8x8 blocks.
 ;
@@ -6031,7 +6097,7 @@
 00003882  81C7FE1F          add di,0x1ffe
 00003886  A5                movsw
 00003887  81EFB21F          sub di,0x1fb2
-0000388B  E2F4              loop 0x3881
+0000388B  E2F4              loop 0x3881     ; Next line
 
 0000388D  07                pop es
 0000388E  5B                pop bx
@@ -6059,11 +6125,13 @@
 000038A6  05C263            add ax,0x63c2
 000038A9  89C6              mov si,ax
 000038AB  EBBA              jmp short 0x3867
+
 000038AD  BF73EF            mov di,0xef73
 000038B0  BE83F6            mov si,0xf683
 000038B3  B70A              mov bh,0xa
 000038B5  B300              mov bl,0x0
 000038B7  EB09              jmp short 0x38c2
+
 000038B9  BFE3ED            mov di,0xede3
 000038BC  BEF3F4            mov si,0xf4f3
 000038BF  BB0000            mov bx,0x0
@@ -6085,8 +6153,12 @@
 000038DC  80FF14            cmp bh,0x14
 000038DF  75E1              jnz 0x38c2
 000038E1  C6067FF401        mov byte [0xf47f],0x1
-000038E6  E80100            call word 0x38ea
+000038E6  E80100            call word 0x38ea  ; Set palette for screen
 000038E9  C3                ret
+
+;
+; Set the palette appropriate to the screen?
+;
 000038EA  803E1CF106        cmp byte [0xf11c],0x6
 000038EF  7246              jc 0x3937
 000038F1  803E1CF10B        cmp byte [0xf11c],0xb
@@ -6106,14 +6178,19 @@
 00003922  803E1CF144        cmp byte [0xf11c],0x44
 00003927  7202              jc 0x392b
 00003929  EB0C              jmp short 0x3937
+
+; Set current palette to 1
 0000392B  2E803E433900      cmp byte [cs:0x3943],0x0
 00003931  7503              jnz 0x3936
-00003933  E95AFE            jmp word 0x3790
+00003933  E95AFE            jmp word 0x3790  ; Set palette 1
 00003936  C3                ret
+
+; Set current palette to 0
 00003937  2E803E433901      cmp byte [cs:0x3943],0x1
 0000393D  7503              jnz 0x3942
-0000393F  E940FE            jmp word 0x3782
+0000393F  E940FE            jmp word 0x3782  ; Set palette 0
 00003942  C3                ret
+
 00003943  00BECFF1          add [bp-0xe31],bh
 00003947  F60480            test byte [si],0x80
 0000394A  7403              jz 0x394f

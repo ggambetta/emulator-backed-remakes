@@ -23,6 +23,7 @@ class Runner {
     error_ = false;
     instance_ = this;
     running_ = false;
+    breakpoint_once_ = -1;
 
     signal(SIGINT, &Runner::catchSignal);
     signal(SIGABRT, &Runner::catchSignal);
@@ -40,6 +41,7 @@ class Runner {
     string last_command;
     while (true) {
       if (!x86_->isExecutePending()) {
+        fetched_address_ = x86_->getCS_IP();
         x86_->fetchAndDecode();
       }
       x86_->outputCurrentOperation(cout);
@@ -92,21 +94,27 @@ class Runner {
 
   void doStep(int steps) {
     running_ = true;
+    bool first = true;
     while ((steps == -1 || steps--) && !error_) {
-      int address = x86_->getCS_IP();
-
       if (!x86_->isExecutePending()) {
+        fetched_address_ = x86_->getCS_IP();
         x86_->fetchAndDecode();
       }
       addToDisassembly();
 
-      if (breakpoints_.find(address) != breakpoints_.end()) {
+      // Handle breakpoints.
+      if (fetched_address_ == breakpoint_once_) {
+        break;
+      }
+      if (!first && breakpoints_.count(fetched_address_) != 0) {
         cout << "Breakpoint." << endl;
         break;
       }
 
       x86_->execute();
+      first = false;
     }
+    breakpoint_once_ = -1;
     running_ = false;
   }
 
@@ -118,7 +126,7 @@ class Runner {
 
     int size = x86_->getBytesFetched();
     int address = x86_->getCS_IP() - size;
-    if (disassembly_.find(address) != disassembly_.end()) {
+    if (disassembly_.count(address)) {
       // TODO: If the disassembly is different, code if self-modifying.
       // Think what to do with this.
       return;
@@ -161,10 +169,9 @@ class Runner {
       if (address != next_address || address == start_offset_) {
         disassembleBytes(os, ram + address, address - next_address);
         os << endl;
-        os << ".ORG " << Hex16 << address << "h" << endl;
       }
 
-      os << "        " << source << endl;
+      os << Hex16 << address << "        " << source << endl;
 
       next_address = address + size;
     }
@@ -212,15 +219,25 @@ class Runner {
     cout << endl;
   }
 
+  void doUntil(const string& addr_string) {
+    breakpoint_once_ = parseNumber(addr_string);
+    cout << "Running until " << Hex16 << breakpoint_once_ << "h" << endl; 
+    doRun();
+  }
 
   void doBreak(const string& addr_string) {
     int addr = parseNumber(addr_string);
     if (breakpoints_.find(addr) != breakpoints_.end()) {
-      cerr << "Breakpoint at " << addr_string << " already set." << endl;
+      cerr << "Breakpoint at " << Hex16 << addr << "h already set." << endl;
     } else {
       breakpoints_.insert(addr);
-      cout << "Set breakpoint at " << addr_string << "." << endl;
+      cout << "Set breakpoint at " << Hex16 << addr << "h." << endl;
     }
+  }
+
+  void doOver() {
+    breakpoint_once_ = x86_->getCS_IP();
+    doRun();
   }
 
   void doSet(const string& reg, const string& val_str) {
@@ -247,7 +264,7 @@ class Runner {
 
     vector<string> tokens = split(command);
     if (tokens.empty()) {
-      tokens.push_back("step");
+      return;
     }
 
     try {
@@ -310,6 +327,14 @@ class Runner {
         x86_->reset();
         vga_->setVideoMode(0);
         breakpoints_.clear();
+      } else if (action == "over") {
+        doOver();
+      } else if (action == "until") {
+        if (tokens.size() > 1) {
+          doUntil(tokens[1]);
+        } else {
+          cerr << "Syntax: " << action << " <address>" << endl;
+        }
       } else {
         cerr << "Unknown command '" << action << "'" << endl;
       }
@@ -334,8 +359,12 @@ class Runner {
   // Map of { start => size, disassembly }.
   map<int, pair<int, string>> disassembly_;
 
+  // Address of last fetched instruction.
+  int fetched_address_;
+
   // Breakpoints.
   set<int> breakpoints_;
+  int breakpoint_once_;
 
   static Runner* instance_;
 };

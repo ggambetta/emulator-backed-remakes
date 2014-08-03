@@ -74,6 +74,8 @@ class X86 : public X86Base {
   int getBytesFetched() const;
   void outputCurrentOperation(std::ostream& os);
 
+  virtual void setFlag(word mask, bool value);
+
   //
   // X86Base overrides.
   //
@@ -87,7 +89,6 @@ class X86 : public X86Base {
   virtual word* getMem16Ptr(word segment, word offset) override;
 
   virtual bool getFlag(word mask) const override;
-  virtual void setFlag(word mask, bool value) override;
 
 
   //

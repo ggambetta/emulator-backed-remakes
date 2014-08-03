@@ -115,13 +115,7 @@ void X86::outputCurrentOperation(std::ostream& os) {
   os << Addr(current_cs_, current_ip_) << " ";
 
   byte* code = getMem8Ptr(current_cs_, current_ip_);
-  for (int i = 0; i < bytes_fetched_; i++) {
-    os << Hex8 << (int)(*code++);
-  }
-  for (int i = 0; i < 6 - bytes_fetched_; i++) {
-    os << "  ";
-  }
-
+  writeBytes(os, code, bytes_fetched_, 6);
   os << getOpcodeDesc() << endl;
 }
 

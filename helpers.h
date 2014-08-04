@@ -42,7 +42,10 @@ void writeBytes(std::ostream& os, byte* data, int count, int width);
 
 // String functions.
 std::vector<std::string> split(const std::string& input);
+
 std::string upper(const std::string& str);
+std::string strip(const std::string& str);
+
 
 bool parseBool(const std::string& str);
 int parseNumber(const std::string& str);

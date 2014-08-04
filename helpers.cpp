@@ -122,3 +122,20 @@ string upper(const string& str) {
   }
   return ret;
 }
+
+
+string strip(const string& str) {
+  string ret = str;
+
+  size_t end = ret.find_last_not_of(" \n\r\t");
+  if (end != string::npos) {
+    ret.resize(end + 1);
+  }
+
+  size_t start = ret.find_first_not_of(" \n\r\t");
+  if (start != string::npos) {
+    ret = ret.substr(start);
+  }
+
+  return ret;
+}

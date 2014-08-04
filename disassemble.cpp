@@ -15,7 +15,9 @@ using namespace std;
 
 struct Fragment {
   int size;
+  vector<string> block_comments;
   string code;
+  string line_comment;
 };
 
 
@@ -149,7 +151,7 @@ class X86Disassembler : public X86Base {
     }
   }
 
-  void disassembleBytes(ostream& os, int address, int size) {
+  void outputBytes(ostream& os, int address, int size) {
     byte* data = mem_->getPointer(address);
     int start = 0;
     stringstream ss;
@@ -183,11 +185,50 @@ class X86Disassembler : public X86Base {
     flushLine(os, ss);
   }
 
-  void disassemble(const string& binary_fn, const string& asm_fn) {
-    // Load the binary.
-    load(binary_fn);
 
-    // Disassemble.
+  void outputAsm(const string& asm_fn) {
+    ofstream out(asm_fn);
+
+    int next_address = start_offset_;
+    for (const auto& entry: disassembly_) {
+      int address = entry.first;
+      auto fragment = entry.second;
+
+      // If there's a gap between disassembled chunks, output whatever is in
+      // the middle as raw data.
+      if (address != next_address) {
+        out << endl;
+        outputBytes(out, next_address, address - next_address);
+      }
+
+      // Space before an address that is jumped to.
+      if (entry_points_.count(address) != 0) {
+        out << endl;
+      }
+
+      // Output block comments.
+      if (!fragment->block_comments.empty()) {
+        out << endl;
+        for (const string& comment : fragment->block_comments) {
+          out << "; " << comment << endl;
+        }
+      }
+
+      // Output disassembly and line comment.
+      out << Hex16 << address << "  " << fragment->code;
+      if (!fragment->line_comment.empty()) {
+        out << "    ; " << fragment->line_comment;
+      }
+      out << endl;
+
+      next_address = address + fragment->size;
+    }
+
+    outputBytes(out, next_address, end_offset_ - next_address); 
+  }
+
+
+  void disassemble() {
     bool found;
     do {
       found = false;
@@ -200,29 +241,64 @@ class X86Disassembler : public X86Base {
         }
       }
     } while (found);
+  }
 
-    // Output.
-    ofstream out(asm_fn);
-
-    int next_address = start_offset_;
-    for (const auto& entry: disassembly_) {
-      int address = entry.first;
-      auto fragment = entry.second;
-
-      if (address != next_address) {
-        out << endl;
-        disassembleBytes(out, next_address, address - next_address);
-      }
-
-      if (entry_points_.count(address) != 0) {
-        out << endl;
-      }
-
-      out << Hex16 << address << "  " << fragment->code << endl;
-      next_address = address + fragment->size;
+  bool startsWithAddress(const string& line) {
+    if (line.size() < 5) {
+      return false;
     }
+    return isxdigit(line[0]) && isxdigit(line[1]) &&
+           isxdigit(line[2]) && isxdigit(line[3]) &&
+           line[4] == ' ';
+  }
 
-    disassembleBytes(out, next_address, end_offset_ - next_address); 
+  void mergeComments(const string& asm_fn) {
+    ifstream infile(asm_fn);
+    string line;
+
+    vector<string> block_comments;
+    while (getline(infile, line)) {
+      line = strip(line);
+      if (line.empty()) {
+        continue;
+      }
+
+      if (line[0] == ';') {
+        // Whole-line comment.
+        block_comments.push_back(strip(line.substr(1)));
+      } else if (startsWithAddress(line)) {
+        // Disassembly line.
+        int address = (int)strtol(line.data(), NULL, 16);
+
+        if (disassembly_.count(address) == 0) {
+          // Possibly a data address.
+          // TODO: Don't lose these comments!
+          continue;
+        }
+        auto fragment = disassembly_[address];
+
+        // Attach block comments.
+        if (!block_comments.empty()) {
+          fragment->block_comments = block_comments;
+          block_comments.clear();
+        }
+
+        // Find and attach line comment.
+        int idx = line.find(';');
+        if (idx == string::npos) {
+          continue;
+        }
+        fragment->line_comment = strip(line.substr(idx + 1));
+      }
+    }
+  }
+
+
+  void disassembleAndMerge(const string& binary_fn, const string& asm_fn) {
+    load(binary_fn);
+    disassemble();
+    mergeComments(asm_fn);
+    outputAsm(asm_fn);
   }
 
 
@@ -270,7 +346,8 @@ int main (int argc, char** argv) {
   x86.addEntryPoint(0x2CA4);
   x86.addEntryPoint(0x2CB1);
   x86.addEntryPoint(0x2CD6);
-  x86.disassemble("goody.com", "goody.asm");
+
+  x86.disassembleAndMerge("goody.com", "goody.asm");
 
   cout << endl;
   return 0;

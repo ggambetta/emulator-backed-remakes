@@ -256,6 +256,15 @@ void X86::ADD_w() {
   adjustFlagZSP(*warg1);
 }
 
+void X86::ADC_b() {
+  CHECK_BARGS();
+
+  int result = (*barg1) + (*barg2) + getFlag(F_CF);
+  *barg1 = result & 0xFF;
+
+  setFlag(F_CF, (result & 0x100) != 0);
+  adjustFlagZSP(*barg1);
+}
 
 void X86::ADD_b() {
   CHECK_BARGS();

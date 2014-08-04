@@ -94,6 +94,7 @@ class X86 : public X86Base {
   //
   // Opcode implementations.
   //
+  virtual void ADC_b() override;
   virtual void ADD_b() override;
   virtual void ADD_w() override;
   virtual void ADD_wb() override;

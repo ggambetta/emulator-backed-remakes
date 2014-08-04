@@ -135,12 +135,52 @@ class X86Disassembler : public X86Base {
     }
   }
 
-  void disassembleBytes(ostream& os, byte* data, int size) {
-    if (size == 0) {
-      return;
+
+  void flushLine(ostream& os, stringstream& ss) {
+    if (!ss.str().empty()) {
+      os << ss.str() << endl;
+      ss.str("");
     }
-    os << endl;
-    os << ".DB (" << dec << size << ")" << endl;
+  }
+
+  void startLine(stringstream& ss, int address) {
+    if (ss.str().empty()) {
+      ss << Hex16 << address << "  .DB ";
+    }
+  }
+
+  void disassembleBytes(ostream& os, int address, int size) {
+    byte* data = mem_->getPointer(address);
+    int start = 0;
+    stringstream ss;
+    while (start < size) {
+      startLine(ss, address + start);
+
+      // Find a consecutive group of printable or non-printable characters.
+      bool printable = isprint(data[start]); 
+      int end = start;
+      while (isprint(data[end]) == printable && end < size) {
+        end++;
+      }
+
+      // Print them.
+      if (printable && (end - start) > 3) {
+        flushLine(os, ss);
+        startLine(ss, address + start);
+        ss << "'" << string((char*)data + start, end - start) << "'";
+        flushLine(os, ss);
+        start = end;
+      } else {
+        while (start < end && ss.str().size() < 77) {
+          ss << Hex8 << (int)data[start++] << ", ";
+        }
+        if (start < end) {
+          flushLine(os, ss);
+        }
+      }
+    }
+
+    flushLine(os, ss);
   }
 
   void disassemble(const string& binary_fn, const string& asm_fn) {
@@ -164,22 +204,25 @@ class X86Disassembler : public X86Base {
     // Output.
     ofstream out(asm_fn);
 
-    byte* ram = mem_->getPointer(0);
     int next_address = start_offset_;
     for (const auto& entry: disassembly_) {
       int address = entry.first;
       auto fragment = entry.second;
 
-      if (address != next_address || address == start_offset_) {
-        disassembleBytes(out, ram + address, address - next_address);
+      if (address != next_address) {
+        out << endl;
+        disassembleBytes(out, next_address, address - next_address);
+      }
+
+      if (entry_points_.count(address) != 0) {
         out << endl;
       }
 
-      out << Hex16 << address << "        " << fragment->code << endl;
+      out << Hex16 << address << "  " << fragment->code << endl;
       next_address = address + fragment->size;
     }
 
-    disassembleBytes(out, ram + next_address, end_offset_ - next_address); 
+    disassembleBytes(out, next_address, end_offset_ - next_address); 
   }
 
 
@@ -204,6 +247,29 @@ class X86Disassembler : public X86Base {
 int main (int argc, char** argv) {
   Memory mem(1 << 20);  // 1 MB
   X86Disassembler x86(&mem);
+
+  x86.addEntryPoint(0x0BA8);
+  x86.addEntryPoint(0x0FE4);
+  x86.addEntryPoint(0x0FF4);
+  x86.addEntryPoint(0x107B);
+  x86.addEntryPoint(0x1157);
+  x86.addEntryPoint(0x11DE);
+  x86.addEntryPoint(0x12F2);
+  x86.addEntryPoint(0x1308);
+  x86.addEntryPoint(0x1348);
+  x86.addEntryPoint(0x1355);
+  x86.addEntryPoint(0x1362);
+  x86.addEntryPoint(0x13C6);
+  x86.addEntryPoint(0x147C);
+  x86.addEntryPoint(0x14AE);
+
+  x86.addEntryPoint(0x2013);
+  x86.addEntryPoint(0x2C63);
+  x86.addEntryPoint(0x2C8A);
+  x86.addEntryPoint(0x2C97);
+  x86.addEntryPoint(0x2CA4);
+  x86.addEntryPoint(0x2CB1);
+  x86.addEntryPoint(0x2CD6);
   x86.disassemble("goody.com", "goody.asm");
 
   cout << endl;

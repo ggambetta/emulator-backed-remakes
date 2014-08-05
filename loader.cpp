@@ -8,23 +8,31 @@ using namespace std;
 
 static const int kCOMOffset = 0x0100;
 
-void Loader::loadCOM(const string& filename, Memory* mem, X86Base* x86, int& start, int& end) {
-    ifstream file(filename, ios::in | ios::binary | ios::ate);
-    int size = (int)file.tellg();
-    ASSERT(kCOMOffset + size < mem->getSize());
 
-    start = kCOMOffset;
-    end = size;
+void Loader::loadCOM(const string& filename, Memory* mem, X86Base* x86) {
+  int dummy;
+  loadCOM(filename, mem, x86, dummy, dummy);
+}
 
-    file.seekg(0, ios::beg);
-    file.read((char*)mem->getPointer(kCOMOffset), size);
 
-    *x86->getReg16Ptr(X86::R16_CS) = 0;
-    *x86->getReg16Ptr(X86::R16_DS) = 0;
-    *x86->getReg16Ptr(X86::R16_ES) = 0;
+void Loader::loadCOM(const string& filename, Memory* mem, X86Base* x86,
+                     int& start, int& end) {
+  ifstream file(filename, ios::in | ios::binary | ios::ate);
+  int size = (int)file.tellg();
+  ASSERT(kCOMOffset + size < mem->getSize());
 
-    *x86->getReg16Ptr(X86::R16_SS) = 0;
-    *x86->getReg16Ptr(X86::R16_SP) = 0xFFFF;
+  start = kCOMOffset;
+  end = size;
 
-    *x86->getReg16Ptr(X86::R16_IP) = kCOMOffset;
+  file.seekg(0, ios::beg);
+  file.read((char*)mem->getPointer(kCOMOffset), size);
+
+  *x86->getReg16Ptr(X86::R16_CS) = 0;
+  *x86->getReg16Ptr(X86::R16_DS) = 0;
+  *x86->getReg16Ptr(X86::R16_ES) = 0;
+
+  *x86->getReg16Ptr(X86::R16_SS) = 0;
+  *x86->getReg16Ptr(X86::R16_SP) = 0xFFFF;
+
+  *x86->getReg16Ptr(X86::R16_IP) = kCOMOffset;
 }

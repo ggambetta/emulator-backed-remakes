@@ -1,11 +1,13 @@
 #include <time.h>
 #include <unordered_map>
+#include <memory>
 
 #include "loader.h"
 #include "memory.h"
 #include "monitor.h"
 #include "vga.h"
 #include "x86.h"
+#include "graphics.h"
 
 using namespace std;
 
@@ -86,8 +88,11 @@ class GoodyRemake : public Remake<GoodyRemake> {
  public:
   GoodyRemake() {
     Loader::loadCOM("goody.com", &mem_, &x86_);
+
     addHook(0x3851, &GoodyRemake::drawCharacter);
     addHook(0x383F, &GoodyRemake::drawTile);
+
+    window_.reset(new Window(1024, 768, "Goody"));
   }
 
   void drawTile() {
@@ -115,6 +120,7 @@ class GoodyRemake : public Remake<GoodyRemake> {
          << " at " << col << ", " << row << endl;
   }
 
+  unique_ptr<Window> window_;
 };
 
 

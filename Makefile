@@ -1,7 +1,7 @@
 CXXFLAGS=-std=c++0x -Wall -g -F /Library/Frameworks 
 TESTFLAGS=-I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -L. -lemu
 LIBRARY=libemu.a
-SDL=-framework SDL2
+SDL=-framework SDL2 -framework SDL2_image
 
 TEST_SCRIPT=tests.sh
 

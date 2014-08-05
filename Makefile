@@ -5,7 +5,7 @@ SDL=-framework SDL2
 
 TEST_SCRIPT=tests.sh
 
-BINARIES=runner disassemble
+BINARIES=runner disassemble goody
 BINARIES_SRC=$(addsuffix .cpp, $(BINARIES))
 
 SOURCES=$(filter-out $(BINARIES_SRC) %_test.cpp, $(wildcard *.cpp)) x86_base.cpp

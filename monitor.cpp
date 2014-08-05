@@ -1,7 +1,7 @@
 #include "monitor.h"
 #include "vga.h"
-#include <SDL2/SDL.h>
 
+#include <SDL2/SDL.h>
 #include <fstream>
 
 using namespace std;
@@ -88,7 +88,10 @@ void Monitor::update() {
   vga_->renderRGB(buffer);
 
   // Wrap in a texture.
-  SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(buffer, width, height, 24, width*3, 0x0000FF, 0x00FF00, 0xFF0000, 0);
+  SDL_Surface* surface = 
+      SDL_CreateRGBSurfaceFrom(buffer, width, height, 24, width*3,
+                               0x0000FF, 0x00FF00, 0xFF0000, 0);
+
   SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
 
   // Render.

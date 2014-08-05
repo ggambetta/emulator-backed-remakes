@@ -252,6 +252,27 @@ class X86Disassembler : public X86Base {
            line[4] == ' ';
   }
 
+  void loadConfig(const string& fn) {
+    ifstream infile(fn);
+    string line;
+
+    while (getline(infile, line)) {
+      line = strip(line);
+      if (line.empty()) {
+        continue;
+      }
+      vector<string> tokens = split(line);
+      string cmd = lower(tokens[0]);
+      if (cmd == "entrypoint") {
+        if (tokens.size() > 1) {
+          addEntryPoint(parseNumber(tokens[1]));
+        } else {
+          cerr << "Syntax: " << cmd << " <address>" << endl; 
+        }
+      }
+    }
+  }
+
   void mergeComments(const string& asm_fn) {
     ifstream infile(asm_fn);
     string line;
@@ -321,34 +342,23 @@ class X86Disassembler : public X86Base {
 
 
 int main (int argc, char** argv) {
+  if (argc < 2) {
+    cerr << "Usage: " << argv[0] << " <prefix>" << endl;
+    cerr << endl;
+    cerr << "Disassembles <prefix>.com into <prefix>.asm." << endl;
+    cerr << "If <prefix>.asm exists, attempts to merge the existing comments." << endl;
+    cerr << "If <prefix>.cfg exists, reads configuration entries from it:" << endl;
+    cerr << "    EntryPoint <address>    Add an explicit entry point to explore." << endl;
+
+    return 1;
+  }
+
   Memory mem(1 << 20);  // 1 MB
   X86Disassembler x86(&mem);
 
-  x86.addEntryPoint(0x0BA8);
-  x86.addEntryPoint(0x0FE4);
-  x86.addEntryPoint(0x0FF4);
-  x86.addEntryPoint(0x107B);
-  x86.addEntryPoint(0x1157);
-  x86.addEntryPoint(0x11DE);
-  x86.addEntryPoint(0x12F2);
-  x86.addEntryPoint(0x1308);
-  x86.addEntryPoint(0x1348);
-  x86.addEntryPoint(0x1355);
-  x86.addEntryPoint(0x1362);
-  x86.addEntryPoint(0x13C6);
-  x86.addEntryPoint(0x147C);
-  x86.addEntryPoint(0x14AE);
+  string prefix = argv[1];
+  x86.loadConfig(prefix + ".cfg");
+  x86.disassembleAndMerge(prefix + ".com", prefix + ".asm");
 
-  x86.addEntryPoint(0x2013);
-  x86.addEntryPoint(0x2C63);
-  x86.addEntryPoint(0x2C8A);
-  x86.addEntryPoint(0x2C97);
-  x86.addEntryPoint(0x2CA4);
-  x86.addEntryPoint(0x2CB1);
-  x86.addEntryPoint(0x2CD6);
-
-  x86.disassembleAndMerge("goody.com", "goody.asm");
-
-  cout << endl;
   return 0;
 }

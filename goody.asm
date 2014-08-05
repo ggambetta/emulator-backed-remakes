@@ -76,12 +76,11 @@
 01B2  CALL 33B6h
 
 ; Write instructions
-01B5  MOV CH, 03h   ; y = 3
-01B7  MOV CL, 0Dh   ; x = 13
-01B9  MOV DH, 0Ah   ; h = 10
-01BB  MOV DL, 14h   ; w = 20
+01B5  MOV CH, 03h    ; y = 3
+01B7  MOV CL, 0Dh    ; x = 13
+01B9  MOV DH, 0Ah    ; h = 10
+01BB  MOV DL, 14h    ; w = 20
 01BD  CALL 1162h    ; Clear area
-
 01C0  CALL 342Ch    ; Write instructions
 01C3  CALL 031Dh
 01C6  MOV AH, 50h
@@ -1928,6 +1927,7 @@
 1137  POP BX
 1138  RET 
 
+
 ; BX = f(AH, DX)
 1139  PUSH CX
 113A  MOV BX, 0000h
@@ -1957,12 +1957,13 @@
 115F  ADD BX, BX
 1161  RET 
 
-;
+
+; 
 ; Clear rectangular area of screen
-;
+; 
 ; CL, CH = x, y
 ; DL, DH = width, height
-;
+; 
 ; Dimensions and coordinates in 8x8 tiles
 1162  PUSH DX
 1163  PUSH CX
@@ -1984,36 +1985,37 @@
 117E  JNZ 1162h
 1180  RET 
 
-;
+
+; 
 ; Write strings of text
-;
+; 
 ; BX points to a sequence of structures of the form
 ; 
 ; <end> <y> <x> <text>
-;
+; 
 ; end = FF to end, 00 read new coordinates
 ; x and y in 8x8 tiles
 ; text is terminated by the next <end> character (?)
-;
-1181  MOV AH, [BX] ; AH = <end>
-1183  CMP AH, FFh ; FF == done
+; 
+1181  MOV AH, [BX]    ; AH = <end>
+1183  CMP AH, FFh    ; FF == done
 1186  JNZ 1189h
 1188  RET 
 
 1189  OR AH, AH
-118B  JZ 11A0h  // Read coordinates
+118B  JZ 11A0h    ; 00 == read coordinates
 118D  CMP AH, 20h
 1190  JZ 1195h
 1192  SUB AH, 20h
 
 1195  SUB AH, 20h
 1198  PUSH BX
-1199  CALL 11B1h  ; Draw the character
+1199  CALL 11B1h    ; Draw the character
 119C  POP BX
 119D  INC BX
 119E  JMP 1181h
 
-11A0  INC BX    ; AH == 0
+11A0  INC BX
 11A1  MOV AH, [BX]    ; Read coordinates, store in F1B9 and F1BA
 11A3  INC BX
 11A4  MOV [F1BAh], AH
@@ -2024,7 +2026,7 @@
 
 11B1  PUSH DX
 11B2  MOV DX, 0000h
-11B5  MOV CX, [F1B9h] ; Read coordinates
+11B5  MOV CX, [F1B9h]    ; Read coordinates
 11B9  MOV DX, FFFFh
 11BC  CALL 3851h    ; Draw character AH at CX
 11BF  POP DX
@@ -2041,7 +2043,7 @@
 11D6  MOV CX, 0000h
 
 11D9  MOV [F1B9h], CX
-11DD  RET ; --- end --- 
+11DD  RET     ; --- end ---
 
 11DE  PUSH CX
 11DF  MOV AH, [BX]
@@ -2939,15 +2941,16 @@
 22D8  .DB B8, 0E, BB, 2A, E0, E8, 1D, 00, 8A, 26, 2A, F1, FE, C4, 88, 26, 2A, 
 22E9  .DB F1, 
 
-;
+
+; 
 ; Draw money counter?
-;
+; 
 22EA  MOV AH, [F12Ah]
 22EE  MOV DX, 0064h
 22F1  CALL 1139h
-22F4  MOV CX, 1505h ; row = 21, col = 5
+22F4  MOV CX, 1505h    ; row = 21, col = 5
 22F7  MOV AH, 05h
-22F9  CALL 3388h  ; Draw number BX with AH digits in CX 
+22F9  CALL 3388h    ; Draw number BX with AH digits in CX
 22FC  RET 
 
 22FD  .DB BA, 04, 00, 8A, 27, 88, E5, 43, 8A, 26, 1D, F1, 3A, 27, 74, 07, 01, 
@@ -3644,7 +3647,7 @@
 ; Draw a number
 ; AH = digits
 ; BX = number
-; CX = position 
+; CX = position
 3388  PUSH SI
 3389  PUSH DX
 338A  PUSH CX
@@ -3702,9 +3705,10 @@
 340E  .DB FF, E8, 3D, DD, B9, 00, 00, E8, 37, DD, B9, FF, FF, E8, 31, DD, E8, 
 341F  .DB 18, 04, 74, FB, E9, 49, CD, BB, 6E, 35, E9, 55, DD, 
 
-;
+
+; 
 ; Write instructions
-;
+; 
 342C  MOV BX, 3432h
 342F  JMP 1181h
 
@@ -4815,22 +4819,23 @@
 3E0D  SHL CH, 01h
 3E0F  SHL CH, 01h
 
+
 ; Copy CH*2 lines of CL bytes into DI
 3E11  PUSH CX
 3E12  MOV CH, 00h
 3E14  PUSH DI
 3E15  REPZ MOVSW 
 3E17  POP DI
-3E18  ADD DI, 2000h   ; Move to odd lines bank
+3E18  ADD DI, 2000h    ; Move to odd lines bank
 3E1C  POP CX
 3E1D  PUSH CX
 3E1E  MOV CH, 00h
 3E20  PUSH DI
 3E21  REPZ MOVSW 
 3E23  POP DI
-3E24  SUB DI, 1FB0h   ; Back to even lines bank + 1 line
+3E24  SUB DI, 1FB0h    ; Back to even lines bank + 1 line
 3E28  POP CX
-3E29  DEC CH    
+3E29  DEC CH
 3E2B  JNZ 3E11h
 3E2D  POP ES
 3E2E  POP DI

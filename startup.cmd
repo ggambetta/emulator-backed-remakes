@@ -1,3 +1,3 @@
 load goody.com
-scale 2
+scale 3
 

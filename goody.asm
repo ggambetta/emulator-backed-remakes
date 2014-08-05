@@ -8,6 +8,8 @@
 010E  MOV ES, AX
 0110  MOV DS, AX
 0112  MOV SS, AX
+
+; Copy 1808 bytes from EDE3 to EDE4 (move 1 byte forward?)
 0114  MOV BX, EDE3h
 0117  MOV [BX], 0000h
 011B  MOV DX, EDE4h
@@ -18,6 +20,8 @@
 0126  REPZ MOVSB 
 0128  XCHG SI, BX
 012A  XCHG DI, DX
+
+; Copy 799 bytes from EDE3 to EDE4 (move 1 byte forward?)
 012C  MOV BX, EDE3h
 012F  MOV DX, EDE4h
 0132  MOV [BX], 00FFh
@@ -28,9 +32,11 @@
 013E  REPZ MOVSB 
 0140  XCHG SI, BX
 0142  XCHG DI, DX
+
+; Copy 800 bytes from EDE3 to F4F3
 0144  MOV BX, EDE3h
 0147  MOV DX, F4F3h
-014A  MOV CX, 0320h
+014A  MOV CX, 0320h    ; 800 = 40 x 20 = tiles per screen?
 014D  XCHG SI, BX
 014F  XCHG DI, DX
 0151  CLD 
@@ -68,12 +74,15 @@
 01AC  CALL 0FFCh
 01AF  CALL 23DAh
 01B2  CALL 33B6h
-01B5  MOV CH, 03h
-01B7  MOV CL, 0Dh
-01B9  MOV DH, 0Ah
-01BB  MOV DL, 14h
-01BD  CALL 1162h
-01C0  CALL 342Ch
+
+; Write instructions
+01B5  MOV CH, 03h   ; y = 3
+01B7  MOV CL, 0Dh   ; x = 13
+01B9  MOV DH, 0Ah   ; h = 10
+01BB  MOV DL, 14h   ; w = 20
+01BD  CALL 1162h    ; Clear area
+
+01C0  CALL 342Ch    ; Write instructions
 01C3  CALL 031Dh
 01C6  MOV AH, 50h
 01C8  MOV [F11Dh], AH
@@ -1663,12 +1672,12 @@
 0F4C  PUSH AX
 0F4D  PUSH CX
 0F4E  MOV AH, 66h
-0F50  CALL 3895h
+0F50  CALL 3895h    ; Draw tile AX at CX
 0F53  POP CX
 0F54  PUSH CX
 0F55  INC CL
 0F57  MOV AH, 69h
-0F59  CALL 3895h
+0F59  CALL 3895h    ; Draw tile AX at CX
 0F5C  POP CX
 0F5D  DEC CH
 0F5F  POP AX
@@ -1734,7 +1743,7 @@
 0FC5  PUSH CX
 0FC6  MOV AH, [BX]
 0FC8  PUSH BX
-0FC9  CALL 3895h
+0FC9  CALL 3895h    ; Draw tile AX at CX
 0FCC  POP BX
 0FCD  POP CX
 0FCE  PUSH CX
@@ -1742,7 +1751,7 @@
 0FD1  INC BX
 0FD2  MOV AH, [BX]
 0FD4  PUSH BX
-0FD5  CALL 3895h
+0FD5  CALL 3895h    ; Draw tile AX at CX
 0FD8  POP BX
 0FD9  INC BX
 0FDA  POP CX
@@ -1919,6 +1928,7 @@
 1137  POP BX
 1138  RET 
 
+; BX = f(AH, DX)
 1139  PUSH CX
 113A  MOV BX, 0000h
 113D  MOV CH, 08h
@@ -1947,6 +1957,13 @@
 115F  ADD BX, BX
 1161  RET 
 
+;
+; Clear rectangular area of screen
+;
+; CL, CH = x, y
+; DL, DH = width, height
+;
+; Dimensions and coordinates in 8x8 tiles
 1162  PUSH DX
 1163  PUSH CX
 
@@ -1955,7 +1972,7 @@
 1169  XOR AH, AH
 116B  MOV DH, 01h
 116D  PUSH DX
-116E  CALL 3851h    ; Draw character
+116E  CALL 3851h    ; Draw character AH at CX
 1171  POP DX
 1172  INC CL
 1174  DEC DL
@@ -1967,26 +1984,37 @@
 117E  JNZ 1162h
 1180  RET 
 
-1181  MOV AH, [BX]
-1183  CMP AH, FFh
+;
+; Write strings of text
+;
+; BX points to a sequence of structures of the form
+; 
+; <end> <y> <x> <text>
+;
+; end = FF to end, 00 read new coordinates
+; x and y in 8x8 tiles
+; text is terminated by the next <end> character (?)
+;
+1181  MOV AH, [BX] ; AH = <end>
+1183  CMP AH, FFh ; FF == done
 1186  JNZ 1189h
 1188  RET 
 
 1189  OR AH, AH
-118B  JZ 11A0h
+118B  JZ 11A0h  // Read coordinates
 118D  CMP AH, 20h
 1190  JZ 1195h
 1192  SUB AH, 20h
 
 1195  SUB AH, 20h
 1198  PUSH BX
-1199  CALL 11B1h
+1199  CALL 11B1h  ; Draw the character
 119C  POP BX
 119D  INC BX
 119E  JMP 1181h
 
-11A0  INC BX
-11A1  MOV AH, [BX]
+11A0  INC BX    ; AH == 0
+11A1  MOV AH, [BX]    ; Read coordinates, store in F1B9 and F1BA
 11A3  INC BX
 11A4  MOV [F1BAh], AH
 11A8  MOV AH, [BX]
@@ -1996,9 +2024,9 @@
 
 11B1  PUSH DX
 11B2  MOV DX, 0000h
-11B5  MOV CX, [F1B9h]
+11B5  MOV CX, [F1B9h] ; Read coordinates
 11B9  MOV DX, FFFFh
-11BC  CALL 3851h    ; Draw character
+11BC  CALL 3851h    ; Draw character AH at CX
 11BF  POP DX
 11C0  MOV CX, [F1B9h]
 11C4  INC CL
@@ -2013,14 +2041,14 @@
 11D6  MOV CX, 0000h
 
 11D9  MOV [F1B9h], CX
-11DD  RET 
+11DD  RET ; --- end --- 
 
 11DE  PUSH CX
 11DF  MOV AH, [BX]
 11E1  MOV CL, DL
 11E3  MOV CH, DH
 11E5  PUSH DX
-11E6  CALL 3895h
+11E6  CALL 3895h    ; Draw tile AX at CX
 11E9  POP DX
 11EA  INC DL
 11EC  INC BX
@@ -2593,7 +2621,7 @@
 1D38  RET 
 
 1D39  CALL 2C57h
-1D3C  CALL 3895h
+1D3C  CALL 3895h    ; Draw tile AX at CX
 1D3F  INC DI
 1D40  INC CL
 1D42  JMP 1D31h
@@ -2911,12 +2939,15 @@
 22D8  .DB B8, 0E, BB, 2A, E0, E8, 1D, 00, 8A, 26, 2A, F1, FE, C4, 88, 26, 2A, 
 22E9  .DB F1, 
 
+;
+; Draw money counter?
+;
 22EA  MOV AH, [F12Ah]
 22EE  MOV DX, 0064h
 22F1  CALL 1139h
-22F4  MOV CX, 1505h
+22F4  MOV CX, 1505h ; row = 21, col = 5
 22F7  MOV AH, 05h
-22F9  CALL 3388h
+22F9  CALL 3388h  ; Draw number BX with AH digits in CX 
 22FC  RET 
 
 22FD  .DB BA, 04, 00, 8A, 27, 88, E5, 43, 8A, 26, 1D, F1, 3A, 27, 74, 07, 01, 
@@ -2983,8 +3014,8 @@
 2377  MOV AH, [F11Bh]
 237B  MOV BL, AH
 237D  MOV AH, 02h    ; 2 digits
-237F  MOV CH, 17h    ; col = 23
-2381  MOV CL, 13h    ; row = 19
+237F  MOV CH, 17h    ; row = 23
+2381  MOV CL, 13h    ; col = 19
 2383  JMP 3388h
 
 2386  .DB B3, 04, B2, 04, E8, F8, EF, 72, 01, C3, 80, 0C, 10, BB, FA, CE, E8, 
@@ -3611,8 +3642,9 @@
 
 
 ; Draw a number
+; AH = digits
 ; BX = number
-; AH = digits?
+; CX = position 
 3388  PUSH SI
 3389  PUSH DX
 338A  PUSH CX
@@ -3632,7 +3664,7 @@
 33A2  JNZ 33B2h
 33A4  ADD AH, 1Eh    ; Index 1E = '0'
 33A7  MOV DX, FFFFh
-33AA  CALL 3851h    ; Draw character
+33AA  CALL 3851h    ; Draw character AH at CX
 33AD  INC CL    ; Next column
 33AF  INC SI    ; Next input character
 33B0  JMP 339Dh
@@ -3644,9 +3676,9 @@
 33B5  .DB C3, 
 
 33B6  CALL 368Eh
-33B9  CALL 361Dh
+33B9  CALL 361Dh    ; Draw beer meter
 33BC  MOV DX, 0000h
-33BF  CALL 22EAh
+33BF  CALL 22EAh    ; Draw money counter?
 33C2  RET 
 
 33C3  .DB BB, 08, F1, 01, CB, B4, 1A, 00, CC, 88, E1, B5, 17, 8A, 27, 80, C4, 
@@ -3658,7 +3690,7 @@
 33DC  PUSH CX
 33DD  MOV CH, 17h
 33DF  XOR AH, AH
-33E1  CALL 3851h    ; Draw character
+33E1  CALL 3851h    ; Draw character AH at CX
 33E4  POP CX
 33E5  INC CL
 33E7  DEC CH
@@ -3670,6 +3702,9 @@
 340E  .DB FF, E8, 3D, DD, B9, 00, 00, E8, 37, DD, B9, FF, FF, E8, 31, DD, E8, 
 341F  .DB 18, 04, 74, FB, E9, 49, CD, BB, 6E, 35, E9, 55, DD, 
 
+;
+; Write instructions
+;
 342C  MOV BX, 3432h
 342F  JMP 1181h
 
@@ -4025,6 +4060,14 @@
 3839  TEST [CE4Fh], 80h
 383E  RET 
 
+
+; 
+; Draw a tile.
+; 
+; AX = tile index
+; BL = column
+; BH = row
+; 
 383F  PUSH SI
 3840  PUSH DI
 3841  PUSH AX
@@ -4032,11 +4075,11 @@
 3843  PUSH DX
 3844  PUSH BX
 3845  PUSH ES
-3846  MOV CL, 04h
+3846  MOV CL, 04h    ; Tile = 16 bytes per tile (8 x 8)
 3848  SHL AX, CL
-384A  ADD AX, 63C2h
+384A  ADD AX, 63C2h    ; Start of tiles
 384D  MOV SI, AX
-384F  JMP 3867h
+384F  JMP 3867h    ; Draw bitmap
 
 
 ; 
@@ -4063,6 +4106,14 @@
 3862  ADD AX, 73C2h    ; Start of character map
 3865  MOV SI, AX
 
+
+; 
+; Draw a 8x8 bitmap.
+; 
+; SI = pixel data
+; BL = column
+; BH = row
+; 
 3867  MOV DX, B800h    ; ES = B800:0 (CGA vram)
 386A  MOV ES, DX
 386C  MOV DL, BH    ; Y in BH
@@ -4077,9 +4128,9 @@
 387E  MOV CX, 0004h    ; 4 iterations x 2 lines = 8 lines
 
 3881  MOVSW     ; 1 word = 16 bits = 8 pixels
-3882  ADD DI, 1FFEh
+3882  ADD DI, 1FFEh    ; 8190 = same pixel in next bank
 3886  MOVSW 
-3887  SUB DI, 1FB2h
+3887  SUB DI, 1FB2h    ; -8114 = 8192 - 78 = start of next line in prev bank
 388B  LOOP 3881h    ; Next line
 388D  POP ES
 388E  POP BX
@@ -4090,6 +4141,14 @@
 3893  POP SI
 3894  RET 
 
+
+; 
+; Draw a tile.
+; 
+; AH = tile index
+; CX = column
+; CL = row
+; 
 3895  PUSH SI
 3896  PUSH DI
 3897  PUSH AX
@@ -4098,13 +4157,13 @@
 389A  PUSH BX
 389B  PUSH ES
 389C  MOV BX, CX
-389E  MOV CL, 04h
+389E  MOV CL, 04h    ; Tile = 16 bytes per tile (8 x 8)
 38A0  MOV AL, AH
 38A2  MOV AH, 00h
 38A4  SHL AX, CL
-38A6  ADD AX, 63C2h
+38A6  ADD AX, 63C2h    ; Start of tiles
 38A9  MOV SI, AX
-38AB  JMP 3867h
+38AB  JMP 3867h    ; Draw bitmap
 
 38AD  .DB BF, 73, EF, BE, 83, F6, B7, 0A, B3, 00, EB, 09, 
 
@@ -4113,17 +4172,17 @@
 ; Draw a screen
 ; 
 38B9  MOV DI, EDE3h    ; Pointer to tile indexes
-38BC  MOV SI, F4F3h
+38BC  MOV SI, F4F3h    ; Saved screen tiles?
 38BF  MOV BX, 0000h    ; BL, BH = tile X, Y
 
 38C2  MOV AL, [DI]
 38C4  CLD 
 38C5  CMPSB 
-38C6  JZ 38D1h    ; Tile not found / empty?
+38C6  JZ 38D1h    ; Skip this tile
 38C8  MOV AH, 00h
 38CA  PUSH SI
 38CB  PUSH DI
-38CC  CALL 383Fh    ; Draw tile
+38CC  CALL 383Fh    ; Draw tile AX at BX
 38CF  POP DI
 38D0  POP SI
 
@@ -4140,7 +4199,7 @@
 
 
 ; 
-; Set the palette appropriate to the screen?
+; Set the palette appropriate to the screen.
 ; 
 38EA  CMP [F11Ch], 06h
 38EF  JB 3937h
@@ -4756,21 +4815,22 @@
 3E0D  SHL CH, 01h
 3E0F  SHL CH, 01h
 
+; Copy CH*2 lines of CL bytes into DI
 3E11  PUSH CX
 3E12  MOV CH, 00h
 3E14  PUSH DI
 3E15  REPZ MOVSW 
 3E17  POP DI
-3E18  ADD DI, 2000h
+3E18  ADD DI, 2000h   ; Move to odd lines bank
 3E1C  POP CX
 3E1D  PUSH CX
 3E1E  MOV CH, 00h
 3E20  PUSH DI
 3E21  REPZ MOVSW 
 3E23  POP DI
-3E24  SUB DI, 1FB0h
+3E24  SUB DI, 1FB0h   ; Back to even lines bank + 1 line
 3E28  POP CX
-3E29  DEC CH
+3E29  DEC CH    
 3E2B  JNZ 3E11h
 3E2D  POP ES
 3E2E  POP DI
@@ -4780,7 +4840,7 @@
 3E31  PUSH DI
 3E32  MOV CL, 04h
 3E34  SHL AX, CL
-3E36  ADD AX, 63C2h
+3E36  ADD AX, 63C2h    ; Start of tiles
 3E39  MOV SI, AX
 3E3B  MOV DX, [F170h]
 3E3F  MOV DH, 00h

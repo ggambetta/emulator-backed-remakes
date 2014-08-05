@@ -117,8 +117,19 @@ void writeBytes(ostream& os, byte* data, int count, int width) {
 
 string upper(const string& str) {
   string ret;
+  ret.reserve(str.size());
   for (char k: str) {
     ret.push_back(toupper(k));
+  }
+  return ret;
+}
+
+
+string lower(const string& str) {
+  string ret;
+  ret.reserve(str.size());
+  for (char k: str) {
+    ret.push_back(tolower(k));
   }
   return ret;
 }

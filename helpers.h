@@ -44,6 +44,8 @@ void writeBytes(std::ostream& os, byte* data, int count, int width);
 std::vector<std::string> split(const std::string& input);
 
 std::string upper(const std::string& str);
+std::string lower(const std::string& str);
+
 std::string strip(const std::string& str);
 
 

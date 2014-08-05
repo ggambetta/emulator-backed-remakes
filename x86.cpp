@@ -591,6 +591,12 @@ void X86::SHL_b() {
   adjustFlagZSP(*barg1);
 }
 
+void X86::SHR_b() {
+  CHECK_BARGS();
+  *barg1 >>= *barg2;
+  adjustFlagZSP(*barg1);
+}
+
 
 void X86::MUL_w() {
   CHECK_WARG1();
@@ -600,6 +606,14 @@ void X86::MUL_w() {
   regs_.dx = product >> 16;
 
   setFlag(F_CF | F_OF, regs_.dx != 0);
+}
+
+
+void X86::MUL_b() {
+  CHECK_BARG1();
+
+  regs_.ax = regs_.al * (*barg1);
+  setFlag(F_CF | F_OF, regs_.ah != 0);
 }
 
 
@@ -621,4 +635,55 @@ void X86::LDS() {
   regs_.ds = *src++;
 
   cerr << Addr(regs_.ds, *warg1) << endl;
+}
+
+void X86::RCL_w() {
+  CHECK_WARGS();
+
+  int count = *warg2;
+  int value = *warg1;
+  while (count--) {
+    int cf = (value & 0x8000) != 0;
+    value = (value << 1) | getFlag(F_CF);
+    setFlag(F_CF, cf);
+  }
+  *warg1 = value & 0xFFFF;
+
+  if (*warg2 == 1) {
+    setFlag(F_OF, ((value & 0x8000) != 0) ^ getFlag(F_CF));
+  }
+}
+
+void X86::RCL_b() {
+  CHECK_BARGS();
+
+  int count = *barg2;
+  int value = *barg1;
+  while (count--) {
+    int cf = (value & 0x80) != 0;
+    value = (value << 1) | getFlag(F_CF);
+    setFlag(F_CF, cf);
+  }
+  *barg1 = value & 0xFF;
+
+  if (*barg2 == 1) {
+    setFlag(F_OF, ((value & 0x80) != 0) ^ getFlag(F_CF));
+  }
+}
+
+void X86::RCR_b() {
+  CHECK_BARGS();
+
+  int count = *barg2;
+  int value = *barg1;
+
+  if (count == 1) {
+    setFlag(F_OF, ((value & 0x80) != 0) ^ getFlag(F_CF));
+  }
+
+  while (count--) {
+    int cf = value & 1;
+    value = (value >> 1) | (getFlag(F_CF) << 7);
+    setFlag(F_CF, cf);
+  }
 }

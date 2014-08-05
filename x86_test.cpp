@@ -333,3 +333,38 @@ TEST_F(X86Test, MUL) {
   EXPECT_TRUE(x86_->getFlag(X86::F_CF));
   EXPECT_TRUE(x86_->getFlag(X86::F_OF));
 }
+
+
+TEST_F(X86Test, RCL) {
+  regs_->bx = 0b0101010100110101;
+  x86_->setFlag(X86::F_CF, 1);
+
+  // Word version
+  int off = kOffset;
+  mem_[off++] = 0xD1;  // RCL BX, 1
+  mem_[off++] = 0xD3;
+  x86_->step();
+
+  EXPECT_FALSE(x86_->getFlag(X86::F_CF));
+  EXPECT_EQ(0b1010101001101011, regs_->bx);
+
+  // Now with carry
+  mem_[off++] = 0xD1;  // RCL BX, 1
+  mem_[off++] = 0xD3;
+  x86_->step();
+  
+  EXPECT_TRUE(x86_->getFlag(X86::F_CF));
+  EXPECT_EQ(0b0101010011010110, regs_->bx);
+
+
+  // Byte version
+  regs_->dl = 0b10011010;
+  x86_->setFlag(X86::F_CF, 1);
+
+  mem_[off++] = 0xD0;  // RCL DL, 1
+  mem_[off++] = 0xD2;
+
+  x86_->step();
+  EXPECT_TRUE(x86_->getFlag(X86::F_CF));
+  EXPECT_EQ(0b00110101, regs_->dl);
+}

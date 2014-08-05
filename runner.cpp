@@ -307,7 +307,7 @@ int main (int argc, char** argv) {
   Monitor monitor(&vga);
 
   Runner runner(&x86, &vga, &monitor);
-  runner.runScript("startup.cmd");
+  runner.runScript("runner.cmd");
   runner.run();
 
   cout << endl;

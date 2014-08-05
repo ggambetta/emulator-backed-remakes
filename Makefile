@@ -3,7 +3,9 @@ TESTFLAGS=-I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -L. -lemu
 LIBRARY=libemu.a
 SDL=-framework SDL2
 
-BINARIES=main disassemble
+TEST_SCRIPT=tests.sh
+
+BINARIES=runner disassemble
 BINARIES_SRC=$(addsuffix .cpp, $(BINARIES))
 
 SOURCES=$(filter-out $(BINARIES_SRC) %_test.cpp, $(wildcard *.cpp)) x86_base.cpp
@@ -17,7 +19,7 @@ GENERATED_FILES=x86_base.cpp x86_base.h
 all: $(SOURCES) $(BINARIES) $(LIBRARY) tests 
     
 clean:
-	rm -f *.o $(BINARIES) $(TEST_BINARIES) $(GENERATED_FILES) run_tests.sh $(LIBRARY)
+	rm -f *.o $(BINARIES) $(TEST_BINARIES) $(GENERATED_FILES) $(TEST_SCRIPT) $(LIBRARY)
 	rm -rf *.dSYM
 
 # Generated code.
@@ -34,9 +36,9 @@ $(BINARIES): %: %.cpp $(LIBRARY)
 
 # Tests.
 tests: $(LIBRARY) $(TEST_BINARIES)
-	@echo "#!/bin/bash" > run_tests.sh
-	@$(foreach BIN, $(TEST_BINARIES), echo ./$(BIN) >> run_tests.sh;)
-	@chmod a+x run_tests.sh
+	@echo "#!/bin/bash" > $(TEST_SCRIPT)
+	@$(foreach BIN, $(TEST_BINARIES), echo ./$(BIN) >> $(TEST_SCRIPT);)
+	@chmod a+x $(TEST_SCRIPT)
 
 $(TEST_BINARIES): %: %.cpp $(LIBRARY)
 	g++ $(CXXFLAGS) $(TESTFLAGS) $@.cpp -o $@

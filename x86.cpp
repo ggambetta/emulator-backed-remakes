@@ -373,6 +373,18 @@ void X86::STI() {
 }
 
 
+void X86::STC() {
+  setFlag(F_CF, true);
+}
+
+void X86::CLC() {
+  setFlag(F_CF, false);
+}
+
+void X86::CMC() {
+  setFlag(F_CF, !getFlag(F_CF));
+}
+
 void X86::CMPSB() {
   // Note inverted order of the operands.
   barg2 = getMem8Ptr(regs_.es, regs_.di);
@@ -559,6 +571,12 @@ void X86::DEC_b() {
   CHECK_BARG1();
   *barg1 = (*barg1) - 1;
   adjustFlagZSP(*barg1);
+}
+
+void X86::DEC_w() {
+  CHECK_WARG1();
+  *warg1 = (*warg1) - 1;
+  adjustFlagZSP(*warg1);
 }
  
 

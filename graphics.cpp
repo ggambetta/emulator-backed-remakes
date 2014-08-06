@@ -64,6 +64,11 @@ Window::~Window() {
 
 void Window::update() {
   SDL_RenderPresent(renderer_);
+
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    // TODO: consume input events and feed them back to the emulator.
+  }
 }
 
 

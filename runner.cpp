@@ -215,54 +215,69 @@ class Runner {
     try {
       string action = tokens[0];
       if (action == "s" || action == "step") {
+        // STEP [count] - execute one or more instructions.
         int steps = 1;
         if (tokens.size() > 1) {
           steps = stoi(tokens[1]);
         }
         doStep(steps);
       } else if (action == "r" || action == "run") {
+        // RUN - run until stopped.
         doRun();
       } else if (action == "skip") {
+        // SKIP - skip over the current instruction.
         doSkip();
-      } else if (action == "ss") {
+      } else if (action == "ss" || action == "screenshot") {
+        // SCREENSHOT <filename> - save the emulated screen as PPM.
         if (tokens.size() > 1) {
           monitor_->saveToFile(tokens[1]);
         } else {
           cerr << "Syntax: " << action << " <filename>" << endl;
         }
       } else if (action == "scale") {
+        // SCALE <scale> - set the emulated screen scale.
         if (tokens.size() > 1) {
           monitor_->setScale(stoi(tokens[1]));
         } else {
           cerr << "Syntax: " << action << " <scale>" << endl;
         }
       } else if (action == "load") {
+        // LOAD <filename> - load a COM file.
         if (tokens.size() > 1) {
           doLoad(tokens[1]);
         } else {
           cerr << "Syntax: " << action << " <filename>" << endl;
         }
       } else if (action == "state") {
+        // STATE - print the state of the registers.
         doState();
       } else if (action == "break") {
+        // BREAK <address> - add a permanent breakpoint at the given address.
         if (tokens.size() > 1) {
           doBreak(tokens[1]);
         } else {
           cerr << "Syntax: " << action << " <address>" << endl;
         }
       } else if (action == "set") {
+        // SET <register> <value> - set the value of a register.
         if (tokens.size() > 2) {
           doSet(tokens[1], tokens[2]);
         } else {
           cerr << "Syntax: " << action << " <register> <value>" << endl;
         }
       } else if (action == "reset") {
+        // RESET - restart and clear breakpoints.
         x86_->reset();
         vga_->setVideoMode(0);
         breakpoints_.clear();
       } else if (action == "over") {
+        // OVER - runs until the instruction following the current one
+        // in memory. Mostly equivalent to STEP, except for CALL and the
+        // like; STEP would step into the CALL, OVER stops after the CALL
+        // returns.
         doOver();
       } else if (action == "until") {
+        // UNTIL <address> - add a one-time breakpoint at the given address.
         if (tokens.size() > 1) {
           doUntil(tokens[1]);
         } else {

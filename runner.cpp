@@ -16,6 +16,7 @@
 using namespace std;
 
 const char kPrompt[] = ">>> ";
+const int kFrameRate = 30;
 
 class Runner {
  public:
@@ -95,6 +96,9 @@ class Runner {
   void doStep(int steps) {
     running_ = true;
     bool first = true;
+
+    int next_video_update = 0;
+
     while ((steps == -1 || steps--) && !error_) {
       if (!x86_->isExecutePending()) {
         fetched_address_ = x86_->getCS_IP();
@@ -112,6 +116,11 @@ class Runner {
 
       x86_->execute();
       first = false;
+
+      if (clock() >= next_video_update) {
+        monitor_->update();
+        next_video_update = clock() + (CLOCKS_PER_SEC / kFrameRate);
+      }
     }
     breakpoint_once_ = -1;
     running_ = false;
@@ -125,6 +134,7 @@ class Runner {
 
 
   void doLoad(const string& filename) {
+    x86_->clearExecutionState();
     Loader::loadCOM(filename, x86_->getMemory(), x86_, start_offset_, end_offset_);
     cout << "File loaded, [" << Hex16 << start_offset_ << " - " 
       << Hex16 << end_offset_ << "]" << endl;

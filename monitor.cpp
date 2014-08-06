@@ -102,4 +102,9 @@ void Monitor::update() {
   SDL_DestroyTexture(texture);
   SDL_FreeSurface(surface);
   delete [] buffer;
+
+  // Consume events to avoid starving the SDL event queue.
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+  }
 }

@@ -110,6 +110,13 @@ word* X86Base::decodeO_w() {
 }
 
 
+byte* X86Base::decodeO_b() {
+  word offset = fetch16();
+  addArgDesc(string("[") + segment_desc_ + hex16ToString(offset) + "h]");
+  return getMem8Ptr(segment_, offset);
+}
+
+
 word* X86Base::decodeI_w() {
   return addConstArg_w(fetch16());
 }

@@ -82,7 +82,7 @@
 01BB  MOV DL, 14h    ; w = 20
 01BD  CALL 1162h    ; Clear area
 01C0  CALL 342Ch    ; Write instructions
-01C3  CALL 031Dh
+01C3  CALL 031Dh    ; Attract mode (walking characters)
 01C6  MOV AH, 50h
 01C8  MOV [F11Dh], AH
 01CC  MOV BX, EDE3h
@@ -224,12 +224,20 @@
 
 0310  .DB 1E, 03, 04, 26, 03, 04, 07, 06, 09, 1F, 03, 04, FF, 
 
+
+; -------------------------
+; Attract Mode
+; -------------------------
 031D  MOV BX, 0000h
 0320  MOV [F17Bh], BX
 0324  MOV [F17Ch], BX
 0328  MOV BX, 030Dh
 032B  MOV [F1C9h], BX
 
+
+; 
+; "Only Goody visible" loop
+; 
 032F  MOV BX, [F1C9h]
 0333  MOV DX, 0003h
 0336  ADD BX, DX
@@ -238,7 +246,9 @@
 033F  MOV BX, 1080h
 0342  CALL 03D5h
 
-0345  CALL 39A9h
+
+; Walking loop
+0345  CALL 39A9h    ; Move and draw characters?
 0348  CALL 3839h
 034B  JZ 0354h
 034D  MOV [CS:413Bh], 00h
@@ -255,11 +265,17 @@
 036A  MOV CX, 2710h
 036D  CALL 114Fh    ; Wait for CX cycles
 0370  MOV AH, [SI + 000Ch]
-0373  CMP AH, 1Eh
-0376  JNB 0345h
-0378  MOV DI, [F1C9h]
+0373  CMP AH, 1Eh    ; goody.x < 30?
+0376  JNB 0345h    ; No; next step
+
+; 
+; "Goody + pursuer" loop
+; 
+0378  MOV DI, [F1C9h]    ; Pursuer appears?
 037C  TEST [DI], 80h
 037F  JZ 0388h
+
+; Restart the pursuer list
 0381  MOV DI, 0310h
 0384  MOV [F1C9h], DI
 
@@ -268,7 +284,9 @@
 038D  MOV BX, 1040h
 0390  CALL 03D5h
 
-0393  CALL 39A9h
+
+; Walking loop
+0393  CALL 39A9h    ; Move and draw characters?
 0396  XOR AH, AH
 0398  MOV CX, 1E17h
 039B  CALL 03E8h
@@ -279,7 +297,7 @@
 03AA  CALL 03E8h
 03AD  TEST [SI], 10h
 03B0  JZ 03B5h
-03B2  JMP 032Fh
+03B2  JMP 032Fh    ; Restart the whole cycle.
 
 03B5  MOV CX, 0BB8h
 03B8  CALL 114Fh    ; Wait for CX cycles
@@ -289,10 +307,13 @@
 03C6  RET 
 
 03C7  TEST [CE55h], 80h
-03CC  JZ 0393h
+03CC  JZ 0393h    ; Next step
 03CE  MOV [CS:413Bh], 01h
 03D4  RET 
 
+
+; 
+; ----- End Attract Mode main loop -----
 03D5  PUSH CX
 03D6  PUSH BX
 03D7  CALL 12A7h
@@ -3985,57 +4006,43 @@
 379D  RET 
 
 379E  MOV [F115h], 00h
-37A3  MOV AL
-37A4  DEC BP
-37A5  INTO 
+37A3  MOV AL, [CE4Dh]
 37A6  OR AL, [CE5Ch]
 37AA  TEST AL, 80h
 37AC  JZ 37B3h
 37AE  OR [F115h], 01h
 
-37B3  MOV AL
-37B4  DEC SI
-37B5  INTO 
+37B3  MOV AL, [CE4Eh]
 37B6  OR AL, [CE5Dh]
 37BA  TEST AL, 80h
 37BC  JZ 37C3h
 37BE  OR [F115h], 02h
 
-37C3  MOV AL
-37C4  DEC BX
-37C5  INTO 
+37C3  MOV AL, [CE4Bh]
 37C6  OR AL, [CE5Ah]
 37CA  TEST AL, 80h
 37CC  JZ 37D3h
 37CE  OR [F115h], 04h
 
-37D3  MOV AL
-37D4  DEC SP
-37D5  INTO 
+37D3  MOV AL, [CE4Ch]
 37D6  OR AL, [CE5Bh]
 37DA  TEST AL, 80h
 37DC  JZ 37E3h
 37DE  OR [F115h], 08h
 
-37E3  MOV AL
-37E4  DEC DI
-37E5  INTO 
+37E3  MOV AL, [CE4Fh]
 37E6  OR AL, [CE5Eh]
 37EA  TEST AL, 80h
 37EC  JZ 37F3h
 37EE  OR [F115h], 10h
 
-37F3  MOV AL
-37F4  PUSH CX
-37F5  INTO 
+37F3  MOV AL, [CE51h]
 37F6  OR AL, [CE5Fh]
 37FA  TEST AL, 80h
 37FC  JZ 3803h
 37FE  OR [F115h], 20h
 
-3803  MOV AL
-3804  PUSH AX
-3805  INTO 
+3803  MOV AL, [CE50h]
 3806  TEST AL, 80h
 3808  JZ 380Fh
 380A  OR [F115h], 40h

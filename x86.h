@@ -47,6 +47,7 @@ class X86 : public X86Base {
   virtual void reset();
   virtual void fetchAndDecode() override;
 
+  void refetch();
   bool isExecutePending() const;
 
   virtual void registerInterruptHandler(InterruptHandler* handler, int num);
@@ -66,8 +67,6 @@ class X86 : public X86Base {
   void doPush(word val);
   word doPop();
 
-  virtual byte* getMem8Ptr(word segment, word offset);
-
   void adjustFlagZSP(byte value);
   void adjustFlagZSP(word value);
 
@@ -75,6 +74,8 @@ class X86 : public X86Base {
   void outputCurrentOperation(std::ostream& os);
 
   virtual void setFlag(word mask, bool value);
+
+  const std::vector<std::pair<word, word>>& getCallStack() const;
 
   //
   // X86Base overrides.
@@ -87,6 +88,7 @@ class X86 : public X86Base {
   virtual word* getReg16Ptr(int reg) override;
 
   virtual word* getMem16Ptr(word segment, word offset) override;
+  virtual byte* getMem8Ptr(word segment, word offset) override;
 
   virtual bool getFlag(word mask) const override;
 
@@ -112,6 +114,7 @@ class X86 : public X86Base {
   virtual void INC_b() override;
   virtual void INC_w() override;
   virtual void INT() override;
+  virtual void IN_b() override;
   virtual void JB() override;
   virtual void JMP_b() override;
   virtual void JMP_w() override;
@@ -164,6 +167,9 @@ class X86 : public X86Base {
 
   // Number of times fetch() is called.
   int bytes_fetched_;
+
+  // Call stack tracking.
+  std::vector<std::pair<word, word>> call_stack_;
 
   // Parity flag lookup table.
   static const bool byte_parity_[256];

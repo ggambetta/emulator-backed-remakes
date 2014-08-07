@@ -72,6 +72,14 @@ void X86::reset() {
   regs_.sp = 0xFFFF;
 }
 
+void X86::refetch() {
+  if (!isExecutePending()) {
+    return;
+  }
+  regs_.ip -= getBytesFetched();
+  clearExecutionState();
+  fetchAndDecode();
+}
 
 byte X86::fetch() {
   byte val = mem_->read(getCS_IP());
@@ -245,6 +253,9 @@ void X86::adjustFlagZSP(word value) {
   setFlag(F_PF, byte_parity_[value & 0xFF]);
 }
 
+const vector<pair<word, word>>& X86::getCallStack() const {
+  return call_stack_;
+}
 
 void X86::ADD_w() {
   CHECK_WARGS();
@@ -435,6 +446,7 @@ void X86::STOSB() {
 void X86::CALL_w() {
   CHECK_WARG1();
   doPush(regs_.ip);
+  call_stack_.push_back({regs_.cs, regs_.ip - bytes_fetched_});
   regs_.ip = *warg1;
 }
 
@@ -536,6 +548,18 @@ void X86::INT() {
 }
 
 
+void X86::IN_b() {
+  CHECK_BARGS();
+
+  auto handler = io_handlers_.find(*barg2);
+  if (handler != io_handlers_.end()) {
+    *barg1 = handler->second->handleIN(*barg2);
+  } else {
+    cerr << "No I/O handler for 0x" << Hex8 << (int)(*barg2) << endl;
+  }
+}
+
+
 void X86::OUT_b() {
   CHECK_BARGS();
 
@@ -549,6 +573,7 @@ void X86::OUT_b() {
 
 
 void X86::RET() {
+  call_stack_.pop_back();
   regs_.ip = doPop(); 
 }
 

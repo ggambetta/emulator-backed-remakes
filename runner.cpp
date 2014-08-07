@@ -195,6 +195,13 @@ class Runner {
     doRun();
   }
 
+  void doPoke(const string& addr_string, const string& val_str) {
+    int addr = parseNumber(addr_string);
+    int value = parseNumber(val_str);
+    x86_->getMemory()->write(addr, value);
+    x86_->refetch();
+  }
+
   void doSet(const string& reg, const string& val_str) {
     string ureg = upper(reg);
     int value = parseNumber(val_str);
@@ -213,6 +220,15 @@ class Runner {
       }
     }
   }
+
+  void doCallStack() {
+    auto call_stack = x86_->getCallStack();
+    for (const auto& csip : call_stack) {
+      cout << Addr(csip.first, csip.second) << endl; 
+    }
+    cout << endl;
+  }
+
 
   void executeCommand(const string& command) {
     error_ = false;
@@ -268,6 +284,13 @@ class Runner {
         } else {
           cerr << "Syntax: " << action << " <address>" << endl;
         }
+      } else if (action == "poke") {
+        // POKE <address> <value> - change a memory address.
+        if (tokens.size() > 2) {
+          doPoke(tokens[1], tokens[2]);
+        } else {
+          cerr << "Syntax: " << action << " <address> <value>" << endl;
+        }
       } else if (action == "set") {
         // SET <register> <value> - set the value of a register.
         if (tokens.size() > 2) {
@@ -293,6 +316,8 @@ class Runner {
         } else {
           cerr << "Syntax: " << action << " <address>" << endl;
         }
+      } else if (action == "cs" || action == "callstack") {
+        doCallStack();
       } else {
         cerr << "Unknown command '" << action << "'" << endl;
       }

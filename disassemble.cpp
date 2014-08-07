@@ -24,6 +24,8 @@ struct Fragment {
 class X86Disassembler : public X86Base {
  public:
   X86Disassembler(Memory* mem) : mem_(mem) {
+    dump_raw_ = false;
+    //dump_raw_ = true;
   }
 
   // ----------------------------------------
@@ -95,6 +97,10 @@ class X86Disassembler : public X86Base {
 
   virtual word* getMem16Ptr(word segment, word offset) override {
     return (word*)mem_->getPointer((segment << 4) + offset);
+  }
+
+  virtual byte* getMem8Ptr(word segment, word offset) override {
+    return mem_->getPointer((segment << 4) + offset);
   }
 
   virtual bool getFlag(word mask) const override {
@@ -189,6 +195,7 @@ class X86Disassembler : public X86Base {
   void outputAsm(const string& asm_fn) {
     ofstream out(asm_fn);
 
+    byte* raw = mem_->getPointer(0);
     int next_address = start_offset_;
     for (const auto& entry: disassembly_) {
       int address = entry.first;
@@ -214,8 +221,19 @@ class X86Disassembler : public X86Base {
         }
       }
 
-      // Output disassembly and line comment.
-      out << Hex16 << address << "  " << fragment->code;
+      // Output raw, disassembly and line comment.
+      out << Hex16 << address << "  ";
+
+      if (dump_raw_) {
+        for (int i = 0; i < fragment->size; i++) {
+          out << Hex8 << (int)raw[address + i]; 
+        }
+        int kMaxInstructionSize = 6;
+        out << string((kMaxInstructionSize - fragment->size) * 2, ' ');
+        out << "  ";
+      }
+
+      out << fragment->code;
       if (!fragment->line_comment.empty()) {
         out << "    ; " << fragment->line_comment;
       }
@@ -333,6 +351,7 @@ class X86Disassembler : public X86Base {
   int size_;
 
   word ip_;
+  bool dump_raw_;
 
   int start_offset_;
   int end_offset_;

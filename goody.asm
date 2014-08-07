@@ -253,7 +253,7 @@
 0365  XOR AH, AH
 0367  CALL 03E8h
 036A  MOV CX, 2710h
-036D  CALL 114Fh
+036D  CALL 114Fh    ; Wait for CX cycles
 0370  MOV AH, [SI + 000Ch]
 0373  CMP AH, 1Eh
 0376  JNB 0345h
@@ -282,7 +282,7 @@
 03B2  JMP 032Fh
 
 03B5  MOV CX, 0BB8h
-03B8  CALL 114Fh
+03B8  CALL 114Fh    ; Wait for CX cycles
 03BB  CALL 3839h
 03BE  JZ 03C7h
 03C0  MOV [CS:413Bh], 00h
@@ -1221,7 +1221,7 @@
 0BB2  CALL 1139h
 0BB5  PUSH BX
 0BB6  POP CX
-0BB7  JMP 114Fh
+0BB7  JMP 114Fh    ; Wait for CX cycles
 
 0BBA  CALL 3944h
 0BBD  CALL 0224h
@@ -1330,7 +1330,7 @@
 0C9D  MOV [F11Dh], AH
 0CA1  MOV [SI + 000Eh], 10h
 0CA5  MOV [SI + 000Dh], 80h
-0CA9  JMP 0CE6h
+0CA9  JMP 0CE6h    ; JMP 0CE6h
 
 0CAB  MOV AH, [F126h]
 0CAF  TEST AH, 40h
@@ -1430,7 +1430,7 @@
 0D7C  JB 0DC2h
 0D7E  MOV AH, [DF4Dh]
 0D82  TEST AH, 01h
-0D85  JNZ 0DC2h
+0D85  JNZ 0DC2h    ; JNZ 0DC2h
 0D87  MOV BX, [F1DAh]
 0D8B  MOV [DF50h], BX
 0D8F  TEST [SI + 0013h], 80h
@@ -1944,9 +1944,11 @@
 114D  POP CX
 114E  RET 
 
+
+; Wait for CX cycles
 114F  DEC CX
 1150  MOV AH, CH
-1152  OR AH, CL
+1152  OR AH, CL    ; Equivalent to CX == 0
 1154  JNZ 114Fh
 1156  RET 
 
@@ -3626,7 +3628,7 @@
 335E  JNB 335Ah
 3360  ADD BX, DX
 3362  OR AH, AH
-3364  MOV DX, 000Ah    ; 10
+3364  MOV DX, 000Ah  ; 10
 3367  MOV CL, FFh    ; -1
 
 3369  INC CL
@@ -3799,7 +3801,7 @@
 3672  MOV CL, AH
 3674  MOV CH, 00h
 3676  PUSH ES
-3677  MOV AX, B800h
+3677  MOV AX, B800h    ; CGA VRAM
 367A  MOV ES, AX
 
 367C  MOV [ES:DI], BH
@@ -4802,25 +4804,25 @@
 3DE6  DEC AH
 3DE8  JNZ 3DC1h
 3DEA  POP SI
-3DEB  MOV DI, [F148h]
+3DEB  MOV DI, [F148h]    ; Pointer to destination bytes
 3DEF  PUSH SI
 3DF0  PUSH DI
 3DF1  PUSH ES
-3DF2  MOV DX, B800h
+3DF2  MOV DX, B800h    ; ES = B800:0 (CGA vram)
 3DF5  MOV ES, DX
-3DF7  MOV DX, [F16Eh]
-3DFB  MOV AX, 0050h
-3DFE  MUL DH
+3DF7  MOV DX, [F16Eh]    ; DX = (x, y). y in lines, x in bytes?
+3DFB  MOV AX, 0050h    ; 80 = 320 pixels
+3DFE  MUL DH    ; AX = 80 * DH => DH = y
 3E00  MOV DH, 00h
-3E02  ADD AX, DX
+3E02  ADD AX, DX    ; AX += DL => DL = x
 3E04  MOV DI, AX
 3E06  MOV SI, F4F3h
-3E09  MOV CX, [F176h]
-3E0D  SHL CH, 01h
+3E09  MOV CX, [F176h]    ; Size
+3E0D  SHL CH, 01h    ; CH = CH * 4. 3E11 treats them as double lines. So CH = height in 8x8 tiles?
 3E0F  SHL CH, 01h
 
 
-; Copy CH*2 lines of CL bytes into DI
+; Copy CH*2 lines of CL bytes from SI into DI
 3E11  PUSH CX
 3E12  MOV CH, 00h
 3E14  PUSH DI
@@ -4943,8 +4945,13 @@
 3EE2  .DB 56, 57, 83, C6, 03, 89, FE, B9, 08, 00, 01, CF, FC, F3, A4, 5F, 5E, 
 3EF3  .DB C3, 
 
+
+; Scroll 8 bytes == 32 pixels right?
 3EF4  PUSH SI
 3EF5  PUSH DI
+
+; DI = SI + 3
+; SI = SI + 11
 3EF6  MOV DI, SI
 3EF8  ADD DI, 03h
 3EFB  MOV SI, DI
@@ -5072,7 +5079,7 @@
 4040  .DB FE, 58, E8, 16, FF, C3, 
 4046  .DB 'AQUI HAY QUE POKEAR'
 
-4059  MOV AH, [CS:413Bh]
+4059  MOV AH, [CS:413Bh]    ; 0A  MOV AH, [CS:413Bh]
 405E  OR AH, AH
 4060  NOP 
 4061  NOP 

@@ -233,20 +233,21 @@
 ; -------------------------
 ; Attract Mode
 ; -------------------------
-
+; 
 ; Pursuer table
 0310  .DB 1E, 03, 04, 26, 03, 04, 07, 06, 09, 1F, 03, 04, FF, 
 
+; 031D
 031D  MOV BX, 0000h
 0320  MOV [F17Bh], BX
 0324  MOV [F17Ch], BX
-0328  MOV BX, 030Dh ; Start of pursuer table - 3
+0328  MOV BX, 030Dh    ; Start of pursuer table - 3
 032B  MOV [F1C9h], BX
 
-;
+; 
 ; "Only Goody visible" loop
 ; 
-032F  MOV BX, [F1C9h]  ; Pursuer data += 3
+032F  MOV BX, [F1C9h]    ; Pursuer data += 3
 0333  MOV DX, 0003h
 0336  ADD BX, DX
 0338  MOV [F1C9h], BX
@@ -275,14 +276,13 @@
 0373  CMP AH, 1Eh    ; goody.x < 30?
 0376  JNB 0345h    ; No; next step
 
-;
+; 
 ; "Goody + pursuer" loop
 ; 
 0378  MOV DI, [F1C9h]
-037C  TEST [DI], 80h  ; FF = end of table
+037C  TEST [DI], 80h    ; FF = end of table
 037F  JZ 0388h
-
-0381  MOV DI, 0310h ; Restart the pursuer list
+0381  MOV DI, 0310h    ; Restart the pursuer list
 0384  MOV [F1C9h], DI
 
 0388  MOV CH, [DI]
@@ -5214,6 +5214,7 @@
 40A6  MOV [CS:413Eh], BX
 40AB  MOV [F115h], AH
 40AF  RET 
+
 40B0  .DB 8A, 26, 15, F1, BB, 
 40B5  .DB '=A:'th.'
 40BC  .DB 8B, 1E, 

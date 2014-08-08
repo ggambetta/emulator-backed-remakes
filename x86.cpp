@@ -70,6 +70,8 @@ void X86::reset() {
 
   regs_.ss = 0;
   regs_.sp = 0xFFFF;
+
+  call_stack_.clear();
 }
 
 void X86::refetch() {

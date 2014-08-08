@@ -27,6 +27,7 @@ class X86Base {
   virtual word* getReg16Ptr(int reg) = 0;
   virtual byte* getReg8Ptr(int reg) = 0;
   virtual word* getMem16Ptr(word segment, word offset) = 0;
+  virtual byte* getMem8Ptr(word segment, word offset) = 0;
 
   virtual bool getFlag(word mask) const = 0;
 

@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <set>
+#include <unordered_set>
 #include <signal.h>
 #include <sstream>
 #include <vector>
@@ -183,7 +183,8 @@ class Runner {
   void doBreak(const string& addr_string) {
     int addr = parseNumber(addr_string);
     if (breakpoints_.find(addr) != breakpoints_.end()) {
-      cerr << "Breakpoint at " << Hex16 << addr << "h already set." << endl;
+      breakpoints_.erase(addr);
+      cout << "Removed breakpoint at " << Hex16 << addr << "h." << endl;
     } else {
       breakpoints_.insert(addr);
       cout << "Set breakpoint at " << Hex16 << addr << "h." << endl;
@@ -225,6 +226,14 @@ class Runner {
     auto call_stack = x86_->getCallStack();
     for (const auto& csip : call_stack) {
       cout << Addr(csip.first, csip.second) << endl; 
+    }
+    cout << endl;
+  }
+
+  void doEntryPoints() {
+    auto entry_points = x86_->getEntryPoints();
+    for (int address : entry_points) {
+      cout << "EntryPoint " << Hex16 << address << "h" << endl;
     }
     cout << endl;
   }
@@ -278,7 +287,7 @@ class Runner {
         // STATE - print the state of the registers.
         doState();
       } else if (action == "break") {
-        // BREAK <address> - add a permanent breakpoint at the given address.
+        // BREAK <address> - add/remove a permanent breakpoint at the given address.
         if (tokens.size() > 1) {
           doBreak(tokens[1]);
         } else {
@@ -317,7 +326,12 @@ class Runner {
           cerr << "Syntax: " << action << " <address>" << endl;
         }
       } else if (action == "cs" || action == "callstack") {
+        // CALLSTACK - print the current call stack.
         doCallStack();
+      } else if (action == "ep" || action == "entrypoints") {
+        // ENTRYPOINTS - print all collected entry points in a format suitable
+        // for the disassembler .cfg.
+        doEntryPoints();
       } else {
         cerr << "Unknown command '" << action << "'" << endl;
       }
@@ -341,7 +355,7 @@ class Runner {
   int fetched_address_;
 
   // Breakpoints.
-  set<int> breakpoints_;
+  unordered_set<int> breakpoints_;
   int breakpoint_once_;
 
   static Runner* instance_;

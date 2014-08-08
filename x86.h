@@ -5,6 +5,7 @@
 #include "helpers.h"
 
 #include <unordered_map>
+#include <unordered_set>
 #include <iostream>
 
 class Memory;
@@ -76,6 +77,9 @@ class X86 : public X86Base {
   virtual void setFlag(word mask, bool value);
 
   const std::vector<std::pair<word, word>>& getCallStack() const;
+  const std::unordered_set<int>& getEntryPoints() const;
+
+  void addEntryPoint();
 
   //
   // X86Base overrides.
@@ -170,6 +174,9 @@ class X86 : public X86Base {
 
   // Call stack tracking.
   std::vector<std::pair<word, word>> call_stack_;
+
+  // Entry points.
+  std::unordered_set<int> entry_points_;
 
   // Parity flag lookup table.
   static const bool byte_parity_[256];

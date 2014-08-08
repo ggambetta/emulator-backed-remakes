@@ -253,8 +253,18 @@ void X86::adjustFlagZSP(word value) {
   setFlag(F_PF, byte_parity_[value & 0xFF]);
 }
 
+
+void X86::addEntryPoint() {
+  entry_points_.insert(getCS_IP());
+}
+
+
 const vector<pair<word, word>>& X86::getCallStack() const {
   return call_stack_;
+}
+
+const unordered_set<int>& X86::getEntryPoints() const {
+  return entry_points_;
 }
 
 void X86::ADD_w() {
@@ -445,9 +455,12 @@ void X86::STOSB() {
 
 void X86::CALL_w() {
   CHECK_WARG1();
-  doPush(regs_.ip);
   call_stack_.push_back({regs_.cs, regs_.ip - bytes_fetched_});
+
+  doPush(regs_.ip);
   regs_.ip = *warg1;
+
+  addEntryPoint();
 }
 
 
@@ -455,6 +468,7 @@ void X86::JNB() {
   CHECK_WARG1();
   if (!getFlag(F_CF)) {
     regs_.ip = *warg1;
+    addEntryPoint();
   }
 }
 
@@ -463,6 +477,7 @@ void X86::JB() {
   CHECK_WARG1();
   if (getFlag(F_CF)) {
     regs_.ip = *warg1;
+    addEntryPoint();
   }
 }
 
@@ -470,6 +485,7 @@ void X86::JB() {
 void X86::JMP_b() {
   CHECK_WARG1();
   regs_.ip = *warg1;
+  addEntryPoint();
 }
 
 
@@ -609,6 +625,7 @@ void X86::JNZ() {
   CHECK_WARG1();
   if (!getFlag(F_ZF)) {
     regs_.ip = *warg1;
+    addEntryPoint();
   }
 }
  
@@ -617,6 +634,7 @@ void X86::JZ() {
   CHECK_WARG1();
   if (getFlag(F_ZF)) {
     regs_.ip = *warg1;
+    addEntryPoint();
   }
 }
 

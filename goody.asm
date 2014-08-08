@@ -51,7 +51,6 @@
 0167  CALL 3839h
 016A  MOV [CS:0409h], SP
 
-
 ; Restart
 016F  MOV SP, [CS:0409h]
 0174  CALL 02DEh
@@ -111,14 +110,17 @@
 0215  CALL 040Bh
 0218  JMP 016Fh
 
+; 021B
 021B  MOV AH, 0Fh    ; Start with 15 lives
 021D  MOV [F11Bh], AH    ; F11B = lives counter
 0221  CALL 2373h    ; Draw lives counter
 
+; 0224
 0224  CALL 0276h
 0227  MOV BX, 0000h
 022A  MOV [F12Ah], BX
 
+; 022E
 022E  MOV AH, 01h
 0230  MOV [F17Bh], AH
 0234  MOV BX, F1CFh
@@ -128,6 +130,7 @@
 0242  MOV [F1F4h], AH
 0246  RET 
 
+; 0247
 0247  XOR AH, AH
 0249  MOV [F12Ch], AH
 024D  MOV [F12Ah], AH
@@ -148,6 +151,7 @@
 0272  MOV [BX], 08h
 0275  RET 
 
+; 0276
 0276  MOV BX, F1CFh
 0279  MOV [BX], 0000h
 027D  MOV DX, F1D0h
@@ -181,10 +185,12 @@
 02BD  CALL 02C1h
 02C0  RET 
 
+; 02C1
 02C1  MOV BX, DFF9h
 02C4  CALL 02CAh
 02C7  MOV BX, E02Ah
 
+; 02CA
 02CA  MOV AH, [BX]
 02CC  INC BX
 02CD  MOV DX, 0004h
@@ -198,6 +204,7 @@
 02DB  JNZ 02D5h
 02DD  RET 
 
+; 02DE
 02DE  MOV BX, F126h
 02E1  MOV [BX], 0000h
 02E5  MOV DX, F127h
@@ -210,6 +217,7 @@
 02F4  XCHG DI, DX
 02F6  RET 
 
+; 02F7
 02F7  MOV BX, F12Eh
 02FA  MOV [BX], 0000h
 02FE  MOV DX, F12Fh
@@ -222,30 +230,29 @@
 030D  XCHG DI, DX
 030F  RET 
 
-0310  .DB 1E, 03, 04, 26, 03, 04, 07, 06, 09, 1F, 03, 04, FF, 
-
-
 ; -------------------------
 ; Attract Mode
 ; -------------------------
+
+; Pursuer table
+0310  .DB 1E, 03, 04, 26, 03, 04, 07, 06, 09, 1F, 03, 04, FF, 
+
 031D  MOV BX, 0000h
 0320  MOV [F17Bh], BX
 0324  MOV [F17Ch], BX
-0328  MOV BX, 030Dh
+0328  MOV BX, 030Dh ; Start of pursuer table - 3
 032B  MOV [F1C9h], BX
 
-
-; 
+;
 ; "Only Goody visible" loop
 ; 
-032F  MOV BX, [F1C9h]
+032F  MOV BX, [F1C9h]  ; Pursuer data += 3
 0333  MOV DX, 0003h
 0336  ADD BX, DX
 0338  MOV [F1C9h], BX
 033C  MOV CX, 0017h
 033F  MOV BX, 1080h
 0342  CALL 03D5h
-
 
 ; Walking loop
 0345  CALL 39A9h    ; Move and draw characters?
@@ -268,22 +275,20 @@
 0373  CMP AH, 1Eh    ; goody.x < 30?
 0376  JNB 0345h    ; No; next step
 
-; 
+;
 ; "Goody + pursuer" loop
 ; 
-0378  MOV DI, [F1C9h]    ; Pursuer appears?
-037C  TEST [DI], 80h
+0378  MOV DI, [F1C9h]
+037C  TEST [DI], 80h  ; FF = end of table
 037F  JZ 0388h
 
-; Restart the pursuer list
-0381  MOV DI, 0310h
+0381  MOV DI, 0310h ; Restart the pursuer list
 0384  MOV [F1C9h], DI
 
 0388  MOV CH, [DI]
 038A  MOV CL, [DI + 0001h]
 038D  MOV BX, 1040h
 0390  CALL 03D5h
-
 
 ; Walking loop
 0393  CALL 39A9h    ; Move and draw characters?
@@ -309,11 +314,9 @@
 03C7  TEST [CE55h], 80h
 03CC  JZ 0393h    ; Next step
 03CE  MOV [CS:413Bh], 01h
-03D4  RET 
+03D4  RET     ; ----- End Attract Mode main loop -----
 
-
-; 
-; ----- End Attract Mode main loop -----
+; 03D5
 03D5  PUSH CX
 03D6  PUSH BX
 03D7  CALL 12A7h
@@ -327,6 +330,7 @@
 03E3  MOV AH, C0h
 03E5  JMP 1274h
 
+; 03E8
 03E8  PUSH CX
 03E9  CALL 1459h
 03EC  POP CX
@@ -351,6 +355,7 @@
 
 0409  .DB E2, FE, 
 
+; 040B
 040B  CALL 0BBAh
 
 040E  MOV [4877h], 00h
@@ -374,6 +379,7 @@
 0446  CALL 044Bh
 0449  JMP 040Eh
 
+; 044B
 044B  TEST [CE48h], 0080h
 0451  JZ 0478h
 0453  TEST [CE4Bh], 0080h
@@ -394,6 +400,7 @@
 0487  MOV [CS:092Ah], CCh
 048D  RET 
 
+; 048E
 048E  MOV AH, [F12Bh]
 0492  TEST AH, 01h
 0495  JZ 0498h
@@ -501,11 +508,13 @@
 
 0584  JMP 087Fh
 
+; 0587
 0587  MOV BX, F136h
 058A  OR AH, AH
 058C  RCL [BX], 01h
 058E  RET 
 
+; 058F
 058F  MOV BX, DF4Dh
 0592  TEST [BX], 02h
 0595  JZ 0598h
@@ -599,6 +608,7 @@
 
 064A  JMP 0925h
 
+; 064D
 064D  MOV AH, [F126h]
 0651  TEST AH, 40h
 0654  JNZ 065Ah
@@ -658,6 +668,7 @@
 06CF  STC 
 06D0  RET 
 
+; 06D1
 06D1  MOV AH, [F126h]
 06D5  TEST AH, 40h
 06D8  JNZ 06DEh
@@ -787,6 +798,7 @@
 07EC  MOV [F127h], AH
 07F0  JMP 364Eh
 
+; 07F3
 07F3  POP CX
 07F4  MOV BX, D373h
 07F7  TEST [SI + 0013h], 80h
@@ -830,6 +842,7 @@
 0856  MOV BX, CE61h
 0859  JMP 3192h
 
+; 085C
 085C  TEST [SI + 0011h], 40h
 0860  JNZ 0863h
 0862  RET 
@@ -907,6 +920,7 @@
 0903  MOV [SI + 0010h], AH
 0906  RET 
 
+; 0907
 0907  MOV DL, [BX]
 0909  INC BX
 090A  MOV CL, [BX]
@@ -959,6 +973,7 @@
 0971  MOV [F125h], AH
 0975  RET 
 
+; 0976
 0976  POP BX
 0977  TEST [SI + 0011h], 40h
 097B  JNZ 0984h
@@ -985,6 +1000,7 @@
 
 09A9  RET 
 
+; 09AA
 09AA  MOV AH, [F115h]
 09AE  TEST [SI + 0011h], 04h
 09B2  JZ 09B5h
@@ -1021,6 +1037,7 @@
 09E8  MOV [F127h], AH
 09EC  JMP 364Eh
 
+; 09EF
 09EF  MOV AH, [F115h]
 09F3  TEST AH, 10h
 09F6  JZ 09F9h
@@ -1042,6 +1059,7 @@
 0A15  MOV [SI + 0010h], AH
 0A18  RET 
 
+; 0A19
 0A19  AND [SI + 0011h], BFh
 0A1D  CALL 0A8Eh
 0A20  CALL 0ABAh
@@ -1087,8 +1105,10 @@
 0A76  INC BX
 0A77  JMP 0A7Ch
 
+; 0A79
 0A79  CALL 10D5h
 
+; 0A7C
 0A7C  MOV AH, [BX]
 0A7E  OR AH, AH
 0A80  JNZ 0A83h
@@ -1101,6 +1121,7 @@
 0A89  OR [SI + 0011h], 40h
 0A8D  RET 
 
+; 0A8E
 0A8E  MOV BX, D465h
 0A91  MOV DL, [SI + 000Fh]
 0A94  SHL DL, 01h
@@ -1122,6 +1143,7 @@
 0AB5  MOV [F1C3h], DX
 0AB9  RET 
 
+; 0ABA
 0ABA  MOV AH, [SI + 0024h]
 0ABD  AND AH, 0Fh
 0AC0  MOV [SI + 0024h], AH
@@ -1160,6 +1182,7 @@
 0B08  OR [SI + 0024h], 20h
 0B0C  RET 
 
+; 0B0D
 0B0D  TEST AH, 80h
 0B10  JNZ 0B1Ch
 0B12  MOV AH, [F126h]
@@ -1170,14 +1193,17 @@
 0B1C  OR [SI + 0024h], 80h
 0B20  RET 
 
+; 0B21
 0B21  OR [SI + 0024h], 10h
 0B25  RET 
 
+; 0B26
 0B26  OR [SI + 0024h], 40h
 0B2A  RET 
 
 0B2B  .DB 00, 
 
+; 0B2C
 0B2C  MOV AH, [F107h]
 0B30  TEST AH, 08h
 0B33  JZ 0B36h
@@ -1244,6 +1270,7 @@
 0BB6  POP CX
 0BB7  JMP 114Fh    ; Wait for CX cycles
 
+; 0BBA
 0BBA  CALL 3944h
 0BBD  CALL 0224h
 0BC0  CALL 02DEh
@@ -1263,6 +1290,7 @@
 0BE7  CALL 38B9h    ; Draw screen
 0BEA  JMP 3180h
 
+; 0BED
 0BED  MOV SI, F1F8h
 0BF0  TEST [SI], 80h
 0BF3  JZ 0BF6h
@@ -1285,6 +1313,7 @@
 0C15  MOV AH, 01h
 0C17  JMP 3F5Bh
 
+; 0C1A
 0C1A  MOV SI, F1CFh
 0C1D  MOV AH, [SI + 0024h]
 0C20  AND AH, F0h
@@ -1399,9 +1428,11 @@
 0D13  XCHG DI, DX
 0D15  JMP 0BCFh
 
+; 0D18
 0D18  TEST [SI + 0013h], 80h
 0D1C  RET 
 
+; 0D1D
 0D1D  MOV AH, [F133h]
 0D21  CMP AH, 2Ch
 0D24  JZ 0D2Bh
@@ -1419,6 +1450,7 @@
 0D3E  XOR AH, AH
 0D40  RET 
 
+; 0D41
 0D41  MOV BX, F136h
 0D44  OR [BX], 01h
 0D47  TEST [BX], 02h
@@ -1483,6 +1515,7 @@
 0DC3  MOV AH, [F115h]
 0DC7  RET 
 
+; 0DC8
 0DC8  MOV BX, F136h
 0DCB  OR [BX], 01h
 0DCE  TEST [BX], 02h
@@ -1499,6 +1532,7 @@
 0DEA  POP CX
 0DEB  RET 
 
+; 0DEC
 0DEC  MOV AH, [DF4Dh]
 0DF0  TEST AH, 01h
 0DF3  JNZ 0DF6h
@@ -1517,6 +1551,7 @@
 
 0E0B  RET 
 
+; 0E0C
 0E0C  MOV CH, 08h
 0E0E  MOV BX, F480h
 
@@ -1541,6 +1576,7 @@
 0E30  JNZ 0E11h
 0E32  RET 
 
+; 0E33
 0E33  MOV BX, DF4Dh
 0E36  AND [BX], FBh
 0E39  MOV AH, [F115h]
@@ -1617,6 +1653,7 @@
 0ED0  POP CX
 0ED1  RET 
 
+; 0ED2
 0ED2  MOV AH, [F11Dh]
 0ED6  CMP AH, 42h
 0ED9  JNZ 0EDCh
@@ -1706,6 +1743,7 @@
 0F64  OR AH, AH
 0F66  RET 
 
+; 0F67
 0F67  MOV BX, F465h
 0F6A  MOV CH, 14h
 
@@ -1724,6 +1762,7 @@
 0F80  STC 
 0F81  RET 
 
+; 0F82
 0F82  MOV AH, [DF51h]
 0F86  MOV CL, AH
 0F88  MOV AH, [DF53h]
@@ -1781,6 +1820,7 @@
 0FE0  JNZ 0FC4h
 0FE2  RET 
 
+; 0FE3
 0FE3  RET 
 
 0FE4  MOV CX, [F17Bh]
@@ -1793,9 +1833,11 @@
 
 0FF4  JNZ 0FEBh
 
+; 0FF6
 0FF6  MOV AH, 08h
 0FF8  MOV [F1AFh], AH
 
+; 0FFC
 0FFC  CALL 1058h
 0FFF  MOV [F108h], AH
 1003  CALL 1058h
@@ -1824,6 +1866,7 @@
 1053  MOV [F114h], AH
 1057  RET 
 
+; 1058
 1058  CALL 1111h
 105B  AND AH, 0Fh
 105E  CMP AH, 0Ah
@@ -1832,6 +1875,7 @@
 
 1064  .DB C3, 
 
+; ----- Start 1065 -----
 1065  INC CH
 1067  MOV AH, [SI + 0010h]
 106A  CMP AH, CL
@@ -1892,6 +1936,7 @@
 10D3  STC 
 10D4  RET 
 
+; ----- End 1065 -----
 10D5  MOV BL, CH
 10D7  MOV BH, 00h
 10D9  ADD BX, BX
@@ -1908,6 +1953,7 @@
 10F0  ADD BX, DX
 10F2  RET 
 
+; 10F3
 10F3  CALL 381Eh
 10F6  JZ 10FBh
 10F8  JMP 016Fh
@@ -1926,6 +1972,7 @@
 110E  JNZ 110Bh
 1110  RET 
 
+; 1111
 1111  PUSH BX
 1112  PUSH DX
 1113  MOV DX, [F1AFh]
@@ -1948,7 +1995,6 @@
 1137  POP BX
 1138  RET 
 
-
 ; BX = f(AH, DX)
 1139  PUSH CX
 113A  MOV BX, 0000h
@@ -1965,7 +2011,6 @@
 114D  POP CX
 114E  RET 
 
-
 ; Wait for CX cycles
 114F  DEC CX
 1150  MOV AH, CH
@@ -1979,7 +2024,6 @@
 115D  ADD BX, BX
 115F  ADD BX, BX
 1161  RET 
-
 
 ; 
 ; Clear rectangular area of screen
@@ -2008,8 +2052,6 @@
 117E  JNZ 1162h
 1180  RET 
 
-
-; 
 ; Write strings of text
 ; 
 ; BX points to a sequence of structures of the form
@@ -2047,6 +2089,7 @@
 11AE  INC BX
 11AF  JMP 1181h
 
+; 11B1
 11B1  PUSH DX
 11B2  MOV DX, 0000h
 11B5  MOV CX, [F1B9h]    ; Read coordinates
@@ -2082,6 +2125,7 @@
 11F0  JNZ 11DEh
 11F2  RET 
 
+; 11F3
 11F3  PUSH SI
 11F4  POP BX
 11F5  MOV CX, 0003h
@@ -2098,6 +2142,7 @@
 120A  XCHG DI, DX
 120C  RET 
 
+; 120D
 120D  PUSH SI
 120E  POP BX
 120F  MOV CX, 0003h
@@ -2115,6 +2160,7 @@
 1226  XCHG DI, DX
 1228  RET 
 
+; 1229
 1229  CALL 1292h
 122C  MOV AH, [DI + FFFFh]
 122F  MOV [SI + 000Ah], AH
@@ -2154,6 +2200,7 @@
 128C  CALL 3B61h
 128F  JMP 120Dh
 
+; 1292
 1292  PUSH DI
 1293  PUSH CX
 1294  MOV DI, SI
@@ -2167,6 +2214,7 @@
 12A5  POP DI
 12A6  RET 
 
+; 12A7
 12A7  MOV AH, [F133h]
 12AB  CMP AH, 3Ch
 12AE  JNZ 12B2h
@@ -2194,6 +2242,7 @@
 12D0  OR AH, AH
 12D2  RET 
 
+; 12D3
 12D3  PUSH DI
 12D4  PUSH CX
 12D5  MOV DI, F3DAh
@@ -2240,6 +2289,7 @@
 1324  XCHG DX, BX
 1326  RET 
 
+; 1327
 1327  MOV SI, F1CFh
 132A  MOV BX, F3DAh
 132D  MOV CH, 04h
@@ -2286,6 +2336,7 @@
 1380  MOV [F1DCh], CX
 1384  RET 
 
+; 1385
 1385  OR AH, AH
 1387  MOV DI, F1CFh
 138A  TEST [DI], 80h
@@ -2395,6 +2446,7 @@
 1455  POP BX
 1456  JMP 3CAAh
 
+; 1459
 1459  PUSH CX
 145A  PUSH DX
 145B  MOV CH, 0Ch
@@ -2629,6 +2681,7 @@
 1CFB  .DB 80, C3, E8, 1A, 00, BB, 32, F1, FE, 07, E8, 42, 00, 72, 19, 8A, 26, 
 1D0C  .DB 26, F1, F6, C4, 40, 74, 10, BB, DD, F1, FE, 07, EB, 09, 
 
+; 1D1A
 1D1A  MOV CX, [F131h]
 1D1E  MOV DI, D355h
 1D21  JMP 1D2Ah
@@ -2690,6 +2743,7 @@
 1FA8  .DB 58, FE, CC, 75, F0, FE, C5, 88, CC, 80, EC, 04, 88, E1, 58, FE, CC, 
 1FB9  .DB 75, DF, C3, 
 
+; 1FBC
 1FBC  MOV BX, F17Bh
 1FBF  MOV AH, [BX]
 1FC1  MOV [F120h], AH
@@ -2727,6 +2781,7 @@
 200E  JNZ 1FCAh
 2010  RET 
 
+; 2011
 2011  JMP BX
 
 2013  TEST [SI + 0002h], 80h
@@ -2792,6 +2847,7 @@
 20DB  .DB 04, 5B, E9, 26, F4, B5, 02, B1, 00, B2, 01, E8, 7C, EF, 72, 01, C3, 
 20EC  .DB 08, E4, 75, 01, C3, 80, 0C, 10, C3, 
 
+; 20F5
 20F5  MOV BX, DF4Dh
 20F8  AND [BX], FDh
 20FB  AND [BX], FBh
@@ -2817,6 +2873,7 @@
 2126  OR [BX], 02h
 2129  RET 
 
+; 212A
 212A  MOV AH, [DF53h]
 212E  ADD AH, F5h
 2131  MOV CH, AH
@@ -2845,6 +2902,7 @@
 215C  CMP AH, CH
 215E  RET 
 
+; 215F
 215F  MOV DI, 2192h
 2162  PUSH DI
 2163  MOV AH, [F107h]
@@ -2886,6 +2944,7 @@
 222B  .DB B4, 12, 88, E0, B4, 32, E8, 23, 0A, E8, 5E, 16, FE, C1, 88, C4, FE, 
 223C  .DB CC, 75, EE, C3, 
 
+; 2240
 2240  MOV AH, [F11Dh]
 2244  MOV BX, E057h
 
@@ -2964,7 +3023,6 @@
 22D8  .DB B8, 0E, BB, 2A, E0, E8, 1D, 00, 8A, 26, 2A, F1, FE, C4, 88, 26, 2A, 
 22E9  .DB F1, 
 
-
 ; 
 ; Draw money counter?
 ; 
@@ -2979,10 +3037,12 @@
 22FD  .DB BA, 04, 00, 8A, 27, 88, E5, 43, 8A, 26, 1D, F1, 3A, 27, 74, 07, 01, 
 230E  .DB D3, FE, CD, 75, F6, C3, 43, 30, E4, 88, 27, C3, 
 
+; 231A
 231A  MOV AH, 0Bh
 231C  MOV BX, E02Ah
 231F  JMP 2326h
 
+; 2321
 2321  MOV AH, 15h
 2323  MOV BX, DFF9h
 
@@ -3031,7 +3091,6 @@
 
 2370  JMP 1274h
 
-
 ; 
 ; Draw lives counter
 ; 
@@ -3047,6 +3106,7 @@
 2386  .DB B3, 04, B2, 04, E8, F8, EF, 72, 01, C3, 80, 0C, 10, BB, FA, CE, E8, 
 2397  .DB F9, 0D, BB, F9, DF, E8, 5E, FF, B4, 16, 88, 26, 25, F1, E9, 75, 12, 
 
+; 23A8
 23A8  MOV BX, F11Ah
 23AB  TEST [BX], 40h
 23AE  JNZ 23B1h
@@ -3071,6 +3131,7 @@
 23D4  CALL 361Dh
 23D7  JMP 1506h
 
+; 23DA
 23DA  MOV DI, D3DCh
 23DD  MOV DX, 0003h
 
@@ -3195,6 +3256,7 @@
 2B05  .DB F6, 07, 80, 74, 08, 43, FE, CD, 75, F6, E9, DA, 08, BB, 07, F1, 80, 
 2B16  .DB 27, DF, 8A, 26, DB, F1, 80, FC, 1C, 72, 03, 80, 0F, 20, C3, 
 
+; 2B25
 2B25  MOV BX, EDE3h
 2B28  MOV DX, F4F3h
 2B2B  MOV CX, 0320h
@@ -3276,6 +3338,7 @@
 2BB6  JNZ 2B58h
 2BB8  RET 
 
+; 2BB9
 2BB9  MOV BX, EDE3h
 2BBC  MOV DX, EDE4h
 2BBF  MOV CX, 031Fh
@@ -3288,6 +3351,7 @@
 2BCF  XCHG DI, DX
 2BD1  RET 
 
+; 2BD2
 2BD2  MOV AH, [F11Dh]
 2BD6  SHL AH, 01h
 2BD8  MOV DH, 00h
@@ -3334,6 +3398,7 @@
 2C2F  MOV [F1C7h], DI
 2C33  RET 
 
+; 2C34
 2C34  MOV DI, [F1C7h]
 2C38  MOV AH, [DI]
 2C3A  OR AH, AH
@@ -3354,10 +3419,12 @@
 2C4D  JNZ 2C42h
 2C4F  RET 
 
+; 2C50
 2C50  MOV BL, [DI]
 2C52  MOV BH, [DI + 0001h]
 2C55  JMP BX
 
+; 2C57
 2C57  PUSH BX
 2C58  PUSH CX
 2C59  PUSH DX
@@ -3374,12 +3441,14 @@
 2C6C  MOV [SI + 000Eh], BH
 2C6F  RET 
 
+; 2C70
 2C70  PUSH SI
 2C71  MOV SI, F1CFh
 2C74  CALL 2C79h
 2C77  POP SI
 2C78  RET 
 
+; 2C79
 2C79  MOV DL, [SI + 000Bh]
 2C7C  MOV DH, [SI + 000Ch]
 2C7F  MOV BL, [SI + 000Dh]
@@ -3419,6 +3488,7 @@
 2CBA  DEC [SI + 0014h]
 2CBD  RET 
 
+; 2CBE
 2CBE  CALL 2CE2h
 2CC1  MOV CL, [SI + 0013h]
 2CC4  MOV BL, [SI + 000Bh]
@@ -3435,6 +3505,7 @@
 2CDE  MOV [SI + 000Ch], BH
 2CE1  RET 
 
+; 2CE2
 2CE2  MOV CL, [SI + 0013h]
 2CE5  MOV BL, [SI + 0003h]
 2CE8  MOV BH, [SI + 0004h]
@@ -3451,6 +3522,7 @@
 2D07  MOV [SI + 000Eh], BH
 2D0A  RET 
 
+; 2D0B
 2D0B  MOV CH, 00h
 2D0D  TEST CL, 80h
 2D10  JNZ 2D13h
@@ -3510,6 +3582,7 @@
 3046  .DB 08, E4, 74, 06, 80, FC, 4E, 73, 01, C3, 01, D3, FE, CD, 75, EE, 08, 
 3057  .DB E4, C3, 
 
+; 3059
 3059  CLI 
 305A  PUSH DS
 305B  MOV AX, 0000h
@@ -3563,10 +3636,12 @@
 3180  MOV [487Ah], 00h
 3185  JMP 324Dh
 
+; 3188
 3188  MOV [487Ah], 01h
 318D  MOV BX, D235h
 3190  JMP 319Ah
 
+; 3192
 3192  TEST [487Ah], FFh
 3197  JZ 319Ah
 3199  RET 
@@ -3615,7 +3690,6 @@
 3308  .DB E6, 42, 88, E8, E6, 42, 58, 0C, 03, E6, 61, C3, A0, 50, 48, 24, 7F, 
 3319  .DB 0C, 42, A2, 50, 48, 8B, 1E, 51, 48, 8B, 07, 43, 43, A3, 53, 48, 89, 
 332A  .DB 1E, 51, 48, E4, 61, 24, FC, E6, 61, C3, 
-
 
 ; 
 ; Number to decimal
@@ -3666,7 +3740,6 @@
 3383  MOV [SI + 0005h], FFh
 3387  RET 
 
-
 ; Draw a number
 ; AH = digits
 ; BX = number
@@ -3701,6 +3774,7 @@
 
 33B5  .DB C3, 
 
+; 33B6
 33B6  CALL 368Eh
 33B9  CALL 361Dh    ; Draw beer meter
 33BC  MOV DX, 0000h
@@ -3710,6 +3784,7 @@
 33C3  .DB BB, 08, F1, 01, CB, B4, 1A, 00, CC, 88, E1, B5, 17, 8A, 27, 80, C4, 
 33D4  .DB 1E, E9, 79, 04, 
 
+; 33D8
 33D8  MOV CH, 0Dh
 33DA  MOV CL, 1Ah
 
@@ -3727,7 +3802,6 @@
 33FD  .DB B9, 04, 04, BA, 23, 07, E8, 5C, DD, BB, C6, 34, E8, 75, DD, B9, FF, 
 340E  .DB FF, E8, 3D, DD, B9, 00, 00, E8, 37, DD, B9, FF, FF, E8, 31, DD, E8, 
 341F  .DB 18, 04, 74, FB, E9, 49, CD, BB, 6E, 35, E9, 55, DD, 
-
 
 ; 
 ; Write instructions
@@ -3796,6 +3870,7 @@
 3642  MOV CH, 02h
 3644  XOR AH, AH
 
+; 3646
 3646  ADD DX, 1CC8h
 364A  CALL 3748h
 364D  RET 
@@ -3813,6 +3888,7 @@
 3666  JNZ 3669h
 3668  RET 
 
+; 3669
 3669  MOV CL, 03h
 366B  SHR AH, CL
 366D  JNZ 3670h
@@ -3833,6 +3909,7 @@
 368C  POP ES
 368D  RET 
 
+; 368E
 368E  MOV SI, DF56h
 3691  PUSH SI
 3692  MOV AH, [F103h]
@@ -3858,6 +3935,7 @@
 36C8  CALL 36E3h
 36CB  RET 
 
+; 36CC
 36CC  CMP AH, FFh
 36CF  JNZ 36D2h
 36D1  RET 
@@ -3873,6 +3951,7 @@
 36E1  INC BX
 36E2  RET 
 
+; 36E3
 36E3  CMP AH, FFh
 36E6  JZ 36EAh
 36E8  JMP 3736h
@@ -3884,7 +3963,6 @@
 
 36F2  .DB C3, 
 
-
 ; 
 ; Draw the UI
 ; 
@@ -3893,7 +3971,6 @@
 36F9  MOV CL, 50h    ; 80 bytes = 320 pixels (1 row)
 36FB  MOV CH, 28h    ; 40 rows
 36FD  JMP 36FFh
-
 
 ; Start copying the bitmap pointed to by BX, dimensions CL x CH, to the screen at DX,
 ; starting at an EVEN row.
@@ -3933,7 +4010,6 @@
 3734  POP ES
 3735  RET 
 
-
 ; Start copying the bitmap pointed to by BX, dimensions CL x CH, to the screen at DX,
 ; starting at an ODD row.
 3736  PUSH ES
@@ -3948,6 +4024,7 @@
 3745  POP AX
 3746  JMP 3761h
 
+; 3748
 3748  PUSH DS
 3749  PUSH AX
 374A  MOV AX, B800h
@@ -3982,13 +4059,11 @@
 3777  POP DS
 3778  RET 
 
-
 ; Set CGA mode and palette 0
 3779  MOV AX, 0004h
 377C  INT 10h
 377E  CALL 3782h
 3781  RET 
-
 
 ; Set CGA palette 0
 3782  MOV BX, 0100h
@@ -3997,7 +4072,6 @@
 378D  INT 10h
 378F  RET 
 
-
 ; Set CGA palette 1
 3790  MOV BX, 0101h
 3793  MOV [CS:3943h], BL    ; 0x3943 = current palette
@@ -4005,6 +4079,7 @@
 379B  INT 10h
 379D  RET 
 
+; 379E
 379E  MOV [F115h], 00h
 37A3  MOV AL, [CE4Dh]
 37A6  OR AL, [CE5Ch]
@@ -4055,6 +4130,7 @@
 
 381C  .DB C3, C3, 
 
+; 381E
 381E  TEST [F115h], 40h
 3823  JNZ 3826h
 3825  RET 
@@ -4067,12 +4143,13 @@
 
 3832  .DB 00, 
 
+; 3833
 3833  TEST [CE53h], 80h
 3838  RET 
 
+; 3839
 3839  TEST [CE4Fh], 80h
 383E  RET 
-
 
 ; 
 ; Draw a tile.
@@ -4093,7 +4170,6 @@
 384A  ADD AX, 63C2h    ; Start of tiles
 384D  MOV SI, AX
 384F  JMP 3867h    ; Draw bitmap
-
 
 ; 
 ; Draw character.
@@ -4119,8 +4195,6 @@
 3862  ADD AX, 73C2h    ; Start of character map
 3865  MOV SI, AX
 
-
-; 
 ; Draw a 8x8 bitmap.
 ; 
 ; SI = pixel data
@@ -4154,7 +4228,6 @@
 3893  POP SI
 3894  RET 
 
-
 ; 
 ; Draw a tile.
 ; 
@@ -4179,7 +4252,6 @@
 38AB  JMP 3867h    ; Draw bitmap
 
 38AD  .DB BF, 73, EF, BE, 83, F6, B7, 0A, B3, 00, EB, 09, 
-
 
 ; 
 ; Draw a screen
@@ -4210,7 +4282,6 @@
 38E6  CALL 38EAh    ; Set palette for screen
 38E9  RET 
 
-
 ; 
 ; Set the palette appropriate to the screen.
 ; 
@@ -4234,14 +4305,12 @@
 3927  JB 392Bh
 3929  JMP 3937h
 
-
 ; Set current palette to 1
 392B  CMP [CS:3943h], 00h
 3931  JNZ 3936h
 3933  JMP 3790h    ; Set palette 1
 
 3936  RET 
-
 
 ; Set current palette to 0
 3937  CMP [CS:3943h], 01h
@@ -4252,6 +4321,7 @@
 
 3943  .DB 00, 
 
+; 3944
 3944  MOV SI, F1CFh
 
 3947  TEST [SI], 80h
@@ -4264,6 +4334,7 @@
 3957  JNZ 3947h
 3959  RET 
 
+; 395A
 395A  MOV AX, 0028h
 395D  MUL CH
 395F  MOV CH, 00h
@@ -4272,6 +4343,7 @@
 3966  ADD BX, AX
 3968  RET 
 
+; 3969
 3969  MOV CX, [SI + 001Ah]
 396C  SHR CL, 01h
 396E  SHR CH, 01h
@@ -4310,6 +4382,9 @@
 39A7  POP CX
 39A8  RET 
 
+; 
+; Move and draw characters?
+; 
 39A9  PUSH SI
 39AA  MOV DI, F17Ch
 
@@ -4344,6 +4419,7 @@
 39E8  MOV [F47Fh], 01h
 39ED  RET 
 
+; 39EE
 39EE  MOV AL, [DI]
 39F0  OR AL, [DI + 0001h]
 39F3  JNZ 39F9h
@@ -4355,6 +4431,7 @@
 39FC  INC DI
 39FD  RET 
 
+; 39FE
 39FE  TEST [SI], 40h
 3A01  JZ 3A08h
 3A03  CALL 3EF4h
@@ -4514,6 +4591,7 @@
 3B5C  OR [SI + 0001h], 04h
 3B60  RET 
 
+; 3B61
 3B61  MOV BX, CC5Eh
 3B64  MOV CH, 00h
 3B66  MOV CL, [SI + 000Fh]
@@ -4532,6 +4610,7 @@
 3B84  MOV [SI + 001Ch], 0000h
 3B89  RET 
 
+; 3B8A
 3B8A  MOV AH, 27h
 3B8C  CMP AH, BH
 3B8E  JB 3B94h
@@ -4540,6 +4619,7 @@
 
 3B94  RET 
 
+; 3B95
 3B95  MOV AH, 13h
 3B97  CMP AH, BH
 3B99  JB 3B94h
@@ -4548,6 +4628,7 @@
 3B9F  MOV CL, BH
 3BA1  RET 
 
+; 3BA2
 3BA2  CALL 3C10h
 3BA5  MOV [F168h], 01h
 3BAA  MOV AH, [SI + 0016h]
@@ -4585,6 +4666,7 @@
 3BF4  POP SI
 3BF5  RET 
 
+; 3BF6
 3BF6  MOV BX, [F14Ah]
 3BFA  MOV [BX], SI
 3BFC  INC BX
@@ -4592,6 +4674,7 @@
 3BFE  MOV [F14Ah], BX
 3C02  RET 
 
+; 3C03
 3C03  MOV BX, [F14Ah]
 3C07  MOV SI, [BX]
 3C09  INC BX
@@ -4599,10 +4682,12 @@
 3C0B  MOV [F14Ah], BX
 3C0F  RET 
 
+; 3C10
 3C10  MOV BX, [F14Ch]
 3C14  MOV [F14Ah], BX
 3C18  RET 
 
+; 3C19
 3C19  MOV BH, [SI + 0016h]
 3C1C  MOV BL, [SI + 0017h]
 3C1F  MOV DH, [F169h]
@@ -4649,17 +4734,20 @@
 
 3C9B  RET 
 
+; 3C9C
 3C9C  CMP AH, CH
 3C9E  JNB 3CA2h
 3CA0  MOV AH, CH
 
 3CA2  RET 
 
+; 3CA3
 3CA3  CMP AH, CH
 3CA5  JB 3CA2h
 3CA7  MOV AH, CH
 3CA9  RET 
 
+; 3CAA
 3CAA  MOV AH, DL
 3CAC  CMP AH, BH
 3CAE  JB 3CB4h
@@ -4669,6 +4757,9 @@
 3CB4  CMC 
 3CB5  RET 
 
+; 
+; Draw character?
+; 
 3CB6  MOV AH, [F47Fh]
 3CBA  OR AH, AH
 3CBC  JNZ 3CDCh
@@ -4828,8 +4919,7 @@
 3E0D  SHL CH, 01h    ; CH = CH * 4. 3E11 treats them as double lines. So CH = height in 8x8 tiles?
 3E0F  SHL CH, 01h
 
-
-; Copy CH*2 lines of CL bytes from SI into DI
+; Copy loop: CH*2 lines of CL bytes from SI into DI
 3E11  PUSH CX
 3E12  MOV CH, 00h
 3E14  PUSH DI
@@ -4851,6 +4941,7 @@
 3E2F  POP SI
 3E30  RET 
 
+; 3E31
 3E31  PUSH DI
 3E32  MOV CL, 04h
 3E34  SHL AX, CL
@@ -4869,6 +4960,7 @@
 3E4C  POP DI
 3E4D  RET 
 
+; 3E4E
 3E4E  PUSH SI
 3E4F  PUSH DI
 3E50  MOV BX, [SI + 0026h]
@@ -4920,6 +5012,7 @@
 3EB5  POP SI
 3EB6  RET 
 
+; 3EB7
 3EB7  MOV AL, [SI]
 3EB9  OR AL, AL
 3EBB  JZ 3EDDh
@@ -4952,7 +5045,6 @@
 3EE2  .DB 56, 57, 83, C6, 03, 89, FE, B9, 08, 00, 01, CF, FC, F3, A4, 5F, 5E, 
 3EF3  .DB C3, 
 
-
 ; Scroll 8 bytes == 32 pixels right?
 3EF4  PUSH SI
 3EF5  PUSH DI
@@ -4970,6 +5062,7 @@
 3F06  POP SI
 3F07  RET 
 
+; 3F08
 3F08  MOV [SI], 00h
 3F0B  CALL 3F1Dh
 3F0E  MOV CX, [F148h]
@@ -4981,6 +5074,7 @@
 
 3F1C  RET 
 
+; 3F1D
 3F1D  MOV DX, SI
 3F1F  MOV CH, [F17Bh]
 3F23  MOV BX, F17Ch
@@ -5086,6 +5180,7 @@
 4040  .DB FE, 58, E8, 16, FF, C3, 
 4046  .DB 'AQUI HAY QUE POKEAR'
 
+; 4059
 4059  MOV AH, [CS:413Bh]
 405E  OR AH, AH
 4060  NOP 

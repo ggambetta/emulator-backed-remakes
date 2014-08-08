@@ -328,6 +328,12 @@ class Runner {
       } else if (action == "cs" || action == "callstack") {
         // CALLSTACK - print the current call stack.
         doCallStack();
+      } else if (action == "cvram") {
+        // CVRAM - clear VRAM.
+        vga_->clearVRAM();
+      } else if (action == "rvram") {
+        // CVRAM - randomize VRAM.
+        vga_->randomVRAM();
       } else if (action == "ep" || action == "entrypoints") {
         // ENTRYPOINTS - print all collected entry points in a format suitable
         // for the disassembler .cfg.

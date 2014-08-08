@@ -13,11 +13,31 @@
 
 using namespace std;
 
+int kMaxInstructionSize = 6;
+
 struct Fragment {
+  enum {
+    CODE,
+    DATA,
+  };
+  int type;
+
   int size;
   vector<string> block_comments;
   string code;
   string line_comment;
+};
+
+
+struct EntryPoint {
+  bool explored;
+
+  enum {
+    CALL,
+    JUMP,
+    MANUAL,
+  };
+  int type;
 };
 
 
@@ -36,7 +56,7 @@ class X86Disassembler : public X86Base {
     return mem_->read(ip_++);
   }
 
-  virtual void CALL_w() override { addEntryPoint(*warg1); }
+  virtual void CALL_w() override { addEntryPoint(*warg1, EntryPoint::CALL); }
 
   virtual void LOOP() override { addEntryPoint(*warg1); }
   virtual void LOOPNZ() override { addEntryPoint(*warg1); }
@@ -113,11 +133,16 @@ class X86Disassembler : public X86Base {
     addEntryPoint(start_offset_);
   }
 
-  void addEntryPoint(int address) {
-    if (entry_points_.count(address) == 0) {
-      //cout << "Found new entry point: " << Hex16 << address << "h [from " << Hex16 << ip_ << "]" <<  endl;
-      entry_points_[address] = false;
+  void addEntryPoint(int address, int type = EntryPoint::JUMP) {
+    if (entry_points_.count(address) != 0) {
+      return;
     }
+
+    //cout << "Found new entry point: " << Hex16 << address << "h [from " << Hex16 << ip_ << "]" <<  endl;
+    EntryPoint* ep = new EntryPoint();
+    ep->explored = false;
+    ep->type = type;
+    entry_points_[address].reset(ep);
   }
 
   void explore(int address) {
@@ -133,6 +158,7 @@ class X86Disassembler : public X86Base {
 
       if (disassembly_.count(address) == 0) {
         shared_ptr<Fragment> fragment(new Fragment());
+        fragment->type = Fragment::CODE;
         fragment->size = size_;
         fragment->code = getOpcodeDesc();
         disassembly_[address] = fragment;
@@ -157,17 +183,17 @@ class X86Disassembler : public X86Base {
     }
   }
 
-  void outputBytes(ostream& os, int address, int size) {
+  void outputDataFragment(ostream& os, int address, Fragment* fragment) {
     byte* data = mem_->getPointer(address);
     int start = 0;
     stringstream ss;
-    while (start < size) {
+    while (start < fragment->size) {
       startLine(ss, address + start);
 
       // Find a consecutive group of printable or non-printable characters.
       bool printable = isprint(data[start]); 
       int end = start;
-      while (isprint(data[end]) == printable && end < size) {
+      while (isprint(data[end]) == printable && end < fragment->size) {
         end++;
       }
 
@@ -192,67 +218,85 @@ class X86Disassembler : public X86Base {
   }
 
 
+  void outputRawBytes(ostream& os, int address, int size) {
+    byte* raw = mem_->getPointer(address);
+    while (size--) {
+      os << Hex8 << (int)(*raw++);
+    }
+  }
+
+  void outputComment(ostream& os, const string& comment) {
+    os << "; " << comment << endl;
+  }
+
+
+  void outputCodeFragment(ostream& os, int address, Fragment* fragment) {
+    // Space and synthetic comments before "interesting" addresses.
+    EntryPoint* ep = entry_points_[address].get();
+    if (ep && fragment->block_comments.empty()) {
+      os << endl;
+      if (ep->type == EntryPoint::CALL) {
+        outputComment(os, hex16ToString(address));
+      }
+    }
+
+    // Address.
+    os << Hex16 << address << "  ";
+
+    // Raw bytes.
+    if (dump_raw_) {
+      outputRawBytes(os, address, fragment->size);
+      os << string((kMaxInstructionSize - fragment->size) * 2, ' ') << "  ";
+    }
+
+    // Disassembly.
+    os << fragment->code;
+
+    // Line comment.
+    if (!fragment->line_comment.empty()) {
+      os << "    ; " << fragment->line_comment;
+    }
+
+    os << endl;
+  }
+
   void outputAsm(const string& asm_fn) {
     ofstream out(asm_fn);
 
-    byte* raw = mem_->getPointer(0);
-    int next_address = start_offset_;
     for (const auto& entry: disassembly_) {
       int address = entry.first;
-      auto fragment = entry.second;
-
-      // If there's a gap between disassembled chunks, output whatever is in
-      // the middle as raw data.
-      if (address != next_address) {
-        out << endl;
-        outputBytes(out, next_address, address - next_address);
-      }
-
-      // Space before an address that is jumped to.
-      if (entry_points_.count(address) != 0) {
-        out << endl;
-      }
+      auto fragment = entry.second.get();
 
       // Output block comments.
       if (!fragment->block_comments.empty()) {
         out << endl;
         for (const string& comment : fragment->block_comments) {
-          out << "; " << comment << endl;
+          outputComment(out, comment);
         }
       }
 
-      // Output raw, disassembly and line comment.
-      out << Hex16 << address << "  ";
-
-      if (dump_raw_) {
-        for (int i = 0; i < fragment->size; i++) {
-          out << Hex8 << (int)raw[address + i]; 
-        }
-        int kMaxInstructionSize = 6;
-        out << string((kMaxInstructionSize - fragment->size) * 2, ' ');
-        out << "  ";
+      // Output the fragment contents.
+      if (fragment->type == Fragment::CODE) {
+        outputCodeFragment(out, address, fragment);
+      } else if (fragment->type == Fragment::DATA) {
+        outputDataFragment(out, address, fragment);
       }
-
-      out << fragment->code;
-      if (!fragment->line_comment.empty()) {
-        out << "    ; " << fragment->line_comment;
-      }
-      out << endl;
-
-      next_address = address + fragment->size;
     }
-
-    outputBytes(out, next_address, end_offset_ - next_address); 
   }
 
 
   void disassemble() {
+    exploreEntryPoints();
+    addDataFragments();
+  }
+
+  void exploreEntryPoints() {
     bool found;
     do {
       found = false;
       for (auto& kv: entry_points_) {
-        if (!kv.second) {
-          kv.second = true;
+        if (!kv.second->explored) {
+          kv.second->explored = true;
           found = true;
           explore(kv.first);
           continue;
@@ -260,6 +304,33 @@ class X86Disassembler : public X86Base {
       }
     } while (found);
   }
+
+
+  void coverAddressGap(int begin, int end) {
+    if (begin == end) {
+      return;
+    }
+
+    Fragment* fragment = new Fragment();
+    fragment->type = Fragment::DATA;
+    fragment->size = end - begin;
+
+    disassembly_[begin].reset(fragment);
+  }
+
+
+  // Ensures every address between start_offset_ and end_offset_ is covered
+  // by some CODE or DATA fragment.
+  void addDataFragments() {
+    int next_address = start_offset_;
+    for (const auto& entry: disassembly_) {
+      int address = entry.first;
+      coverAddressGap(next_address, address);
+      next_address = address + entry.second->size;
+    }
+    coverAddressGap(next_address, end_offset_);
+  }
+
 
   bool startsWithAddress(const string& line) {
     if (line.size() < 5) {
@@ -283,7 +354,7 @@ class X86Disassembler : public X86Base {
       string cmd = lower(tokens[0]);
       if (cmd == "entrypoint") {
         if (tokens.size() > 1) {
-          addEntryPoint(parseNumber(tokens[1]));
+          addEntryPoint(parseNumber(tokens[1]), EntryPoint::MANUAL);
         } else {
           cerr << "Syntax: " << cmd << " <address>" << endl; 
         }
@@ -311,7 +382,7 @@ class X86Disassembler : public X86Base {
 
         if (disassembly_.count(address) == 0) {
           // Possibly a data address.
-          // TODO: Don't lose these comments!
+          // TODO: Support comments on data blocks.
           continue;
         }
         auto fragment = disassembly_[address];
@@ -342,7 +413,7 @@ class X86Disassembler : public X86Base {
 
 
  private:
-  map<int, bool> entry_points_;
+  map<int, unique_ptr<EntryPoint>> entry_points_;
 
   Memory* mem_;
   word dummy_;

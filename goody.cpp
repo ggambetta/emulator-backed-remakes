@@ -86,13 +86,25 @@ class Remake : public RemakeBase {
 //
 class GoodyRemake : public Remake<GoodyRemake> {
  public:
+
+   // Original screen is 320x200 with 1:1.2 aspect ratio (320x240 1:1)
+   // Original game uses 40x25 tiles of 8x8 pixels
+   // 1000x750 gives 40x25 tiles of 25x30 (aspect 1:2)
+  const int kWindowWidth = 1000;
+  const int kWindowHeight = 750;
+  const int kTileWidth = 25;
+  const int kTileHeight = 30;
+
+
   GoodyRemake() {
     Loader::loadCOM("goody.com", &mem_, &x86_);
 
     addHook(0x3851, &GoodyRemake::drawCharacter);
     addHook(0x383F, &GoodyRemake::drawTile);
+    addHook(0x36FF, &GoodyRemake::drawImage);
+    addHook(0x3736, &GoodyRemake::drawImage);
 
-    window_.reset(new Window(1024, 768, "Goody"));
+    window_.reset(new Window(kWindowWidth, kWindowHeight, "Goody"));
   }
 
   void drawTile() {
@@ -100,8 +112,22 @@ class GoodyRemake : public Remake<GoodyRemake> {
     int col = regs_.bl;
     int row = regs_.bh;
 
-    cerr << dec;
-    cerr << "Draw tile " << tile << " at " << col << ", " << row << endl;
+    /*cerr << dec;
+    cerr << "Draw tile " << tile << " at " << col << ", " << row << endl;*/
+  }
+
+  void drawImage() {
+    int id = regs_.bx;
+    int w = regs_.cl * 4;
+    int h = regs_.ch;
+
+    int offset = regs_.dx;
+    int x = (offset % 80);
+    int y = (offset / 80) * 2;
+
+    /*cerr << dec;
+    cerr << "Draw image " << id << " (" << w << " x " << h << ") "
+         << "at (" << x << ", " << y << ")" << endl; */
   }
 
   void drawCharacter() {
@@ -115,9 +141,9 @@ class GoodyRemake : public Remake<GoodyRemake> {
       k += 64;
     }
 
-    cerr << dec;
+    /*cerr << dec;
     cerr << "Draw character " << (int)k << "[" << k << "]"
-         << " at " << col << ", " << row << endl;
+         << " at " << col << ", " << row << endl;*/
   }
 
   unique_ptr<Window> window_;

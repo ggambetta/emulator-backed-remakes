@@ -184,6 +184,11 @@ class X86Disassembler : public X86Base {
   }
 
   void outputDataFragment(ostream& os, int address, Fragment* fragment) {
+    // Blank line before data dump.
+    if (fragment->block_comments.empty()) {
+      os << endl;
+    }
+
     byte* data = mem_->getPointer(address);
     int start = 0;
     stringstream ss;
@@ -288,6 +293,7 @@ class X86Disassembler : public X86Base {
   void disassemble() {
     exploreEntryPoints();
     addDataFragments();
+    verifyCoverage();
   }
 
   void exploreEntryPoints() {
@@ -303,6 +309,18 @@ class X86Disassembler : public X86Base {
         }
       }
     } while (found);
+  }
+
+  // Verifies every byte between start_offset_ and end_offset_ is covered
+  // by exactly one fragment.
+  void verifyCoverage() {
+    int next_address = start_offset_;
+    for (const auto& entry: disassembly_) {
+      int address = entry.first;
+      ASSERT(address == next_address);
+      next_address = address + entry.second->size;
+    }
+    ASSERT(next_address = end_offset_);
   }
 
 
@@ -362,6 +380,47 @@ class X86Disassembler : public X86Base {
     }
   }
 
+
+  void insertDataFragment(int address) {
+    // Find the next address.
+    int next_address = end_offset_;
+    auto it = disassembly_.upper_bound(address);
+    if (it != disassembly_.end()) {
+      next_address = it->first;
+    }
+    ASSERT(next_address > address);
+    it--;
+
+    // Find the previous fragment.
+    Fragment* prev = it->second.get();
+    int prev_address = it->first;
+    ASSERT(prev_address < address);
+
+    // Adjust its size.
+    prev->size = address - prev_address;
+
+    // Add the new fragment.
+    Fragment* data = new Fragment();
+    data->type = Fragment::DATA;
+    data->size = next_address - address;
+
+    //cerr << "Inserted fragment of size " << (int)data->size << " at "
+    //     << Hex16 << address << endl;
+
+    disassembly_[address].reset(data);
+  }
+
+  Fragment* getFragment(int address, bool add_if_needed = false) {
+    if (disassembly_.count(address) == 0) {
+      if (!add_if_needed) {
+        return nullptr;
+      }
+      insertDataFragment(address);
+    }
+    
+    return disassembly_[address].get();
+  }
+
   void mergeComments(const string& asm_fn) {
     ifstream infile(asm_fn);
     string line;
@@ -380,16 +439,9 @@ class X86Disassembler : public X86Base {
         // Disassembly line.
         int address = (int)strtol(line.data(), NULL, 16);
 
-        if (disassembly_.count(address) == 0) {
-          // Possibly a data address.
-          // TODO: Support comments on data blocks.
-          continue;
-        }
-        auto fragment = disassembly_[address];
-
         // Attach block comments.
         if (!block_comments.empty()) {
-          fragment->block_comments = block_comments;
+          getFragment(address, true)->block_comments = block_comments;
           block_comments.clear();
         }
 
@@ -398,9 +450,14 @@ class X86Disassembler : public X86Base {
         if (idx == string::npos) {
           continue;
         }
-        fragment->line_comment = strip(line.substr(idx + 1));
+        Fragment* fragment = getFragment(address);
+        if (fragment) {
+          fragment->line_comment = strip(line.substr(idx + 1));
+        }
       }
     }
+
+    verifyCoverage();
   }
 
 

@@ -70,14 +70,31 @@ void VGA::setVideoMode(int mode) {
   mode_ = mode;
   
   if (mode_ == MODE_CGA_320x200) {
-    clog << "VGA: Video mode 0x" << Hex8 << mode_ << " (CGA 320x200)" << endl;
-    cga_palette_ = 0;
-  
-    // Clear VRAM.
+    clearVRAM();
+  } else {
+    cerr << "VGA: Unsupported video mode 0x" << Hex8 << mode << endl;
+  }
+}
+
+
+void VGA::clearVRAM() {
+  if (mode_ == MODE_CGA_320x200) {
     byte* vram = x86_->getMem8Ptr(0xB800, 0);
     memset(vram, 0, 16384);
   } else {
-    cerr << "VGA: Unsupported video mode 0x" << Hex8 << mode << endl;
+    cerr << "VGA: Unsupported video mode 0x" << Hex8 << mode_ << endl;
+  }
+}
+
+
+void VGA::randomVRAM() {
+  if (mode_ == MODE_CGA_320x200) {
+    byte* vram = x86_->getMem8Ptr(0xB800, 0);
+    for (int i = 0; i < 16384; i++) {
+      *vram++ = rand() & 0xFF;
+    }
+  } else {
+    cerr << "VGA: Unsupported video mode 0x" << Hex8 << mode_ << endl;
   }
 }
 

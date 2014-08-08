@@ -20,6 +20,9 @@ class VGA : public InterruptHandler, public IOHandler {
   void setVideoMode(int mode);
   void setPalette(int palette);
 
+  void clearVRAM();
+  void randomVRAM();
+
  private:
   X86* x86_;
 

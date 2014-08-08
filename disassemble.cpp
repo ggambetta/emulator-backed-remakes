@@ -241,7 +241,7 @@ class X86Disassembler : public X86Base {
     if (ep && fragment->block_comments.empty()) {
       os << endl;
       if (ep->type == EntryPoint::CALL) {
-        outputComment(os, hex16ToString(address));
+        outputComment(os, hex16ToString(address) + "h");
       }
     }
 

@@ -9,19 +9,19 @@
 0110  MOV DS, AX
 0112  MOV SS, AX
 
-; Copy 1808 bytes from EDE3 to EDE4 (move 1 byte forward?)
+; Zero 1808 bytes from EDE3
 0114  MOV BX, EDE3h
-0117  MOV [BX], 0000h
+0117  MOV [BX], 0000h    ; [EDE3h] = 0
 011B  MOV DX, EDE4h
 011E  MOV CX, 0710h
-0121  XCHG SI, BX
-0123  XCHG DI, DX
+0121  XCHG SI, BX    ; SI = EDE3h
+0123  XCHG DI, DX    ; DI = EDE4h
 0125  CLD 
-0126  REPZ MOVSB 
+0126  REPZ MOVSB     ; ES:DI = DS:SI
 0128  XCHG SI, BX
 012A  XCHG DI, DX
 
-; Copy 799 bytes from EDE3 to EDE4 (move 1 byte forward?)
+; Fill 799 bytes from EDE3 with -1
 012C  MOV BX, EDE3h
 012F  MOV DX, EDE4h
 0132  MOV [BX], 00FFh
@@ -43,12 +43,14 @@
 0152  REPZ MOVSB 
 0154  XCHG SI, BX
 0156  XCHG DI, DX
+
+; Startup
 0158  CALL 3779h    ; Set video mode
 015B  CALL 36F3h    ; Draw UI
-015E  CALL 3059h
+015E  CALL 3059h    ; Set up music?
 0161  CALL 0FF6h
-0164  CALL 021Bh    ; Reset state
-0167  CALL 3839h
+0164  CALL 021Bh    ; Reset lives
+0167  CALL 3839h    ; Test exit condition?
 016A  MOV [CS:0409h], SP
 
 ; Restart
@@ -57,7 +59,7 @@
 0177  CALL 02F7h
 017A  CALL 3944h
 017D  CALL 3188h
-0180  CALL 33D8h    ; Clear tools???
+0180  CALL 33D8h    ; Clear safe combination digits?
 0183  MOV AH, 54h
 0185  MOV [F11Dh], AH
 0189  XOR AH, AH
@@ -68,8 +70,8 @@
 019D  CALL 2B25h
 01A0  CALL 38B9h    ; Draw screen
 01A3  CALL 39A9h    ; Opera Soft logo?
-01A6  CALL 021Bh    ; Reset state
-01A9  CALL 0247h
+01A6  CALL 021Bh    ; Reset lives
+01A9  CALL 0247h    ; Reset inventory, beer, money
 01AC  CALL 0FFCh
 01AF  CALL 23DAh
 01B2  CALL 33B6h    ; Draw inventory and score
@@ -130,13 +132,15 @@
 0242  MOV [F1F4h], AH
 0246  RET 
 
-; 0247h
+; 
+; Reset inventory, beer, money
+; 
 0247  XOR AH, AH
-0249  MOV [F12Ch], AH
+0249  MOV [F12Ch], AH    ; Money
 024D  MOV [F12Ah], AH
 0251  MOV [F12Bh], AH
 0255  MOV AH, FFh
-0257  MOV BX, F103h
+0257  MOV BX, F103h    ; Inventory #0
 025A  MOV [BX], AH
 025C  INC BX
 025D  MOV [BX], AH
@@ -145,9 +149,9 @@
 0262  INC BX
 0263  MOV [BX], AH
 0265  MOV [F3CFh], AH
-0269  MOV BX, F125h
+0269  MOV BX, F125h    ; Fill beer meter
 026C  MOV [BX], 16h
-026F  MOV BX, F124h
+026F  MOV BX, F124h    ; Reset beer timer
 0272  MOV [BX], 08h
 0275  RET 
 
@@ -251,13 +255,15 @@
 0333  MOV DX, 0003h
 0336  ADD BX, DX
 0338  MOV [F1C9h], BX
+
+; Spawn Goody
 033C  MOV CX, 0017h
 033F  MOV BX, 1080h
 0342  CALL 03D5h
 
 ; Walking loop
 0345  CALL 39A9h    ; Move and draw characters?
-0348  CALL 3839h
+0348  CALL 3839h    ; Test exit condition?
 034B  JZ 0354h
 034D  MOV [CS:413Bh], 00h
 0353  RET 
@@ -269,7 +275,7 @@
 
 0362  MOV CX, 1E17h
 0365  XOR AH, AH
-0367  CALL 03E8h
+0367  CALL 03E8h    ; Update Goody
 036A  MOV CX, 2710h
 036D  CALL 114Fh    ; Wait for CX cycles
 0370  MOV AH, [SI + 000Ch]
@@ -285,6 +291,7 @@
 0381  MOV DI, 0310h    ; Restart the pursuer list
 0384  MOV [F1C9h], DI
 
+; Spawn pursuer
 0388  MOV CH, [DI]
 038A  MOV CL, [DI + 0001h]
 038D  MOV BX, 1040h
@@ -294,19 +301,19 @@
 0393  CALL 39A9h    ; Move and draw characters?
 0396  XOR AH, AH
 0398  MOV CX, 1E17h
-039B  CALL 03E8h
+039B  CALL 03E8h    ; Update Goody
 039E  MOV DI, [F1C9h]
 03A2  MOV AH, [DI]
 03A4  MOV CL, [DI + 0001h]
 03A7  MOV CH, [DI + 0002h]
-03AA  CALL 03E8h
+03AA  CALL 03E8h    ; Update pursuer
 03AD  TEST [SI], 10h
 03B0  JZ 03B5h
 03B2  JMP 032Fh    ; Restart the whole cycle.
 
 03B5  MOV CX, 0BB8h
 03B8  CALL 114Fh    ; Wait for CX cycles
-03BB  CALL 3839h
+03BB  CALL 3839h    ; Test exit condition?
 03BE  JZ 03C7h
 03C0  MOV [CS:413Bh], 00h
 03C6  RET 
@@ -316,7 +323,12 @@
 03CE  MOV [CS:413Bh], 01h
 03D4  RET     ; ----- End Attract Mode main loop -----
 
-; 03D5h
+; 
+; Spawn a character
+; 
+; CX = index???
+; BX = position???
+; 
 03D5  PUSH CX
 03D6  PUSH BX
 03D7  CALL 12A7h
@@ -330,7 +342,12 @@
 03E3  MOV AH, C0h
 03E5  JMP 1274h
 
-; 03E8h
+; 
+; Update a character
+; 
+; AH = ???
+; CX = index???
+; 
 03E8  PUSH CX
 03E9  CALL 1459h
 03EC  POP CX
@@ -372,7 +389,7 @@
 0433  CALL 0C1Ah
 0436  CALL 39A9h
 0439  CALL 10F3h
-043C  CALL 23A8h
+043C  CALL 23A8h    ; Update beer
 
 043F  CMP [4877h], 03h
 0444  JB 043Fh
@@ -969,7 +986,7 @@
 0966  CALL 1D1Ah
 0969  XOR AH, AH
 096B  MOV [F131h], AH
-096F  MOV AH, 16h
+096F  MOV AH, 16h    ; Refill beer
 0971  MOV [F125h], AH
 0975  RET 
 
@@ -1264,7 +1281,7 @@
 0BA8  MOV AH, 0Dh
 0BAA  MOV BX, F17Bh
 0BAD  SUB AH, [BX]
-0BAF  MOV DX, 012Ch
+0BAF  MOV DX, 012Ch    ; 300
 0BB2  CALL 1139h
 0BB5  PUSH BX
 0BB6  POP CX
@@ -1998,7 +2015,7 @@
 ; BX = f(AH, DX)
 1139  PUSH CX
 113A  MOV BX, 0000h
-113D  MOV CH, 08h
+113D  MOV CH, 08h    ; 8 times
 
 113F  RCR AH, 01h
 1141  JNB 1145h
@@ -2550,7 +2567,7 @@
 1523  RET 
 
 1524  PUSH SI
-1525  MOV [F125h], 16h
+1525  MOV [F125h], 16h    ; Refill beer
 152A  MOV SI, F1CFh
 152D  OR [SI + 0024h], 02h
 1531  MOV [SI + 0011h], 00h
@@ -3027,15 +3044,31 @@
 ; Draw money counter
 ; 
 22EA  MOV AH, [F12Ah]
-22EE  MOV DX, 0064h
+22EE  MOV DX, 0064h    ; 100
 22F1  CALL 1139h
 22F4  MOV CX, 1505h    ; row = 21, col = 5
 22F7  MOV AH, 05h
 22F9  CALL 3388h    ; Draw number BX with AH digits in CX
 22FC  RET 
 
-22FD  .DB BA, 04, 00, 8A, 27, 88, E5, 43, 8A, 26, 1D, F1, 3A, 27, 74, 07, 01, 
-230E  .DB D3, FE, CD, 75, F6, C3, 43, 30, E4, 88, 27, C3, 
+; 22FDh
+22FD  MOV DX, 0004h
+2300  MOV AH, [BX]
+2302  MOV CH, AH
+2304  INC BX
+2305  MOV AH, [F11Dh]
+
+2309  CMP AH, [BX]
+230B  JZ 2314h
+230D  ADD BX, DX
+230F  DEC CH
+2311  JNZ 2309h
+2313  RET 
+
+2314  INC BX
+2315  XOR AH, AH
+2317  MOV [BX], AH
+2319  RET 
 
 ; 231Ah
 231A  MOV AH, 0Bh
@@ -3103,8 +3136,20 @@
 2381  MOV CL, 13h    ; col = 19
 2383  JMP 3388h
 
-2386  .DB B3, 04, B2, 04, E8, F8, EF, 72, 01, C3, 80, 0C, 10, BB, FA, CE, E8, 
-2397  .DB F9, 0D, BB, F9, DF, E8, 5E, FF, B4, 16, 88, 26, 25, F1, E9, 75, 12, 
+2386  MOV BL, 04h
+2388  MOV DL, 04h
+238A  CALL 1385h
+238D  JB 2390h
+238F  RET 
+
+2390  OR [SI], 10h
+2393  MOV BX, CEFAh
+2396  CALL 3192h
+2399  MOV BX, DFF9h
+239C  CALL 22FDh
+239F  MOV AH, 16h
+23A1  MOV [F125h], AH
+23A5  JMP 361Dh
 
 ; 23A8h
 23A8  MOV BX, F11Ah
@@ -3113,22 +3158,26 @@
 23B0  RET 
 
 23B1  AND [BX], BFh
-23B4  DEC [F124h]
+23B4  DEC [F124h]    ; Update beer timer
 23B8  JZ 23BBh
 23BA  RET 
 
-23BB  MOV AH, 08h
+; Beer timer expired
+23BB  MOV AH, 08h    ; Reset beer timer
 23BD  MOV [F124h], AH
+
+; Decrement beer
 23C1  MOV BX, F125h
 23C4  CMP [BX], 00h
 23C7  JZ 23D0h
 23C9  DEC [BX]
 23CB  JZ 23D0h
-23CD  JMP 361Dh
+23CD  JMP 361Dh    ; Draw beer meter
 
+; Beer meter empty
 23D0  MOV AH, 16h
-23D2  MOV [BX], AH
-23D4  CALL 361Dh
+23D2  MOV [BX], AH    ; Refill beer
+23D4  CALL 361Dh    ; Draw beer meter
 23D7  JMP 1506h
 
 ; 23DAh
@@ -3582,7 +3631,7 @@
 3046  .DB 08, E4, 74, 06, 80, FC, 4E, 73, 01, C3, 01, D3, FE, CD, 75, EE, 08, 
 3057  .DB E4, C3, 
 
-; 3059h
+; Set up music?
 3059  CLI 
 305A  PUSH DS
 305B  MOV AX, 0000h
@@ -3607,7 +3656,9 @@
 308A  MOV [CS:30A6h], AX
 308E  MOV AX, CS
 3090  MOV [BX], AX
-3092  MOV CX, 2E9Eh    ; Program the timer at 100 Hz
+
+; Program the timer at 100 Hz
+3092  MOV CX, 2E9Eh
 3095  MOV AL, CL
 3097  OUT 40h, AL
 3099  MOV AL, CH
@@ -3854,9 +3905,14 @@
 3606  .DB FF, C3, B5, A0, B1, 50, BA, 00, 00, B4, 00, E8, 34, 01, B9, 00, 00, 
 3617  .DB E8, 35, DB, E9, 32, DB, 
 
+; 
+; Draw beer meter
+; 
 361D  MOV AH, [F125h]
 3621  OR AH, AH
 3623  JZ 3631h
+
+; Draw full bar
 3625  MOV CL, AH
 3627  MOV CH, 02h
 3629  MOV AH, FFh
@@ -3868,17 +3924,20 @@
 3637  JNZ 363Ah
 3639  RET 
 
+; Draw black bar
 363A  MOV CL, AH
 363C  MOV DL, [F125h]
 3640  MOV DH, 00h
 3642  MOV CH, 02h
 3644  XOR AH, AH
 
-; 3646h
+; Partial fill
 3646  ADD DX, 1CC8h
-364A  CALL 3748h
+364A  CALL 3748h    ; Fill
 364D  RET 
 
+; 
+; --------------------------
 364E  MOV AH, 3Ch
 3650  MOV DI, 196Ch
 3653  SUB AH, [F127h]
@@ -3913,29 +3972,29 @@
 368C  POP ES
 368D  RET 
 
-;
+; 
 ; Draw Inventory
-;
+; 
 368E  MOV SI, DF56h
-3691  PUSH SI
+3691  PUSH SI    ; Item 0
 3692  MOV AH, [F103h]
 3696  CALL 36CCh
 3699  MOV DX, 19D3h
 369C  CALL 36E3h
 369F  POP SI
-36A0  PUSH SI
+36A0  PUSH SI    ; Item 1
 36A1  MOV AH, [F104h]
 36A5  CALL 36CCh
 36A8  MOV DX, 19DAh
 36AB  CALL 36E3h
 36AE  POP SI
-36AF  PUSH SI
+36AF  PUSH SI    ; Item 2
 36B0  MOV AH, [F105h]
 36B4  CALL 36CCh
 36B7  MOV DX, 19E1h
 36BA  CALL 36E3h
 36BD  POP SI
-36BE  MOV AH, [F106h]
+36BE  MOV AH, [F106h]    ; Item 3
 36C2  CALL 36CCh
 36C5  MOV DX, 19E8h
 36C8  CALL 36E3h
@@ -3957,11 +4016,14 @@
 36E1  INC BX
 36E2  RET 
 
-; 36E3h
+; 
+; Draw inventory item in AH at DL, DH
+; 
 36E3  CMP AH, FFh
-36E6  JZ 36EAh
+36E6  JZ 36EAh    ; Empty
 36E8  JMP 3736h
 
+; Clear slot (24 x 16)
 36EA  MOV CL, 06h
 36EC  MOV CH, 10h
 36EE  MOV AH, 00h
@@ -4023,6 +4085,9 @@
 373A  MOV ES, AX
 373C  JMP 371Ah
 
+; -------------------------
+; 
+; Fill CL bytes x CH rows with AH, strting at DX (ODD row).
 373E  PUSH DS
 373F  PUSH AX
 3740  MOV AX, B800h
@@ -4030,38 +4095,40 @@
 3745  POP AX
 3746  JMP 3761h
 
-; 3748h
+; Fill CL bytes x CH rows with AH, strting at DX (EVEN row).
 3748  PUSH DS
 3749  PUSH AX
 374A  MOV AX, B800h
 374D  MOV DS, AX
 374F  POP AX
 
+; Even row
 3750  PUSH CX
 3751  MOV BX, DX
 
 3753  MOV [BX], AH
 3755  INC BX
 3756  DEC CL
-3758  JNZ 3753h
+3758  JNZ 3753h    ; Next byte
 375A  POP CX
 375B  DEC CH
-375D  JNZ 3761h
+375D  JNZ 3761h    ; Next row (odd)
 375F  POP DS
 3760  RET 
 
+; Odd row
 3761  PUSH CX
 3762  MOV BX, DX
-3764  ADD BX, 2000h
+3764  ADD BX, 2000h    ; Next bank
 
 3768  MOV [BX], AH
 376A  INC BX
 376B  DEC CL
-376D  JNZ 3768h
+376D  JNZ 3768h    ; Next byte
 376F  POP CX
 3770  ADD DX, 50h
 3773  DEC CH
-3775  JNZ 3750h
+3775  JNZ 3750h    ; Next row (even)
 3777  POP DS
 3778  RET 
 
@@ -5753,6 +5820,8 @@
 638F  .DB 10, FA, 10, 3B, 11, 68, 11, AD, 11, 12, 12, 7B, 12, C4, 12, 11, 13, 
 63A0  .DB 6E, 13, EF, 13, 5C, 14, D5, 14, 36, 15, AF, 15, 08, 16, 81, 16, 32, 
 63B1  .DB 17, BB, 17, 00, 18, 49, 18, 92, 18, FF, 18, 64, 19, C5, 19, 62, 1A, 
+
+; Tile data
 63C2  .DB 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 
 63D3  .DB 00, A8, 3A, A8, 2A, 88, 2A, 00, 00, 3A, A8, 2A, A8, 2A, 88, 0F, FF, 
 63E4  .DB 3A, AA, 3E, AA, 3B, AA, 3E, AA, 3B, AA, 0E, EA, 00, 00, FF, CC, AA, 
@@ -6038,8 +6107,11 @@
 7382  .DB 00, 00, 21, 84, A5, F0, B4, 30, B4, 30, B4, 30, 21, C0, 21, C0, AE, 
 7393  .DB AE, BB, BB, AA, AA, AA, AA, A2, A2, 88, 88, 22, 22, 00, 00, 0A, 80, 
 73A4  .DB 0E, 20, 0A, 80, 0E, A0, 0A, 80, 0E, 20, 0A, 80, 0E, 20, A8, 2A, 80, 
-73B5  .DB 02, 80, 02, 00, 00, 00, 00, 80, 02, 80, 02, A8, 2A, 00, 00, 00, 00, 
-73C6  .DB 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 0A, A0, 
+73B5  .DB 02, 80, 02, 00, 00, 00, 00, 80, 02, 80, 02, A8, 2A, 
+
+; Font
+73C2  .DB 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 0A, 
+73D3  .DB A0, 
 73D4  .DB '((((*'
 73D9  .DB A8, 14, 14, 14, 14, 3C, 3C, 00, 00, 2A, A0, 
 73E4  .DB '((((*'
@@ -7973,36 +8045,38 @@ ED97  .DB 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00,
 EDA8  .DB 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 
 EDB9  .DB 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, 3F, FF, FF, FF, FF, FF, FF, 
 EDCA  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EDDB  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EDEC  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EDFD  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE0E  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE1F  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE30  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE41  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE52  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE63  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE74  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE85  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EE96  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EEA7  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EEB8  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EEC9  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EEDA  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EEEB  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EEFC  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF0D  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF1E  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF2F  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF40  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF51  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF62  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF73  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF84  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EF95  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EFA6  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EFB7  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EFC8  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EFD9  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EFEA  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
-EFFB  .DB FF, FF, FF, FF, FF, 
+EDDB  .DB FF, FF, FF, FF, FF, FF, FF, FF, 
+
+; Some buffer
+EDE3  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EDF4  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE05  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE16  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE27  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE38  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE49  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE5A  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE6B  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE7C  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE8D  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EE9E  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EEAF  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EEC0  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EED1  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EEE2  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EEF3  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF04  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF15  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF26  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF37  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF48  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF59  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF6A  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF7B  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF8C  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EF9D  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EFAE  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EFBF  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EFD0  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EFE1  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 
+EFF2  .DB FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, FF, 

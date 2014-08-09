@@ -4508,7 +4508,7 @@
 ; 39FEh
 39FE  TEST [SI], 40h
 3A01  JZ 3A08h
-3A03  CALL 3EF4h
+3A03  CALL 3EF4h    ; Scroll left
 3A06  JMP 3A2Ah
 
 3A08  MOV CX, [SI + 001Eh]
@@ -4832,7 +4832,7 @@
 3CB5  RET 
 
 ; 
-; Draw character?
+; Blit a bitmap?
 ; 
 3CB6  MOV AH, [F47Fh]
 3CBA  OR AH, AH
@@ -4848,7 +4848,7 @@
 3CD2  JZ 3CDCh
 3CD4  TEST [BX], 02h
 3CD7  JZ 3CDCh
-3CD9  JMP 3EF4h
+3CD9  JMP 3EF4h    ; Scroll and return
 
 3CDC  MOV CL, [F169h]
 3CE0  SHR CL, 01h
@@ -4880,11 +4880,16 @@
 3D22  SUB DH, CH
 3D24  MOV [F177h], DH
 
+; F16E[h] = F174[h] * 4
+; F16E[l] = F174[l] * 2
 3D28  MOV CX, [F174h]
 3D2C  ADD CL, CL
 3D2E  ADD CH, CH
 3D30  ADD CH, CH
 3D32  MOV [F16Eh], CX
+
+; F170[h] = F176[h] * 4
+; F170[l] = F176[l] * 2
 3D36  MOV CX, [F176h]
 3D3A  ADD CL, CL
 3D3C  ADD CH, CH
@@ -4919,15 +4924,17 @@
 3D81  MOV DX, [F176h]
 3D85  MOV DI, F4F3h
 
-3D88  PUSH DX
+3D88  PUSH DX    ; DH loop
 3D89  PUSH BX
 3D8A  PUSH DI
 
-3D8B  PUSH BX
+3D8B  PUSH BX    ; DL loop
 3D8C  PUSH DX
 3D8D  MOV AL, [BX]
 3D8F  OR AL, AL
-3D91  JZ 3D98h
+3D91  JZ 3D98h    ; Tile empty, no need to copy
+
+; Copy tile AL bitmap to target buffer
 3D93  MOV AH, 00h
 3D95  CALL 3E31h
 
@@ -4937,16 +4944,16 @@
 3D9B  POP BX
 3D9C  INC BX
 3D9D  DEC DL
-3D9F  JNZ 3D8Bh
+3D9F  JNZ 3D8Bh    ; Next DL
 3DA1  POP DI
 3DA2  MOV DX, [F142h]
 3DA6  ADD DI, DX
 3DA8  POP BX
-3DA9  MOV DX, 0028h
+3DA9  MOV DX, 0028h    ; 40 = 1 line?
 3DAC  ADD BX, DX
 3DAE  POP DX
 3DAF  DEC DH
-3DB1  JNZ 3D88h
+3DB1  JNZ 3D88h    ; Next DH
 3DB3  POP DI
 3DB4  POP SI
 3DB5  CALL 3C10h
@@ -4966,11 +4973,11 @@
 3DD5  TEST [SI], 20h
 3DD8  JZ 3DDFh
 
-3DDA  CALL 3EF4h
+3DDA  CALL 3EF4h    ; Scroll left
 3DDD  JMP 3DE5h
 
 3DDF  CALL 3E4Eh
-3DE2  CALL 3EF4h
+3DE2  CALL 3EF4h    ; Scroll left
 
 3DE5  POP AX
 3DE6  DEC AH
@@ -4989,8 +4996,8 @@
 3E02  ADD AX, DX    ; AX += DL => DL = x
 3E04  MOV DI, AX
 3E06  MOV SI, F4F3h
-3E09  MOV CX, [F176h]    ; Size
-3E0D  SHL CH, 01h    ; CH = CH * 4. 3E11 treats them as double lines. So CH = height in 8x8 tiles?
+3E09  MOV CX, [F176h]    ; Size = CL bytes x CH 8x8 tiles
+3E0D  SHL CH, 01h
 3E0F  SHL CH, 01h
 
 ; Copy loop: CH*2 lines of CL bytes from SI into DI
@@ -5015,20 +5022,27 @@
 3E2F  POP SI
 3E30  RET 
 
-; 3E31h
+; Copy tile bitmap into pixel buffer.
+; 
+; AX = Tile index
+; DI = Destination pointer
+; [F170h] = Size of dst buffer (H = height? L = width in pixels)
+; 
 3E31  PUSH DI
 3E32  MOV CL, 04h
-3E34  SHL AX, CL
+3E34  SHL AX, CL    ; AX = AX * 16 (16 bytes per 8*8 tile)
 3E36  ADD AX, 63C2h    ; Start of tiles
-3E39  MOV SI, AX
-3E3B  MOV DX, [F170h]
-3E3F  MOV DH, 00h
-3E41  DEC DX
+3E39  MOV SI, AX    ; SI = tile bitmap
+
+; Compute DX = skip after line in bytes.
+3E3B  MOV DX, [F170h]    ; DX = Size
+3E3F  MOV DH, 00h    ; DX = width
+3E41  DEC DX    ; DX = width - 2 (2 bytes copied per loop)
 3E42  DEC DX
 3E43  CLD 
-3E44  MOV CX, 0008h
+3E44  MOV CX, 0008h    ; 8 lines
 
-3E47  MOVSW 
+3E47  MOVSW     ; Copy 2 bytes = 8 pixels
 3E48  ADD DI, DX
 3E4A  LOOP 3E47h
 3E4C  POP DI
@@ -5119,7 +5133,7 @@
 3EE2  .DB 56, 57, 83, C6, 03, 89, FE, B9, 08, 00, 01, CF, FC, F3, A4, 5F, 5E, 
 3EF3  .DB C3, 
 
-; Scroll 8 bytes == 32 pixels right?
+; Copy 8 bytes from SI+11 to SI+3
 3EF4  PUSH SI
 3EF5  PUSH DI
 

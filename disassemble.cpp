@@ -45,7 +45,6 @@ class X86Disassembler : public X86Base {
  public:
   X86Disassembler(Memory* mem) : mem_(mem) {
     dump_raw_ = false;
-    //dump_raw_ = true;
   }
 
   // ----------------------------------------
@@ -376,6 +375,8 @@ class X86Disassembler : public X86Base {
         } else {
           cerr << "Syntax: " << cmd << " <address>" << endl; 
         }
+      } else if (cmd == "dumpraw") {
+        dump_raw_ = true;
       }
     }
   }

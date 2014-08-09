@@ -36,7 +36,6 @@ std::string hex8ToString(byte val);
 std::string hex16ToString(word val);
 std::string addrToString(const Addr& addr);
 
-
 void writeBytes(std::ostream& os, byte* data, int count, int width);
 
 
@@ -48,6 +47,9 @@ std::string lower(const std::string& str);
 
 std::string strip(const std::string& str);
 
+
+// Returns true if the string contains hex digits or ends with "h".
+bool isHexNumber(const std::string& str);
 
 bool parseBool(const std::string& str);
 int parseNumber(const std::string& str);

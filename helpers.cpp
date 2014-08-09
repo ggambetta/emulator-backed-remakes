@@ -94,11 +94,24 @@ bool parseBool(const std::string& str) {
 }
 
 
-int parseNumber(const std::string& str) {
+bool isHexNumber(const std::string& str) {
   if (str.empty()) {
-    return 0;
+    return false;
   }
   if (str.back() == 'h' || str.back() == 'H') {
+    return true;
+  }
+  for (char k : str) {
+    if ((k >= 'A' && k <= 'F') || (k >= 'a' && k <= 'f')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+int parseNumber(const std::string& str) {
+  if (isHexNumber(str)) {
     return (int)strtol(str.data(), NULL, 16);
   }
   return stoi(str);

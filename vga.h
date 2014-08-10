@@ -23,6 +23,8 @@ class VGA : public InterruptHandler, public IOHandler {
   void clearVRAM();
   void randomVRAM();
 
+  static void CGAtoRGB(byte* cga, int palette, int npixels, byte* rgb);
+
  private:
   X86* x86_;
 

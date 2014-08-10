@@ -113,28 +113,40 @@ void VGA::renderRGB(byte* buffer) {
     return;
   }
 
-  byte* vram = x86_->getMem8Ptr(0xB800, 0);
-  for (int y = 0; y < 200; y++) {
-    // CGA video memory is interlaced: all even rows, then all odd rows
-    // with a 8K offset.
-    byte* vram_row = vram + (y/2)*320/4 + (y%2)*8192;
+  // CGA VRAM is "interlaced". The first bank contains the even rows and
+  // the second bank (8K after) contains the odd rows.
+  byte* vram_b1 = x86_->getMem8Ptr(0xB800, 0);
+  byte* vram_b2 = vram_b1 + 8192;
+  for (int y = 0; y < 200; y += 2) {
+    CGAtoRGB(vram_b1, cga_palette_, 320, buffer);
+    buffer += 320*3;
+    vram_b1 += 80;
 
-    for (int x = 0; x < 320; x += 4) {
-      byte val = *vram_row++; 
+    CGAtoRGB(vram_b2, cga_palette_, 320, buffer);
+    buffer += 320*3;
+    vram_b2 += 80;
+  }
+}
 
-      // 4 pixels per byte.
-      byte mask = 0b11000000;
-      int shift = 6;
-      for (int px = 0; px < 4; px++) {
-        byte color = (val & mask) >> shift;
-        shift -= 2;
-        mask >>= 2;
-  
-        *buffer++ = kCGAColors[cga_palette_][color][0];
-        *buffer++ = kCGAColors[cga_palette_][color][1];
-        *buffer++ = kCGAColors[cga_palette_][color][2];
-      }
+
+void VGA::CGAtoRGB(byte* cga, int palette, int npixels, byte* rgb) {
+  while (npixels) {
+    // 4 pixels per byte.
+    byte mask = 0b11000000;
+    int shift = 6;
+    for (int px = 0; px < 4 && npixels; px++) {
+      byte color = (*cga & mask) >> shift;
+      shift -= 2;
+      mask >>= 2;
+
+      *rgb++ = kCGAColors[palette][color][0];
+      *rgb++ = kCGAColors[palette][color][1];
+      *rgb++ = kCGAColors[palette][color][2];
+
+      npixels--;
     }
+
+    cga++;
   }
 }
 

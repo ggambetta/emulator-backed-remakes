@@ -24,7 +24,7 @@ void Monitor::setScale(int scale) {
 }
 
 
-void Monitor::saveToFile(const std::string& filename) {
+void Monitor::savePPM(const std::string& filename) {
   int width, height;
   vga_->getModeSize(width, height);
   if (width == 0 || height == 0) {
@@ -34,12 +34,7 @@ void Monitor::saveToFile(const std::string& filename) {
   byte* buffer = new byte[width*height*3];
   vga_->renderRGB(buffer);
 
-  ofstream file(filename);
-  file << "P6\n";
-  file << "320 200\n";
-  file << "255\n";
-  file.write((const char*)buffer, width*height*3);
-  file.close();
+  saveRGBToPPM(buffer, width, height, filename);
 
   delete[] buffer;
 }

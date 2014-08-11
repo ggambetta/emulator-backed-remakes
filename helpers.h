@@ -9,12 +9,14 @@
 typedef unsigned char byte;
 typedef unsigned short word;
 
+
 // Logging constants.
 extern const char* BINARY2[4];
 extern const char* BINARY3[8];
 extern const char* REG16_DESC[13];
 extern const char* REG8_DESC[8];
 extern const char FLAG_NAME[17];
+
 
 // Logging helpers.
 struct _Hex8 {};
@@ -54,6 +56,7 @@ bool isHexNumber(const std::string& str);
 bool parseBool(const std::string& str);
 int parseNumber(const std::string& str);
 
+
 // ASSERT and related functionality.
 #define ASSERT(COND) assertHelper(COND, #COND, __FILE__, __LINE__)
 #define FATAL(MSG) fatalHelper(MSG, __FILE__, __LINE__)
@@ -61,5 +64,8 @@ int parseNumber(const std::string& str);
 void fatalHelper(const std::string& msg, const char* file, int line);
 void assertHelper(bool cond, const std::string& msg, const char* file, int line);
 
+
+// Save a RGB buffer to a PPM file.
+void saveRGBToPPM(byte* rgb, int width, int height, const std::string& filename);
 
 #endif  // __HELPERS_H__

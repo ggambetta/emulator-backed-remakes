@@ -265,7 +265,7 @@ class Runner {
       } else if (action == "ss" || action == "screenshot") {
         // SCREENSHOT <filename> - save the emulated screen as PPM.
         if (tokens.size() > 1) {
-          monitor_->saveToFile(tokens[1]);
+          monitor_->savePPM(tokens[1]);
         } else {
           cerr << "Syntax: " << action << " <filename>" << endl;
         }

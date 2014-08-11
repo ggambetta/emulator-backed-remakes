@@ -2,6 +2,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -163,3 +164,14 @@ string strip(const string& str) {
 
   return ret;
 }
+
+
+void saveRGBToPPM(byte* rgb, int width, int height, const string& filename) {
+  ofstream file(filename);
+  file << "P6\n";
+  file << width << " " << height << "\n";
+  file << "255\n";
+  file.write((const char*)rgb, width*height*3);
+  file.close();
+}
+

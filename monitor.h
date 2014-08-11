@@ -17,7 +17,7 @@ class Monitor {
 
   void setScale(int scale);
 
-  void saveToFile(const std::string& filename);
+  void savePPM(const std::string& filename);
 
  private:
   VGA* vga_;

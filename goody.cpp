@@ -2,12 +2,12 @@
 #include <unordered_map>
 #include <memory>
 
-#include "loader.h"
-#include "memory.h"
-#include "monitor.h"
-#include "vga.h"
-#include "x86.h"
-#include "graphics.h"
+#include "lib/loader.h"
+#include "lib/memory.h"
+#include "lib/monitor.h"
+#include "lib/vga.h"
+#include "lib/x86.h"
+#include "lib/graphics.h"
 
 using namespace std;
 

@@ -1,5 +1,5 @@
-#include "helpers.h"
-#include "vga.h"
+#include "lib/helpers.h"
+#include "lib/vga.h"
 
 #include <fstream>
 #include <sstream>

@@ -7,9 +7,9 @@
 #include <sstream>
 #include <vector>
 
-#include "loader.h"
-#include "memory.h"
-#include "x86_base.h"
+#include "lib/loader.h"
+#include "lib/memory.h"
+#include "lib/x86_base.h"
 
 using namespace std;
 

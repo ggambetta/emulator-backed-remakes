@@ -4894,7 +4894,7 @@
 3D3A  ADD CL, CL
 3D3C  ADD CH, CH
 3D3E  ADD CH, CH
-3D40  MOV [F170h], CX
+3D40  MOV [F170h], CX    ; Size of dst buffer
 3D44  MOV DX, [F176h]
 3D48  MOV AL, DL
 3D4A  MOV AH, 00h
@@ -4909,11 +4909,13 @@
 3D5C  MOV [SI], 0000h
 3D60  CLD 
 3D61  REPZ MOVSW 
-3D63  MOV AX, [F170h]
-3D66  MOV AH, 00h
+
+; [F142] = 8 * width of dst buffer
+3D63  MOV AX, [F170h]    ; Size of dst buffer
+3D66  MOV AH, 00h    ; Width
 3D68  MOV CL, 03h
 3D6A  SHL AX, CL
-3D6C  MOV [F142h], AX
+3D6C  MOV [F142h], AX    ; [F142] = Width of dst buffer * 8
 3D6F  MOV DX, [F174h]
 3D73  MOV AX, 0028h
 3D76  MUL DH
@@ -5022,6 +5024,7 @@
 3E2F  POP SI
 3E30  RET 
 
+; 
 ; Copy tile bitmap into pixel buffer.
 ; 
 ; AX = Tile index
@@ -5048,7 +5051,9 @@
 3E4C  POP DI
 3E4D  RET 
 
-; 3E4Eh
+; 
+; Blit character bitmap into pixel buffer.
+; 
 3E4E  PUSH SI
 3E4F  PUSH DI
 3E50  MOV BX, [SI + 0026h]
@@ -5064,7 +5069,7 @@
 3E67  ADD BX, AX
 3E69  MOV [F144h], BX
 3E6D  MOV AH, 00h
-3E6F  MOV DI, F4F3h
+3E6F  MOV DI, F4F3h    ; Dst buffer
 3E72  MOV CX, [F16Eh]
 3E76  MOV DX, [SI + 001Ah]
 3E79  MOV AL, DL
@@ -5076,58 +5081,65 @@
 3E87  MUL CL
 3E89  ADD AX, AX
 3E8B  ADD DI, AX
-3E8D  MOV CX, [SI + 001Eh]
-3E90  MOV SI, [F144h]
-3E94  MOV BL, [F170h]
-3E98  MOV BH, 00h
-3E9A  MOV DL, [F146h]
-3E9E  MOV DH, 00h
+3E8D  MOV CX, [SI + 001Eh]    ; Size
+3E90  MOV SI, [F144h]    ; Character bitmap
+3E94  MOV BL, [F170h]    ; Bitmap size
+3E98  MOV BH, 00h    ; Keep only height
+3E9A  MOV DL, [F146h]    ; Buffer size
+3E9E  MOV DH, 00h    ; Keep only height
 3EA0  CLD 
 
+; CH loop.
 3EA1  PUSH CX
 3EA2  PUSH SI
 3EA3  PUSH DI
 3EA4  MOV CH, 00h
-3EA6  CALL 3EB7h
+3EA6  CALL 3EB7h    ; Merge row.
 3EA9  POP DI
-3EAA  ADD DI, BX
+3EAA  ADD DI, BX    ; Next row in dst
 3EAC  POP SI
-3EAD  ADD SI, DX
+3EAD  ADD SI, DX    ; Next row in src
 3EAF  POP CX
 3EB0  DEC CH
-3EB2  JNZ 3EA1h
+3EB2  JNZ 3EA1h    ; Next CH
 3EB4  POP DI
 3EB5  POP SI
 3EB6  RET 
 
-; 3EB7h
+; Merge CX bytes (4*CX pixels) from SI into DI.
 3EB7  MOV AL, [SI]
 3EB9  OR AL, AL
-3EBB  JZ 3EDDh
+3EBB  JZ 3EDDh    ; Empty => nothing to do
+
+; Pixel 0
 3EBD  TEST AL, 03h
 3EBF  JZ 3EC3h
 3EC1  OR AL, 03h
 
+; Pixel 1
 3EC3  TEST AL, 0Ch
 3EC5  JZ 3EC9h
 3EC7  OR AL, 0Ch
 
+; Pixel 2
 3EC9  TEST AL, 30h
 3ECB  JZ 3ECFh
 3ECD  OR AL, 30h
 
+; Pixel 3
 3ECF  TEST AL, C0h
 3ED1  JZ 3ED5h
 3ED3  OR AL, C0h
 
-3ED5  XOR AL, FFh
-3ED7  AND AL, [DI]
-3ED9  OR AL, [SI]
+; At this point every non-zero pixel has its bits set.
+3ED5  XOR AL, FFh    ; Invert mask
+3ED7  AND AL, [DI]    ; Leave only empty pixels in dst
+3ED9  OR AL, [SI]    ; Copy src pixels into dst
 3EDB  MOV [DI], AL
 
 3EDD  INC DI
 3EDE  INC SI
-3EDF  LOOP 3EB7h
+3EDF  LOOP 3EB7h    ; Next byte.
 3EE1  RET 
 
 3EE2  .DB 56, 57, 83, C6, 03, 89, FE, B9, 08, 00, 01, CF, FC, F3, A4, 5F, 5E, 

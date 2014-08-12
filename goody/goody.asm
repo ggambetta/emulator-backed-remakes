@@ -4245,9 +4245,9 @@
 384F  JMP 3867h    ; Draw bitmap
 
 ; 
-; Draw character.
+; Draw glyph.
 ; 
-; AH = character index
+; AH = glyph index
 ; CL = column
 ; CH = row
 ; 

@@ -8,6 +8,7 @@
 using namespace std;
 
 const char kFilename[] = "goody.com";
+const string kOutDir = "extracted/";
 
 const int kTileOffset = 0x63C2;
 const int kTileCount = 256;
@@ -15,18 +16,20 @@ const int kTileCount = 256;
 const int kFontOffset = 0x73C2;
 const int kFontCount = 40;
 
-void dumpImages(byte* data, int width, int height, int count, const string& prefix) {
+void dumpImage(byte* data, int width, int height, const string& filename) {
   byte* rgb = new byte[width*height*3];
-  for (int i = 0; i < count; i++) {
-    VGA::CGAtoRGB(data, 0, width*height, rgb);
-    data += width*height/4;
+  VGA::CGAtoRGB(data, 0, width*height, rgb);
+  saveRGBToPPM(rgb, width, height, filename);
+  delete [] rgb;
+}
 
+void dumpImages(byte* data, int width, int height, int count, const string& prefix) {
+  for (int i = 0; i < count; i++) {
     stringstream ss;
     ss << prefix << setw(3) << setfill('0') << i << ".ppm";
-    saveRGBToPPM(rgb, width, height, ss.str());
+    dumpImage(data, width, height, ss.str());
+    data += width*height/4;
   }
-  delete [] rgb;
-
 }
 
 
@@ -40,11 +43,15 @@ int main (int argc, char** argv) {
 
   // Dump tiles.
   cout << "Saving tile images." << endl;
-  dumpImages(code + kTileOffset, 8, 8, kTileCount, "tile_");
+  dumpImages(code + kTileOffset, 8, 8, kTileCount, kOutDir + "tile_");
 
-  // Dump tiles.
+  // Dump font.
   cout << "Saving font." << endl;
-  dumpImages(code + kFontOffset, 8, 8, kFontCount, "text_");
+  dumpImages(code + kFontOffset, 8, 8, kFontCount, kOutDir + "glyph_");
+
+  // Dump images.
+  cout << "Saving images" << endl;
+  dumpImage(code + 0xE163, 320, 40, kOutDir + "ui.ppm");
 
   delete [] code;
   return 0;

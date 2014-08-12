@@ -10,7 +10,9 @@ For an introduction to what this code is and does, please see [this article][0].
     make
     ./goody
 
-Requires the [SDL][1] headers and libraries to be installed. Also requires a sane development platform (i.e. not Windows)
+Requires the [SDL2][1] headers and libraries to be installed. Also requires a sane development platform (i.e. not Windows) with a C++11 compiler (or at least C++0x).
+
+The makefiles are for Mac, but they should work in Linux with minor modifications.
 
 [1]: <http://www.libsdl.org>
 

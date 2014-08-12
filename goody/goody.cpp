@@ -1,6 +1,8 @@
-#include <time.h>
-#include <unordered_map>
+#include <iomanip>
 #include <memory>
+#include <ctime>
+#include <sstream>
+#include <unordered_map>
 
 #include "lib/loader.h"
 #include "lib/memory.h"
@@ -36,7 +38,7 @@ class RemakeBase {
     }
   }
 
-  void updateMonitor() {
+  virtual void updateMonitor() {
     monitor_.update();
     next_video_update_ = clock() + (CLOCKS_PER_SEC / kFrameRate);
   }
@@ -84,6 +86,8 @@ class Remake : public RemakeBase {
 //
 // Goody remake.
 //
+typedef unordered_map<int, shared_ptr<Image>> ImageMap;
+
 class GoodyRemake : public Remake<GoodyRemake> {
  public:
 
@@ -99,54 +103,74 @@ class GoodyRemake : public Remake<GoodyRemake> {
   GoodyRemake() {
     Loader::loadCOM("goody.com", &mem_, &x86_);
 
-    addHook(0x3851, &GoodyRemake::drawCharacter);
+    addHook(0x36F3, &GoodyRemake::drawUI);
+    addHook(0x3851, &GoodyRemake::drawGlyph);
     addHook(0x383F, &GoodyRemake::drawTile);
-    addHook(0x36FF, &GoodyRemake::drawImage);
-    addHook(0x3736, &GoodyRemake::drawImage);
 
     window_.reset(new Window(kWindowWidth, kWindowHeight, "Goody"));
   }
 
-  void drawTile() {
-    int tile = regs_.ax;
-    int col = regs_.bl;
-    int row = regs_.bh;
-
-    /*cerr << dec;
-    cerr << "Draw tile " << tile << " at " << col << ", " << row << endl;*/
-  }
-
-  void drawImage() {
-    int id = regs_.bx;
-    int w = regs_.cl * 4;
-    int h = regs_.ch;
-
-    int offset = regs_.dx;
-    int x = (offset % 80);
-    int y = (offset / 80) * 2;
-
-    /*cerr << dec;
-    cerr << "Draw image " << id << " (" << w << " x " << h << ") "
-         << "at (" << x << ", " << y << ")" << endl; */
-  }
-
-  void drawCharacter() {
+  void drawGlyph() {
     char k = regs_.ah;
     int col = regs_.cl;
     int row = regs_.ch;
 
-    if (k >= 30 && k < 40) {
-      k = k - 30 + '0';
-    } else if (k > 0) {
-      k += 64;
+    Image* glyph = getGlyphImage(k);
+    if (glyph) {
+      window_->drawImage(glyph, col*kTileWidth, row*kTileHeight); 
     }
-
-    /*cerr << dec;
-    cerr << "Draw character " << (int)k << "[" << k << "]"
-         << " at " << col << ", " << row << endl;*/
   }
 
+  void drawUI() {
+    shared_ptr<Image> ui(new Image("assets/ui.png"));
+    window_->drawImage(ui.get(), 0, 600);
+  }
+
+  void drawTile() {
+    int tile_id = regs_.ax;
+    int col = regs_.bl;
+    int row = regs_.bh;
+
+    Image* tile = getTileImage(tile_id);
+    if (tile) {
+      window_->drawImage(tile, col*kTileWidth, row*kTileHeight); 
+    }
+  }
+
+  virtual void updateMonitor() {
+    Remake<GoodyRemake>::updateMonitor();
+    window_->update();
+  }
+
+
+  Image* getOrLoad(int id, const string& prefix, ImageMap& cache) {
+    if (cache.count(id) == 0) {
+      Image* tile = nullptr;
+      stringstream ss;
+      ss << prefix << dec << setw(3) << setfill('0') << id << ".png";
+      if (fileExists(ss.str())) {
+        tile = new Image(ss.str());
+      }
+      cache[id].reset(tile);
+    }
+    return cache[id].get();
+  }
+
+
+  Image* getTileImage(int id) {
+    return getOrLoad(id, "assets/tile_", tiles_);
+  }
+
+
+  Image* getGlyphImage(int id) {
+    return getOrLoad(id, "assets/glyph_", glyphs_);
+  }
+
+
+
   unique_ptr<Window> window_;
+  ImageMap tiles_;
+  ImageMap glyphs_;
 };
 
 

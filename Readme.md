@@ -10,15 +10,24 @@ For an introduction to what this code is and does, please see [this article][0].
     make
     ./goody
 
+Requires the [SDL][1] headers and libraries to be installed. Also requires a sane development platform (i.e. not Windows)
+
+[1]: <http://www.libsdl.org>
+
 # Structure of the code
 
-**`lib/generator/`** - Templates and opcode spec for the generated part of the x86 emulator.
+**`lib/generator/`** - Templates and opcode spec for the x86 emulator fetch/decode loop, which is automatically generated.
 
 **`lib/`** - The emulator code itself, including x86, CGA and devices.
 
-**`tools/runner`** - The runner/debugger.
+**`tools/runner`** - The runner/debugger. Look at the source to see the available commands. You can put startup commands in `runner.cmd`.
 
-**`tools/disassemble`** - The disassembler.
+**`tools/disassemble`** - The disassembler. Takes a prefix as a parameter, not a filename, e.g. `prefix`, and disassembles `prefix.com` into `prefix.asm`, optionally reading `prefix.cfg`.
+
+The disassembler works by following code paths from the entry point and disassembling all the reachable paths. But because it doesn't actually run the code, it misses entry points accessible through jump tables, e.g. `JMP BX`. You can manually add `EntryPoint` commands in the `cfg` file.
+
+Disassembly can be done incrementally. If `prefix.asm` already exists, the disassembler will _merge_ the comments in the existing file into the new disassembly. So you can disassemble, add an entry point to the `cfg` file, run the disassembler again, and not lose your previous work. `runner` can also generate a list of the entry points it actually runs through.
+
 
 **`goody/`** - The Goody remake proof-of-concept.
 

@@ -68,4 +68,8 @@ void assertHelper(bool cond, const std::string& msg, const char* file, int line)
 // Save a RGB buffer to a PPM file.
 void saveRGBToPPM(byte* rgb, int width, int height, const std::string& filename);
 
+
+// Misc.
+bool fileExists(const std::string& path);
+
 #endif  // __HELPERS_H__

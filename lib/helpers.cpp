@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <sstream>
 #include <fstream>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -173,5 +174,11 @@ void saveRGBToPPM(byte* rgb, int width, int height, const string& filename) {
   file << "255\n";
   file.write((const char*)rgb, width*height*3);
   file.close();
+}
+
+
+bool fileExists(const string& path) {
+  struct stat stbuf;
+  return stat(path.data(), &stbuf) == 0;
 }
 

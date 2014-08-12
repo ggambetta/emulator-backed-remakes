@@ -24,7 +24,7 @@ For an introduction to what this code is and does, please see [this article][0].
 
 # License
 
-The **code** is licensed under the Whatever/Credit license: _do whatever you want with it; if something cool comes out of it, credit is appreciated._
+The **code** is licensed under the Whatever/Credit license: _you may do whatever you want with the code; if you make something cool, credit is appreciated._
 
 The **assets** are either public domain or licensed under various Creative Commons licenses. Please see the original licenses at the following links: [1][100], [2][101], [3][102], [4][103], [5][104].
 

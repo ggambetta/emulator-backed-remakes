@@ -1,3 +1,11 @@
+// Emulator-Backed Remakes proof of concept.
+// See http://gabrielgambetta.com/remakes.html for background.
+//
+// (C) 2014 Gabriel Gambetta (gabriel.gambetta@gmail.com)
+//
+// Licensed under the Whatever/Credit License: you may do whatever you want with
+// the code; if you make something cool, credit is appreciated.
+//
 #include "helpers.h"
 
 #include <iomanip>

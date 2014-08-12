@@ -50,20 +50,31 @@ SDL_Texture* Image::getTexture(SDL_Renderer* renderer) {
 //
 Window::Window(int width, int height, const string& title) {
   SDL_CreateWindowAndRenderer(width, height, 0, &window_, &renderer_);
-  SDL_SetWindowTitle(window_, "blah");
+  SDL_SetWindowTitle(window_, title.data());
+  buffer_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888,
+                              SDL_TEXTUREACCESS_TARGET, width, height);
+
+  SDL_SetRenderTarget(renderer_, buffer_);
 }
 
 
 Window::~Window() {
+  SDL_DestroyTexture(buffer_);
   SDL_DestroyRenderer(renderer_);
   SDL_DestroyWindow(window_);
+
   renderer_ = nullptr;
   window_ = nullptr;
 }
 
 
 void Window::update() {
+
+  SDL_SetRenderTarget(renderer_, nullptr);
+  SDL_RenderCopy(renderer_, buffer_, nullptr, nullptr);
+
   SDL_RenderPresent(renderer_);
+  SDL_SetRenderTarget(renderer_, buffer_);
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {

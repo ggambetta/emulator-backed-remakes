@@ -44,6 +44,7 @@ class Window {
  private:
   SDL_Window* window_;
   SDL_Renderer* renderer_;
+  SDL_Texture* buffer_;
 };
 
 #endif // __GRAPHICS_H__

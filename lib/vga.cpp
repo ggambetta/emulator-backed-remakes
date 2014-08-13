@@ -9,8 +9,9 @@
 #include "vga.h"
 #include "x86.h"
 
-#include <iostream>
+#include <cstring>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 

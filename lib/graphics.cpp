@@ -9,7 +9,11 @@
 #include "graphics.h"
 
 #include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
+#ifdef __linux__
+	#include <SDL2/SDL_image.h>
+#else
+	#include <SDL2_image/SDL_image.h>
+#endif
 
 using namespace std;
 

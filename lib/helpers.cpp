@@ -8,9 +8,10 @@
 //
 #include "helpers.h"
 
+#include <fstream>
 #include <iomanip>
 #include <sstream>
-#include <fstream>
+#include <stdexcept>
 #include <sys/stat.h>
 
 using namespace std;
@@ -70,7 +71,7 @@ vector<string> split(const string& input) {
   vector<string> tokens;
   const string delimiters = " \t";
 
-  int end = -1;
+  size_t end = -1;
   do
   {
     int start = end + 1;

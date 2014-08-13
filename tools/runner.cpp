@@ -10,9 +10,10 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <unordered_set>
 #include <signal.h>
 #include <sstream>
+#include <stdexcept>
+#include <unordered_set>
 #include <vector>
 
 #include "lib/loader.h"

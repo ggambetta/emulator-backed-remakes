@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <set>
 #include <signal.h>
 #include <sstream>
@@ -327,7 +328,7 @@ class X86Disassembler : public X86Base {
       ASSERT(address == next_address);
       next_address = address + entry.second->size;
     }
-    ASSERT(next_address = end_offset_);
+    ASSERT(next_address == end_offset_);
   }
 
 
@@ -455,7 +456,7 @@ class X86Disassembler : public X86Base {
         }
 
         // Find and attach line comment.
-        int idx = line.find(';');
+        size_t idx = line.find(';');
         if (idx == string::npos) {
           continue;
         }

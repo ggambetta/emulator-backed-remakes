@@ -1,7 +1,6 @@
 CXXFLAGS=-std=c++0x -Wall -g -F /Library/Frameworks 
-TESTFLAGS=-I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -L. -lemu
+TESTFLAGS=-I/usr/local/include -L/usr/local/lib -lgtest -lgtest_main -L. -lemu -lpthread
 LIBRARY=libemu.a
-SDL=-framework SDL2 -framework SDL2_image
 
 TEST_SCRIPT=tests.sh
 
@@ -34,5 +33,5 @@ tests: $(LIBRARY) $(TEST_BINARIES)
 	@chmod a+x $(TEST_SCRIPT)
 
 $(TEST_BINARIES): %: %.cpp $(LIBRARY)
-	g++ $(CXXFLAGS) $(TESTFLAGS) $@.cpp -o $@
+	g++ $@.cpp -o $@ $(CXXFLAGS) $(TESTFLAGS) 
 

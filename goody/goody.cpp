@@ -102,10 +102,10 @@ class GoodyRemake : public Remake<GoodyRemake> {
    // Original screen is 320x200 with 1:1.2 aspect ratio (320x240 1:1)
    // Original game uses 40x25 tiles of 8x8 pixels
    // 1000x750 gives 40x25 tiles of 25x30 (aspect 1:2)
-  const int kWindowWidth = 1000;
-  const int kWindowHeight = 750;
-  const int kTileWidth = 25;
-  const int kTileHeight = 30;
+  static const int kWindowWidth = 1000;
+  static const int kWindowHeight = 750;
+  static const int kTileWidth = 25;
+  static const int kTileHeight = 30;
 
 
   GoodyRemake() {

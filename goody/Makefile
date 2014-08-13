@@ -1,5 +1,11 @@
 CXXFLAGS=-std=c++0x -Wall -g -F /Library/Frameworks -I.. -L../lib 
-SDL=-framework SDL2 -framework SDL2_image
+
+PLATFORM := $(firstword $(shell uname -s))
+ifeq ($(PLATFORM),Linux)
+	SDL=-lSDL2 -lSDL2_image
+else
+	SDL=-framework SDL2 -framework SDL2_image
+endif
 
 BINARIES=goody xgoody
 

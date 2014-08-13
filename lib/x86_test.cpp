@@ -9,6 +9,8 @@
 #include "x86.h"
 #include "memory.h"
 
+#include <memory>
+
 #include "gtest/gtest.h"
 
 using namespace std;

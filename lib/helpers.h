@@ -13,6 +13,12 @@
 #include <vector>
 
 
+// Pre-C++11 hacks
+#if __cplusplus < 201103L
+  #define override
+#endif
+
+
 // Fixed size types.
 typedef unsigned char byte;
 typedef unsigned short word;
